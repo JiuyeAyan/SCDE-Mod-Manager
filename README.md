@@ -1,4 +1,5 @@
 # SCDE Mod Manager
+Most codes were finished by CHATGPT 5.6 Sol
 
 **SE / scdemm:** Script Extender (SE), by Rawra, enables SE Mods. `+scdemm.1` identifies our adapted SE build, **not a second Mod**. Before installing a downloaded SE update, the Manager reapplies and checks a small managed-mode guard on that copy. It prevents SE's own automatic Workshop Mod deployment/restart from bypassing the Manager. Multiplayer integration lives in Multiplayer Mod Compatibility. Steam originals are not patched; future SE compatibility is not guaranteed.
 
