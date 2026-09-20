@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCDE Mod Manager</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="launch.css" />
+</head>
+<body>
+  <header class="app-titlebar">SCDE Mod Manager</header>
+  <main class="launch-content">
+    <div class="launch-heading"><h1 id="heading"></h1><span id="elapsed"></span></div>
+    <section class="current-stage" aria-live="polite">
+      <div class="spinner" id="spinner"></div>
+      <div><strong id="phase"></strong><p id="current"></p></div>
+    </section>
+    <div class="loading-history" id="history"></div>
+    <p class="loading-hint" id="hint"></p>
+    <footer><span id="close-hint"></span><button class="button compact" id="close" type="button"></button></footer>
+  </main>
+  <script src="launch.js"></script>
+</body>
+</html>

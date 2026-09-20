@@ -1,0 +1,8 @@
+{
+  "id": "bepinex-runtime",
+  "name": "BepInEx Runtime",
+  "version": "5.4.23.5",
+  "author": "BepInEx contributors",
+  "description": "Shared BepInEx 5 Mono x64 runtime for SCDE runtime code Mods.",
+  "gameVersion": "Unity Mono x64"
+}

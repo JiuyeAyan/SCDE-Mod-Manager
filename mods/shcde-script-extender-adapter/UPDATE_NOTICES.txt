@@ -1,0 +1,21 @@
+SHCDE Script Extender by Rawra / Viktor Legodzinski
+Source: https://gitlab.com/rawra-stronghold-crusader/shcde-script-extender
+License: GNU LGPL v3. See LGPL-3.0.txt and GPL-3.0.txt.
+
+This is a locally adapted official release, not a separate compatibility Mod.
+The upstream version, source link and downloaded archive SHA-256 are in UPDATE.json.
+The suffix +scdemm.1 identifies the manager integration guard, not an official version.
+SHCDESE.dll has a five-instruction entry guard in MapModManager.TryUpdateModsFromRemote:
+when SCDEModManagerLaunchId is non-empty, return before automatic deployment/restart.
+Otherwise the original method body runs unchanged. This preserves the user's chosen
+manager-mode deployment policy. Other plugin resources are copied unchanged.
+The equivalent source patch and the complete patcher source are included here.
+The update helper validates the method structure and assembly version. This is NOT
+runtime, multiplayer or third-party Mod compatibility verification.
+
+The downloaded BepInEx core, Doorstop loader, configs and installer scripts are not installed.
+The manager's shared BepInEx Runtime remains authoritative; player configs are retained.
+The original game, Workshop subscriptions and upstream source are not modified.
+Updates trust the official GitLab release account and HTTPS transport. An archive hash
+is recorded for diagnosis, not claimed to be an independent author signature.
+This integration does not sandbox or authenticate other authors' game plugins.

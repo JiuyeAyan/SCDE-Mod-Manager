@@ -1,0 +1,4 @@
+This plugin is authored by JiuyeAyan.
+
+It depends on BepInEx and Harmony supplied by the separate bepinex-runtime Mod.
+It does not redistribute BepInEx, Harmony, Steamworks.NET, Unity, or game assemblies.

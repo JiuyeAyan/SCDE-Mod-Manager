@@ -1,0 +1,14 @@
+{
+  "id": "scde-multiplayer-compatibility",
+  "name": "Multiplayer Mod Compatibility",
+  "version": "0.3.1",
+  "author": "JiuyeAyan",
+  "description": "Verifies manager Mods, loaded plugins and Script Extender networked Mods before multiplayer play, and protects SCDE settings.",
+  "gameVersion": "Steam build 24816905 / Unity 2021.3.45f2 / Assembly-CSharp bc8b6a39",
+  "dependencies": [
+    {
+      "id": "bepinex-runtime",
+      "version": "5.4.23.5"
+    }
+  ]
+}

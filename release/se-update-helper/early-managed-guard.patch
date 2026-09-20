@@ -1,0 +1,10 @@
+--- a/src/SHCDESE.BepInEx/API/Components/Archive/MapModManager.cs
++++ b/src/SHCDESE.BepInEx/API/Components/Archive/MapModManager.cs
+@@ -124,3 +124,7 @@
+     private void TryUpdateModsFromRemote()
+     {
++        // The manager owns deployment. Check before any plugin can initialize Steam.
++        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SCDEModManagerLaunchId")))
++            return;
++
+         // If local does not exist yet: Copy the BepInEx folder into the game root

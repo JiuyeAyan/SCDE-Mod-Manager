@@ -1,0 +1,8 @@
+{
+  "id": "shcde-script-extender",
+  "name": "Script Extender",
+  "version": "2.6.0+scdemm.1",
+  "author": "Rawra",
+  "description": "SHCDE Script Extender core and its dependencies, using the manager's shared BepInEx runtime in the isolated game copy.",
+  "dependencies": [{ "id": "bepinex-runtime", "version": "5.4.23.5" }]
+}

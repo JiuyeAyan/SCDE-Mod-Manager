@@ -1,0 +1,7 @@
+This package includes BepInEx 5.4.23.5 and Harmony under their respective open-source licenses.
+
+BepInEx: https://github.com/BepInEx/BepInEx
+License: LGPL-2.1
+
+Harmony: https://github.com/pardeike/Harmony
+License: MIT

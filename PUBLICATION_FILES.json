@@ -1,0 +1,3120 @@
+{
+  "version": "0.2.8",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 91,
+      "sha256": "0769d8a0f14cc258022158d49998aaa2614348994a8c237ce87df91417b009d3"
+    },
+    {
+      "path": "BUILDING.md",
+      "bytes": 2547,
+      "sha256": "918b7979f4a1fabc351a87f1f143395d6b7d4aaf4f4170445b9ac4ef9200f96b"
+    },
+    {
+      "path": "docs/MANAGER_LANGUAGE_PACKS.md",
+      "bytes": 7594,
+      "sha256": "4777cf738b1ae4d4aa58a61dda1b00cae51dee216b524e3e828d1f33e0fe2fad"
+    },
+    {
+      "path": "docs/RELEASE_0.2.8.md",
+      "bytes": 1863,
+      "sha256": "65df17dc29a6308e80583822d1a9810b9a7d31af01b57e299c39bfe487cf51a8"
+    },
+    {
+      "path": "docs/SE_INTEGRATION.md",
+      "bytes": 3674,
+      "sha256": "e856e0692db70ae8eec614c58de0489eecb1439412f9117cfacc2e9a74eb4a67"
+    },
+    {
+      "path": "ICON/SCDEMM.ico",
+      "bytes": 186706,
+      "sha256": "adba7f43e2cd7c3e875d36e8d06274d42ef4bb24b1ea0dd9fde0235b3b06af42"
+    },
+    {
+      "path": "ICON/SCDEMM.png",
+      "bytes": 103779,
+      "sha256": "c1dacf6fab412b10b80072e4a09f9b04d5f9cfdbf86183332f512c86ad155bbc"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1309,
+      "sha256": "9876183d084a2ecbea4de50e4f0aaab122073842912ea920cc117bd17c5f95ec"
+    },
+    {
+      "path": "licenses/BepInEx-5.4.23.5-LICENSE.txt",
+      "bytes": 1062,
+      "sha256": "e6e534ef6f4347b6449407ee046a3d09cb0174c6f688c996ad0bed94b74b3933"
+    },
+    {
+      "path": "licenses/Electron-LICENSE.txt",
+      "bytes": 1096,
+      "sha256": "5154e165bd6c2cc0cfbcd8916498c7abab0497923bafcd5cb07673fe8480087d"
+    },
+    {
+      "path": "licenses/HarmonyX-LICENSE.txt",
+      "bytes": 1063,
+      "sha256": "7e54ab4766ef78637a05fb3454663a66de6bb960dbd4c7088890ed76b0844f36"
+    },
+    {
+      "path": "licenses/LICENSES.chromium.html",
+      "bytes": 20367095,
+      "sha256": "e3c8a6093358521d4512d68945e16338755e687619196e63948d46c9267537b6"
+    },
+    {
+      "path": "licenses/MonoMod-LICENSE.txt",
+      "bytes": 1080,
+      "sha256": "0b64833222e3c6a426ad29362d26334619fe02eaf2b89ea9c37805521896c920"
+    },
+    {
+      "path": "licenses/UnityDoorstop-LICENSE.txt",
+      "bytes": 26526,
+      "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331"
+    },
+    {
+      "path": "mods/bepinex-runtime/build.ps1",
+      "bytes": 2103,
+      "sha256": "3569cc55c5f18c24a861d9d17980b857680cafee12b53339476eef4499dd9a9b"
+    },
+    {
+      "path": "mods/bepinex-runtime/manifest.json",
+      "bytes": 237,
+      "sha256": "f259b9cc835b1a5cd3fe1fae10bf30780b6b731568917a01ea776a26951787df"
+    },
+    {
+      "path": "mods/bepinex-runtime/package.js",
+      "bytes": 724,
+      "sha256": "5cb0388d2f3d35bfa67e895d950f48ae85a580a273c4d97b9f89a38a2f7ab923"
+    },
+    {
+      "path": "mods/bepinex-runtime/README.md",
+      "bytes": 576,
+      "sha256": "7344f533f335ca2c4c0448651b526db03c08747514c9c54a1a99574ea75e98d8"
+    },
+    {
+      "path": "mods/bepinex-runtime/THIRD_PARTY_NOTICES.txt",
+      "bytes": 218,
+      "sha256": "04b6b303023cdfcf6a6e0e7cb4ed70bc30c74218849317464443855b6662be14"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/build.ps1",
+      "bytes": 4936,
+      "sha256": "79ddaf0422085fbc275314fb66a358a154ccbd62ef110896c480db174ab65740"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/info.json",
+      "bytes": 280,
+      "sha256": "5b6134204e0934429ba3a65aefbe4791152ad874fdd475813d9dd5a819ebc33f"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/manifest.json",
+      "bytes": 465,
+      "sha256": "e3b008b57f64e40f073093b22daaaa65eabab539488842dc0ab99439dd0dc8c4"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/package.js",
+      "bytes": 827,
+      "sha256": "eb0ec00a2d03d1f8c5e7749e20f8f6090b7e803177cf874238dc9159f7dc6388"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/README.md",
+      "bytes": 3928,
+      "sha256": "b5fd473253a956885ccc6422edc42ba877022c834556c7afa9f852cf73635d2c"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/src/SCDEMultiplayerCompatibilityPlugin.cs",
+      "bytes": 48459,
+      "sha256": "b47b1a7dc5163d085fad728142918be6a0eb677d0629c60427aa16da8efe9d02"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/src/ScriptExtenderBridge.cs",
+      "bytes": 9946,
+      "sha256": "3d54066d73d0644fb5e71d9173768f99d4bda1626823f9c5206e0f43be9ede5c"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/src/SeWorkshopMetadata.cs",
+      "bytes": 4464,
+      "sha256": "5e1f647396328197da5b7e5473f997e70846f2d390ac70cda9e459fee5d30f54"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/src/StartupReadyReporter.cs",
+      "bytes": 1554,
+      "sha256": "80b66b2296c251bbd8dabd6eb36d2d45b5cc76a71e03ef4efc5ff82e0d310277"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/test/RuntimeProfileTests.cs",
+      "bytes": 6466,
+      "sha256": "61e07542ee79048a5a3573e2b94b0bde3d444a29c1582eff4d55aa65b05be9c7"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/test/ScriptExtenderStartupProbe.cs",
+      "bytes": 2458,
+      "sha256": "cd037761bcd2fd9ba7419d1eb387a430200e76ad55bc80b1d88f0793be642712"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/test/SeWorkshopMetadataTests.cs",
+      "bytes": 1232,
+      "sha256": "1561aed37b0491ad01e099909b3ab9eefc49d44f792275d8933808363a063347"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/test/SparseKeyMapLoadTests.cs",
+      "bytes": 4693,
+      "sha256": "e3c7acfb22b2bb3d000278c0c812c1709f428eb1ff51c8eabaede551c91598c2"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/test/SparseKeyMapLoadTests.runtimeconfig.json",
+      "bytes": 124,
+      "sha256": "4369cee75d40e8257b2be4dd1da2e854ca8b42a35f3bb34d4ee6aaecfbf6924a"
+    },
+    {
+      "path": "mods/scde-multiplayer-compatibility/THIRD_PARTY_NOTICES.txt",
+      "bytes": 205,
+      "sha256": "bd64659bb0fe34a02f738436f6010d58d94234fed7384ce1954111d555fda4e2"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/build.js",
+      "bytes": 3900,
+      "sha256": "a37563495fe26dcf0789880ff610cbca9511d9bded16ea2fb814c00e738e71b3"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/early-managed-guard.patch",
+      "bytes": 495,
+      "sha256": "5486d8eb82445628d7a927510377ebb85ee8a7277b23c564bbd13df89ce323bf"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/EarlyManagedGuard.cs",
+      "bytes": 4894,
+      "sha256": "621fa8ce92045963cd39115560b98ae52fabb2c2fa1bd47fb03a6f4c59d6f70f"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/EarlyManagedGuard.runtimeconfig.json",
+      "bytes": 124,
+      "sha256": "4369cee75d40e8257b2be4dd1da2e854ca8b42a35f3bb34d4ee6aaecfbf6924a"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/GPL-3.0.txt",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/manifest.json",
+      "bytes": 328,
+      "sha256": "c21b173944bed6c9331ec0cccdd78f1ac74b614a29379cf8af97060e8d62d8f5"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/Mono.Cecil.LICENSE.txt",
+      "bytes": 1096,
+      "sha256": "337e09e19b9e83a660c8999c1812b45069d3b8da042d62069b36a8952fa97770"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/THIRD_PARTY_NOTICES.txt",
+      "bytes": 1760,
+      "sha256": "7f161c43c6126217f6dbf2aeee179ae1799ee5d8bdf29e8405ca3cdcdc78922e"
+    },
+    {
+      "path": "mods/shcde-script-extender-adapter/UPDATE_NOTICES.txt",
+      "bytes": 1510,
+      "sha256": "8d0423a0f42a230617433e5b348f73614aab961e2456abac7abe21f302a0b27a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/config/000shcdese.cfg",
+      "bytes": 3920,
+      "sha256": "53abb49003ef6c8b0798352ef8fc0c7578695e9122266a90cf0ce0353fccd18a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/config/uuimgui.cfg",
+      "bytes": 886,
+      "sha256": "c047ce84b1fae894ffae899d42ed69168c4148fa1e8afc3a62845646043a1917"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/CONTRIBUTING.md",
+      "bytes": 16205,
+      "sha256": "53bdce8b4bb280b91366884e9bb9ea79047e2b65ed939e61f258194c904a71a1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/Directory.Build.props",
+      "bytes": 204,
+      "sha256": "63a40f551a08cf9f5d7428d5f5296f2fc580c38319a3f3a21495336b7788fc8e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/LICENSE.txt",
+      "bytes": 7551,
+      "sha256": "8b0fda3bdf1eb0e6bed38b6743fd7b4e10bb143bb3078b301ab9ca70b1966c7c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/nuget.config",
+      "bytes": 398,
+      "sha256": "b8a0e4c85a3432fb49571385dc51d44e9031298852f9efe4c508475d6a5a339c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/README.md",
+      "bytes": 14901,
+      "sha256": "a66b8d89ba7e277515e7984b026a144e88deed6b0ec33a3b0b993b69840f84b1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/scripts/ci/publish-package.ps1",
+      "bytes": 397,
+      "sha256": "081df84c5ef8e330396f06e61c9bbc13966f6b98c462b59807746419b44a1887"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/scripts/post-build.ps1",
+      "bytes": 6358,
+      "sha256": "580c38f1a6e0c4813bec2e82a0518b83889cca33973cc6e087238c020798f7ea"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/scripts/semantic-release-version-bumper.ps1",
+      "bytes": 4415,
+      "sha256": "3a5b551a5ab662bba26a46640f400400c7be63d4e7bc98cb9d1696b30bd268f6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/scripts/steam-helper.psm1",
+      "bytes": 3701,
+      "sha256": "f830c584f00db1eb1320a4aa0369e0ef4b99e21900defa38dbee1cabdd1744df"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/scripts/update-gamedir-path-run.ps1",
+      "bytes": 653,
+      "sha256": "1748a2b27ae6b8302174b3b074b43076ff07860877d14d4225a755d03cfb9d2f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/scripts/update-gamedir-path.ps1",
+      "bytes": 2234,
+      "sha256": "3e9c551f73dae0ec8da57e44a015662eb8e10cf32cd9395f83aeba933f54692b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/SHCDESE.slnx",
+      "bytes": 206,
+      "sha256": "af232e31282b4723ad89881e732406a1a495a9681631cc212114575c8a91fd2d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/AntiTamper/AntiTamper.cs",
+      "bytes": 9461,
+      "sha256": "e90b74895a10c2d73f952432a9a3f7c9e80f27264983fc70353801af8f9d04de"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/BuildingScales.cs",
+      "bytes": 17943,
+      "sha256": "055c1acfd45945363ef3c8f02763a830d035ecac4d151cb0f8ea306c06dbc2ad"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/AI/CustomLordEntry.cs",
+      "bytes": 2423,
+      "sha256": "8f0e2a35c3d270ad09829fe0b6b3e4a29a7c1c83d3656066d53188d6a297e2d0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/AI/LordDetails.cs",
+      "bytes": 562,
+      "sha256": "1f814c9f2004177798891fb1ab4093fc3f3eecdc994fe2425707946ef66a3797"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/AI/LordInfo.cs",
+      "bytes": 2127,
+      "sha256": "0522c6781393ff8f6a1ffd09ab227e6708e5e1bebbc9e07d607e4067bdf9ef34"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/AI/LordMessageClip.cs",
+      "bytes": 1069,
+      "sha256": "c325502e4a92e063b523533bb1262fe0ac4fbc414866ebe6fca1574fd2a1b937"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Archive/MapArchive.cs",
+      "bytes": 20401,
+      "sha256": "7d1d32f17363ff7e15a6fd81eee8e011e71e157869487a8b126f38035dbcb98a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Archive/MapModManager.cs",
+      "bytes": 23731,
+      "sha256": "f984c07ec17ff804ab0406b819ebddd852c103c84f244280c1ff5783d3106324"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Assets/DirectoryResourceSource.cs",
+      "bytes": 2209,
+      "sha256": "525f5de325a18ab96d4dcac45777412dec65a88b136c125a32d45e3d1e65eba4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Assets/IModResourceSource.cs",
+      "bytes": 602,
+      "sha256": "2962cb517601af9fe2b1bfa06d947542127c27ed4c7844f07b25e33957162ef4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Assets/IndexedModResource.cs",
+      "bytes": 1008,
+      "sha256": "51e72194ec8ba18d4541c7358607667862aaa82a4451a1a93fb376a59b4ae0a8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Assets/ModResourcePath.cs",
+      "bytes": 1150,
+      "sha256": "d2653282f2e8d981ff9958e3b10beeb980c1c2c41daa79a001b9b8d5d6832fed"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Assets/SEModResourceSource.cs",
+      "bytes": 5126,
+      "sha256": "0c56d632b72d5239c5fd0d0fe922c9254de2864fe6b9dd2b1c9f35609d238e24"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/MapEditor/SEMAAssetStorage.cs",
+      "bytes": 5189,
+      "sha256": "b67eec166592e7dda80af7b4640313bebb73adfb9fc9002ac6c37239e1f9fda1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/MapEditor/SEMAData.cs",
+      "bytes": 14346,
+      "sha256": "fb82a42aa392c946bfb1559102998ba1239298cca93caee2eeb3e37781e219d0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/DoNotPersistAttribute.cs",
+      "bytes": 535,
+      "sha256": "ec7c0d1256e911f9ec7fb3f270c9a0f9a8ca47650735e9966892fa058009949b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/GameAssetModManager.cs",
+      "bytes": 18067,
+      "sha256": "ad549089d23888cbd78242db27da7309cd5caa6df2e85fda40b4c9f14d0ba3ba"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/LobbyModMetadataEntry.cs",
+      "bytes": 649,
+      "sha256": "02d16c48283acb11508a2fce04fe77991e550690dd19c133b0764c2c420d8ce7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/LobbyModSettingsEntry.cs",
+      "bytes": 1741,
+      "sha256": "2896ae11c6985db0fd624cc82b67133f66352f63fb51c887de443754a70c375c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/LobbyModSettingsRouting.cs",
+      "bytes": 1952,
+      "sha256": "e2e74292dee0dc6b6b8343b930f2a4b5059aa70c965c6122f98572ad138d0160"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/LobbyModSettingsStorage.cs",
+      "bytes": 12019,
+      "sha256": "d12ff81b55178714a8aa10f662acf5bba77cf2a22fefcb47723066a17f268b91"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/ModInfo.cs",
+      "bytes": 1990,
+      "sha256": "94fcae20b6c472d4528664ed53ba99c8eb0e14a84df4683076653653a7bf72be"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/ModManifest.cs",
+      "bytes": 329,
+      "sha256": "675198a6a6b581f5670343456129a7cfb683efafa80b625ac37a8a49fa2faeba"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/ModNetworkMode.cs",
+      "bytes": 259,
+      "sha256": "9bf057b5bce4bcbea0573963fb0196ef15ab988ac7b49c28c90818cc1e724d76"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/PersistLocalAttribute.cs",
+      "bytes": 432,
+      "sha256": "18bbb77dc188265a2c775bd5ecd52ae7ff48e7371d00c6df6a5739586b37dc51"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/ModManager/ReleaseUpdateChecker.cs",
+      "bytes": 7444,
+      "sha256": "cf2e247b1cd6184a1128d5d9b537757a185078bb3aee43b7326eacc60b7e9223"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/CustomNetworkPacketType.cs",
+      "bytes": 1275,
+      "sha256": "eee0ee8e1039d6a7bd137d26d626bb4e8d72b218679c4090b859a71f53cae7eb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/DeterministicRandom.cs",
+      "bytes": 9280,
+      "sha256": "36d06cf8fc65bf8bdea0a0fb43978f2c4c2cb8e2614a55c8e3c2511fff2e7fa3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/IPacketHandler.cs",
+      "bytes": 1041,
+      "sha256": "5d96486a3bd79ba07aa7235476bdcc50c6716da73622d69dc5584a2c92a699d4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/LobbyModSettingsSyncPacket.cs",
+      "bytes": 391,
+      "sha256": "1acf92aa280a25d300b7d1a56aabe688a9a3b5ec4f8e19a11220d3615392aa1d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/LuaNetworkRPCPacket.cs",
+      "bytes": 805,
+      "sha256": "1e0490cf8dc0ab2b9b522f5b11df194ca5762b09706c9d9883a173799758350d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/LuaNetworkTablePacket.cs",
+      "bytes": 611,
+      "sha256": "5d850adf1dbfdabf046957f293f54538aeb75720febe7025b821888a84c7e53c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/SeedSyncNetworkPacket.cs",
+      "bytes": 431,
+      "sha256": "f375917bc9f2d4b04dc249f7e0bd1251a481cfa54ed56329265afbf683e0cd06"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/SyncLobbyModSettingPerPlayerAttribute.cs",
+      "bytes": 239,
+      "sha256": "b8f1ba7c5002a5129cf30addb8d7807de893b9b653072dcc2ee99eecf5f378e8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Network/SyncLobbymodSettingsHostOnly.cs",
+      "bytes": 275,
+      "sha256": "a0c6ce48d96adfabd49a74531f9d11b60d55479bd4552dc408b36b27e7367f9b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Noesis/BindingView.cs",
+      "bytes": 152,
+      "sha256": "31b96101ac521ede57b5ceba8f2fdbe707a302d218db4ef3b2e0371c3be57e69"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Noesis/XAML/XamlPatcher.cs",
+      "bytes": 10863,
+      "sha256": "f2f3bd0f1175a4303f8a94a3247935f8dc8b1952b206b126cd7071d3edb37834"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Noesis/XAML/XmlPatchOperation.cs",
+      "bytes": 2002,
+      "sha256": "8c1a7facefc1c55dbb94d16c46248b84253d59e30dcee58d3305a6913958da9d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Noesis/XAML/XmlPatchType.cs",
+      "bytes": 1124,
+      "sha256": "67806c80e4b03780f9faf028c31123e5b700680a33a6515afbb1f22e227107f2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/SaveData/LoadContext.cs",
+      "bytes": 649,
+      "sha256": "bb0e6379737071987ba82b373b2c9cf2e6926e5fb899c5053bc3435c7f926ab3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/SaveData/ModDataHandler.cs",
+      "bytes": 428,
+      "sha256": "976a3499c3d1d6ae62ada9bb9a6bd3e109b08932f8a77c5a54030af4855046e5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/SaveData/SaveContext.cs",
+      "bytes": 902,
+      "sha256": "2bdb8487032c31de76b2c084a994f25b33f49b55ba3c8aa1bf8432195d1197ef"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Spatial/IPositionable.cs",
+      "bytes": 178,
+      "sha256": "4948fea294e146e6c3d39713d8981fc53df3f95f2f601218c19aed5eb3e1c0ea"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Spatial/SpatialPredicates.cs",
+      "bytes": 1266,
+      "sha256": "7db1e41f9cef222c8ba5ffe9a3852bf8607e4fbd8ed2cac2f9e76b6c77577e47"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Sprite/AtlasFrameData.cs",
+      "bytes": 988,
+      "sha256": "4c1a609218fba450ff5cb749f3ccc9e6cf1f3eec6c0ed3a83ea87c12f67d1d47"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Sprite/AtlasJsonParser.cs",
+      "bytes": 5769,
+      "sha256": "b515fc151e3cdce9c865175ab96290e86db7469ce5e702e66a6cf41d8a1331e2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Sprite/AtlasOverrideDefinition.cs",
+      "bytes": 2275,
+      "sha256": "f02853730550173dd7b0629308cfc13a85748ce8cd61a159d396a3b9c9b4ace8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Sprite/SpriteMaterialMode.cs",
+      "bytes": 674,
+      "sha256": "7bb83a4d763e691dc62778b375c05a35c6d34d12f897b498160d43fa290299db"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Sprite/SpriteMaterialModeParser.cs",
+      "bytes": 754,
+      "sha256": "221d1656f7477897f7c31c63afc40885c80e04723c3fb8b56dfc96dbcc57c475"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Sprite/SpriteMaterialUtility.cs",
+      "bytes": 7492,
+      "sha256": "2c61ff4fd69feccecbfb3dd3cc6c7bd9dbb814b6a65da658132eb872f44fc343"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Timer/DeterministicClock.cs",
+      "bytes": 1377,
+      "sha256": "1d512c6da5b803775ad41f19e72f1aeaf769b0c7fffa080f964b776bae546117"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Timer/FrameState.cs",
+      "bytes": 2068,
+      "sha256": "85d3550c11fa400934564622f88692ed2261c3f2889ceb0ec0ad2e36db5d3ddb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Timer/GameTimeStamp.cs",
+      "bytes": 2319,
+      "sha256": "a8d07024d367f2c48b1d1d08b7aed8bc6249f2e7eebbed2085aafea36c4b91b5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Timer/StrongholdFrameProvider.cs",
+      "bytes": 4034,
+      "sha256": "a118b9a70985eba7540c14590b6c64d7547b0227d18caee322b7d272d0302f08"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Timer/TimerEngine.cs",
+      "bytes": 10953,
+      "sha256": "e031fdd2231d0e0199c484484c4f4d31436304e002ca2286a5872fcbce173854"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Timer/TimerSaveData.cs",
+      "bytes": 1840,
+      "sha256": "84da5175b4c99c1f4a401053b37245e7ba1f15d3fc8c985c92b48bdccdc43242"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Timer/TimerType.cs",
+      "bytes": 428,
+      "sha256": "313660d13c7fc76956cec959f005dbfb3b33aa0fd6da18d0e8291a1d3fea9010"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Trigger/CircleTriggerZone.cs",
+      "bytes": 544,
+      "sha256": "b03f89898896a896d8224e40645d3819fbca11354175c3bb43dc1aee20f37730"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Trigger/RectTriggerZone.cs",
+      "bytes": 409,
+      "sha256": "78e611173dc061e4e4f57c1c981a9e65982bde0482cc0b26290586ff09d5e68a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Trigger/TriggerZone.cs",
+      "bytes": 736,
+      "sha256": "bf9cc8d9f58aeb0f82322a82dcf328c42922a6637d9ec7c05feb62b675747f69"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/Components/Workshop/WorkshopUpdateManager.cs",
+      "bytes": 9377,
+      "sha256": "7cab0a6dbee3a4bad494bac35fc94b081bb0b31d626299c5c0038c0d959d30db"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameAfterImageManager.cs",
+      "bytes": 10626,
+      "sha256": "701150572a5ad1b63abfda0ad927e542716a6534d6ec45ad387e73b2b0e39249"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameAIManagerAPI.cs",
+      "bytes": 33502,
+      "sha256": "ddb5c00cd23be722f5058960dc589e5ba407e8c86b70b779bd8e8e70105af32d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameAssetManagerAPI.cs",
+      "bytes": 37329,
+      "sha256": "5ee0386bdec861d712e95449ccb7b027e9ab4ca70351a0a4c800efbd2763f0d3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameAtlasManagerAPI.cs",
+      "bytes": 34829,
+      "sha256": "56ced3c1fcec10c3d5cead52c0cc1262d01dd7036dd921a75676465982eeac64"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameBuildingManagerAPI.cs",
+      "bytes": 77373,
+      "sha256": "3dfb8e973ed538539e52edf6111f5c51741abfd50e047152ec320b60d94e368d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameBundleManager.cs",
+      "bytes": 8732,
+      "sha256": "19b218dfff9bcea2fd8f67a707300bf9d777561533c1e4f3bdc6cc86dc7602b8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameMapArchiveManagerAPI.cs",
+      "bytes": 16796,
+      "sha256": "162fa9013b5d77140cdc777d2a697929d7cef2ddfc432d07f7cca4720a90fdbe"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameMetadataManagerAPI.cs",
+      "bytes": 9699,
+      "sha256": "a414704e6166032e5a5783574cf648c2a20b842347fd400dbdea9dbe58112ca3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameNetworkAPI.cs",
+      "bytes": 54408,
+      "sha256": "18801843dc6e00ba51c0ea239f4ef903977685bad0fc7de8241301476cc52a3e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GamePathingManagerAPI.cs",
+      "bytes": 27039,
+      "sha256": "30d8f52eed71420424b957a2c4ec5f0e1db4df071f119f0756f8b12c512c0f7c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GamePitchManagerAPI.cs",
+      "bytes": 18392,
+      "sha256": "fef1a6c0d25cb0abb864ea70404c7c3177aff2218c67dd8ae86a3c8de273f61d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GamePlayerManagerAPI.cs",
+      "bytes": 105825,
+      "sha256": "51d00120e4d96fad7917fe772b0e46fbd6fa59850aed81f7f3d0a2a0094ead78"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameProjectileManagerAPI.cs",
+      "bytes": 15867,
+      "sha256": "ed44f643c0423806c617f77bb5527d42a11bc9fc26edc9170c2cb327812ccc20"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameSoundManagerAPI.cs",
+      "bytes": 25407,
+      "sha256": "0f776cf3449f6040d9ba4dda431b2af65cd30474ea2d8935f502464d16b45209"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameSpriteManagerAPI.cs",
+      "bytes": 12713,
+      "sha256": "c8cb2aa7117fca342a636bc497bacb3319d0c709d7e283a94a033004ac406fa3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameTileManagerAPI.cs",
+      "bytes": 88200,
+      "sha256": "9f5505731a4c0d65e4c9d6a9e4dd02c1252ac5dfb042d83cc09a4973189d9fe3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameTimeManagerAPI.cs",
+      "bytes": 11427,
+      "sha256": "cde0baa29ac2f5606545a0a3e2de05b101814088d947f984b514e23a19cecb5d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameTranslateAPI.cs",
+      "bytes": 23898,
+      "sha256": "836d9a9d5978718adc7595be0f7df70771e22b16cea24aee603c17b88297d979"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameTribeManagerAPI.cs",
+      "bytes": 48283,
+      "sha256": "386e03f4df7ee9ae467c2fcc4ce09220943b11e7db381645c845f101daf4807c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameTriggerManager.cs",
+      "bytes": 16551,
+      "sha256": "b9aa41b90dbe4611b43bb5bff04471013ed122f642214629da1b687f1e7a0d88"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameUnitManagerAPI.cs",
+      "bytes": 74527,
+      "sha256": "714d3106bcecbf3103c2fe85a10bc9cfd07445dd8ef0512c0796c396505fe95d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameVegetationManagerAPI.cs",
+      "bytes": 25411,
+      "sha256": "8dd4edc44cf997676573a7bb5260b2f23ec1b99b08ac0bda8fb5361e717c388d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/GameXAMLManagerAPI.cs",
+      "bytes": 43819,
+      "sha256": "fec8c867a830ba48d0a12818d5a8f9a4ee821d8e783346033cf5fa2a7160e360"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/LowLevel/CrusaderLibrary.cs",
+      "bytes": 4973,
+      "sha256": "b574e4dd6933c4f24eafc50672c4233938a7aab938507f3012dc0cbf1347271d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/LowLevel/CrusaderLibraryLoadContext.cs",
+      "bytes": 1570,
+      "sha256": "81df3592ebe96ced3581f591c2b3c54c3be7ebfd89c4d1787ae5cd59d5873329"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/MiscAPI.cs",
+      "bytes": 2520,
+      "sha256": "12b58522310966c2c55727d34f1cf836ec147e7aba43525288d162953b08ed43"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/ModSaveDataAPI.cs",
+      "bytes": 10404,
+      "sha256": "063fef1f3d204d22ca261c1fef310b2475f40229960843dc1a6eee7f098cf860"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/API/UnityMainThreadDispatcher.cs",
+      "bytes": 8571,
+      "sha256": "7c3020a6cd0d2c41dd0b9fd7decd668451e82ae89bae0acbacd8df876e33e6d0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Bootstrap/Plugin.cs",
+      "bytes": 14455,
+      "sha256": "e69ded4b618a40abd530af6627c109ee7782a71b0d9472914f56e92b72b223d4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Bootstrap/PluginOptions.cs",
+      "bytes": 10182,
+      "sha256": "43f141a0fba6f44c338dd634f480f6c7fa519eaddad9c70f42ac7cc1da2043be"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkAIDetours.cs",
+      "bytes": 12834,
+      "sha256": "ee7a702a2fb69eda299057dd9a3eb51098be07a1e64db40920e37b3dbbb99dc0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkBuildingDetours.cs",
+      "bytes": 55605,
+      "sha256": "0694b7e1c582109f951d861c38b48a5e62794d62c2db2501c3d4bc65d29531b0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkChoreDetours.cs",
+      "bytes": 6944,
+      "sha256": "de3b82fba26101fa589a84a16633ab0da187073d05b904c7af7f5b8a559f225b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkEngineDetours.cs",
+      "bytes": 2472,
+      "sha256": "805f82f0d76c2bddd3f512162b992381d9644a6b5155ad973d368368d3e2ef91"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkMapEditorDetours.cs",
+      "bytes": 29224,
+      "sha256": "a2296e83784980ffc196088f950c4d607c6e1acde5698060dc1c6daea7c1662e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkMapLoaderDetours.cs",
+      "bytes": 19499,
+      "sha256": "69df8e92c02f87fb5798c4d0eacd9460f124f7548a84bc41eb35142258c74c4d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkPathingDetours.cs",
+      "bytes": 4994,
+      "sha256": "3890c23ce4ed8a136a1ceab258c6b7f6737335f1ca9dcfe176d93c50583c5639"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkPlayerDetours.cs",
+      "bytes": 40908,
+      "sha256": "92984e6517e52af028617c1f3a8a2b6786bd77f6cc58dc5c2cab0357dce8b9bb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkProjectileDetours.cs",
+      "bytes": 8295,
+      "sha256": "52ccda48686d3e00b825eab40aa709ede54871c144e19b8735f65e72cab411b6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkSoundDetours.cs",
+      "bytes": 3440,
+      "sha256": "8d2e9cb34434fb9911a4769041bdf7aea09689e7931acbb6c77944d98a49fc15"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkTileDetours.cs",
+      "bytes": 4044,
+      "sha256": "a342abedd5ac2604c20bc68bc7a67e20c8a1ac5058860316b94ce8d604848213"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkTimeDetours.cs",
+      "bytes": 4275,
+      "sha256": "513b0062adc425faae9ca32f49192486e66624bf91c2ee1d7962274712742056"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkTribeDetours.cs",
+      "bytes": 14017,
+      "sha256": "65f302cb3b675ded469e1b645eb92a15b9c2d3d901942c38c400e6295f9254c4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkUnitDetours.cs",
+      "bytes": 79123,
+      "sha256": "afc80b65401b807f2a8c7c61749426104973c741525a7b3dbb365c0eaac1c8b9"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkVegetationDetours.cs",
+      "bytes": 14522,
+      "sha256": "440d1a77aea0073d088233de532175553ddb2127f2e10162cc7314d382600f58"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Detours/BulkVEHDetours.cs",
+      "bytes": 1673,
+      "sha256": "588a7def169294c5c3e070593b38858aafa4daadcdc5b3c9f75ad685c7d76332"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/AI/AIBuildWallEventArgs.cs",
+      "bytes": 509,
+      "sha256": "aff4bbb0036f939eb2818bb16beeb18ec69e07a22a5fbf7a9dcd928e66f32ff6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/AI/AIProcessCustomLordEventArgs.cs",
+      "bytes": 433,
+      "sha256": "d2d38c7b5b5a19044a7d386adf1864253b66251020bf0ad02847b39844986cb6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/AI/AIQueryBuildHovelEventArgs.cs",
+      "bytes": 426,
+      "sha256": "67a270f41b0eebe07dcd7a8a024dfa92a2380eece6666cf9180f02a0d09c2759"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/AI/AISelectSiegeRallypointEventArgs.cs",
+      "bytes": 658,
+      "sha256": "da71fffc58fdbb93bc65c68c03e99647b93856700546a185dc79705442d894e1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/AIR3EventHooks.cs",
+      "bytes": 2105,
+      "sha256": "f05a11ffbb7e6e4f377d96e7fd025c7fa885c14dc667f7174a9f8d056d6db32a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/BuildingR3EventHooks.cs",
+      "bytes": 11951,
+      "sha256": "d41146bcc707181cb6a4ac516c079fe7294b303cd50b8573b73db929eddeb05c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/AddGoodToGoodsyardEventArgs.cs",
+      "bytes": 848,
+      "sha256": "efc512ab37fd15650977d7aeebb14380ec0b23c743fe884bedf8a69b23768c7c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingAllowRepairInProximityEventArgs.cs",
+      "bytes": 724,
+      "sha256": "a7fa6ec182afce9825ce003d9075bc79e4f444dc54428624e3b2cedf022af840"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingBulldozeEventArgs.cs",
+      "bytes": 411,
+      "sha256": "8a5e2f91755a277ac670161b68752996bd5ca9c957e54ebebd1781e533257f1a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingCalculateStoneRepairCostEventArgs.cs",
+      "bytes": 460,
+      "sha256": "62bcb81de76995c49de7f443fe093f0e57527721e7d5ed71acfdbc2ff2826a33"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingCalculateWoodRepairCostEventArgs.cs",
+      "bytes": 458,
+      "sha256": "c3f41639c07f661d9e3062f32f4570989ffdaa64428ba262e4caf653f4b2a15d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingDeleteEventArgs.cs",
+      "bytes": 407,
+      "sha256": "69c454c71d4f7e005b893bb235815938b8b40df3549a79f08a111914dee51954"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingPlacementValidationEventArgs.cs",
+      "bytes": 866,
+      "sha256": "15894b99c3e5593843f5c76cba3586b307127505830aa7427fcb8536ae76a03f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingRefundEventArgs.cs",
+      "bytes": 506,
+      "sha256": "d374d83c0210caa6ec74d95ddc04fa55ff26007bbe94c8a8acb6844b0acf226d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingRepairEventArgs.cs",
+      "bytes": 680,
+      "sha256": "9b927d7a1c0dc111335721bac2255ce1ba06df7f171125206c49cc52d96c058b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingSpawnEventArgs.cs",
+      "bytes": 1298,
+      "sha256": "8a32cb91af4d29117b9593dcc81e8c5d9eebd532f9d427691684eb50dea5e2a1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingSwitchProductionGoodEventArgs.cs",
+      "bytes": 613,
+      "sha256": "7dcb4587abcbd06b962ec8112fb8f8c81ac573a9c253a5d9f8e68e6bc3c302b6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingTileTakeDamageEventArgs.cs",
+      "bytes": 1407,
+      "sha256": "7e7838acbfaeefa1bf7ad32952195521f9b7c6b74c6276473392edaa844b3106"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingTogglePauseEventArgs.cs",
+      "bytes": 455,
+      "sha256": "bb2fb382154ae3ae32158907e6d19431843704b3f564a8df9ba7d8bea94f597b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingUIPauseEventArgs.cs",
+      "bytes": 233,
+      "sha256": "5f83bb1fa896957d7f847eeef63511b8fb43acaa7a16892f6c1c57d8fbbabacb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildingUIUnpauseEventArgs.cs",
+      "bytes": 237,
+      "sha256": "8aa76fca347e7c9070e234fba9cbf18975dfc0ca0b997a5cabebb9370247db4f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildPitchDitchEventArgs.cs",
+      "bytes": 531,
+      "sha256": "025a27bc494dfece5c90219c3e9d58ffb2d061e39378dad1e3bc417687ef5e61"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildStructureEventArgs.cs",
+      "bytes": 924,
+      "sha256": "2192798cb720c8728464ad77f01992e05a4fff21a78653d9a8c602f436dfcee5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/BuildWallEventArgs.cs",
+      "bytes": 960,
+      "sha256": "424dec9d30507439cca10ff72f469a6b8261f274f5f91f87047d4d6cb56b371e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/GatehouseQueryEventArgs.cs",
+      "bytes": 463,
+      "sha256": "5849e9f5c448d10b109e6ed82687fb3a267988a57f6c260fbc1a233e476139e0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/GranarySpawnChickenEventArgs.cs",
+      "bytes": 670,
+      "sha256": "f1520568bbdc36db8dcadee6d34b690fc9296b29b6d16210f952fc74d3afc565"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/IsGameBuildingAdjacentToOtherEventArgs.cs",
+      "bytes": 780,
+      "sha256": "373ec5c1b96fb09449e6634cf3e5938e1faba2d8fc8c4ec5c7d7a0ff41df3be0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/KeepSpawnPeasantEventArgs.cs",
+      "bytes": 876,
+      "sha256": "2b46e853613385873a8ec59906b2d09610bc40e493870fb4d82b1a3981bd3e42"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/RemovePitchDitchEventArgs.cs",
+      "bytes": 318,
+      "sha256": "821ffe126425b0207711eddf7fad5fe26ae3ac2b69750d61b970df6648e01758"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Buildings/WallBulldozeEventArgs.cs",
+      "bytes": 468,
+      "sha256": "02648cdd38f930fa5cc53bf93c8e0cc443a328f2137e4a479a8ff55e342eb82b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/EventHookBase.cs",
+      "bytes": 279,
+      "sha256": "50c182528c65cdfafb2ceb169a0a81acd4353606b1490babf19a52d7bc976dab"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/EventHookPhase.cs",
+      "bytes": 443,
+      "sha256": "88189bbeec47d439f2da2e200b0a92ec56776ce17f9cf4bd7e9e9cc5be064733"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Input/UnityInputEventArgs.cs",
+      "bytes": 427,
+      "sha256": "c919274165a5da8ec0341ec8c1ffa1e3abe3722ede6032bdd117d594f091a91c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/InputR3EventHooks.cs",
+      "bytes": 893,
+      "sha256": "920b75dc808278b38bdbbd6a160047083e2ec7b1df46988f298d6db99081033f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/LUA/CreateStateEventArgs.cs",
+      "bytes": 302,
+      "sha256": "3fd1ed20bb16b234ac5e37e526f8da2b99c51054ee94f912f022f0e16be4d0ec"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/LUAR3EventHooks.cs",
+      "bytes": 454,
+      "sha256": "786aa46d5fed3fe21d83c2d98f858310c412df43298da0556b0685cd3140616b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/AnimalPlaceEventArgs.cs",
+      "bytes": 741,
+      "sha256": "e8b0c2b6344decbae96258f237d54fc78534ac3a942fe8abdaec4e3ae1021bc2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/BrushDeleteEventArgs.cs",
+      "bytes": 589,
+      "sha256": "74420ae0daf4df70177709251b8f709d2220728970659654f59f31c1854c2e97"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/BrushEvenTileHeightEventArgs.cs",
+      "bytes": 609,
+      "sha256": "4176d5cbb2243e52f8e572268d2cc937c77c3e53155b948faa672e7ef0d58117"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/BrushRaiseTileHeightEventArgs.cs",
+      "bytes": 712,
+      "sha256": "da6989c60afc078cfc5b5577d4bd72ab2e9cdcb6d97f3e8a21e0764d052b9bb2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/BrushSetTileHeightToNumberEventArgs.cs",
+      "bytes": 700,
+      "sha256": "d51d3a585e5b3b1380b46bb088913bcfec21c36e91aa562bcdbffdbcb190506d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/BrushSetTileHeightToPresetEventArgs.cs",
+      "bytes": 720,
+      "sha256": "b9d4a336f5bf5f916e7044252fb355c07d5266adaec131ebb6d79ba5e72e95ec"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/BrushSetTileTypeEventArgs.cs",
+      "bytes": 1010,
+      "sha256": "535c1c1bab4ba81379211c9f3ef307f051cc45d4ab6b387a8bcddf12ddc75dde"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/BrushSetTileTypeToNoneEventArgs.cs",
+      "bytes": 615,
+      "sha256": "9a595fa9c0f70e330b07e9c445ccb56d263431ae8167788da421358444c31e36"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/UnitPlaceEventArgs.cs",
+      "bytes": 902,
+      "sha256": "17572e90d52db718dbe49c92c9860678addb43593692ca5b05cbf9216c0a0295"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditor/VegetationPlaceEventArgs.cs",
+      "bytes": 576,
+      "sha256": "628e44c3c02018105364ac691fa49fae2ed4cd4800aa3a2008ecb08335cbea82"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapEditorR3EventHooks.cs",
+      "bytes": 2935,
+      "sha256": "05eaeec42b507b663d20cb3b987679e90157f5b9c09b2c6c7af9d8790537bd9b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapLoader/LoadSaveGameEventArgs.cs",
+      "bytes": 582,
+      "sha256": "25f1703d7245318836ba203b8ea6a56670007f0c1c3cee1d1b05f153b46d3909"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapLoader/MapLoadEventArgs.cs",
+      "bytes": 1043,
+      "sha256": "78b8cd993a2446d783cc4ab1c96f06843967596e6e5a2f5ca8235e51311d7838"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapLoader/MapStartEventArgs.cs",
+      "bytes": 693,
+      "sha256": "bc2849fb1a63d82d93f6ce2aff1f024b01da2c2fbbb17ad1381dfee18fcd7ec5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapLoader/MapUnloadEventArgs.cs",
+      "bytes": 407,
+      "sha256": "3a0151e988887167ca3cbc51b3d53c3831b9ef25b8dbd3fc137ea90b5c5c9451"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/MapLoaderR3EventHooks.cs",
+      "bytes": 1376,
+      "sha256": "1c3df4c02c4fb05498b4cfa887f6ff41db33b5eab278848d1c90251b03c0072e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/AbstractReceiveCustomPacketEventArgs.cs",
+      "bytes": 600,
+      "sha256": "8c54298a8958e29ce94745356bd0fe3aec5a74abf67184929697e952d57f727b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/OnSendCustomInfoToLobbyMemberEventArgs.cs",
+      "bytes": 383,
+      "sha256": "46fd370eaca52934321afb3331c02225f2376979ce29ededf3f8cfa804704dd2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/ReceiveCustomPacketEventArgs.cs",
+      "bytes": 1266,
+      "sha256": "5eb5f0332e93f0d5920a647e3727036cc23514ee7316cb5ebcad6aa5ae949cda"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/ReceiveInGameChatCommandEventArgs.cs",
+      "bytes": 615,
+      "sha256": "dd7dbd7fe07a02e09b5698bfae071bdbdbb78ff2ea85da5aa071c25dabc6b108"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/ReceiveInGameChatMessageEventArgs.cs",
+      "bytes": 611,
+      "sha256": "15006f04402d0ed13cf1846e283196f451d29700f5954b1afc04a2e57a242561"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/ReceiveLobbyChatCommandEventArgs.cs",
+      "bytes": 516,
+      "sha256": "838393e56e962f29d9fd00b84c92e247d9ca390a0ca847e9ae25f21dfda46415"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/ReceiveLobbyChatMessageEventArgs.cs",
+      "bytes": 426,
+      "sha256": "9c77e6b916cdc0a06e3c7200a367eec591049dc15276e5c040e1575dbe3a3a6a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/SendInGameChatMessageEventArgs.cs",
+      "bytes": 452,
+      "sha256": "f1626afe52e28eb8c53381cfff1cda4105a486c9f0cf515ccd47687a4360cd48"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Network/SendLobbyChatMessageEventArgs.cs",
+      "bytes": 319,
+      "sha256": "051cf4bc3550b66b53c38034567e3b813d176f0afcffb320551ba943fa24eb94"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/NetworkR3EventHooks.cs",
+      "bytes": 2565,
+      "sha256": "abac9953a70231600e081c38ada4f8fcb92e9791c1c3b647c52ae8bfc6616e9d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerAddResourceEventArgs.cs",
+      "bytes": 554,
+      "sha256": "93130de933b5fe9b83ddf0030962e69294a647589d0bc3dcc6111206e9bce870"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerAIEvaluateAttackOrder.cs",
+      "bytes": 626,
+      "sha256": "378e690998e1db661f3aa0c54efba0cd69971cb21ee31a1ce1f6e9945c169c2f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerAIEvaluateCanSpareGoods.cs",
+      "bytes": 584,
+      "sha256": "2c9165554bc1917b4b229c251b3afb225b3defe88cb5353efd7f986f6907c991"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerAIEvaluateDefendOrder.cs",
+      "bytes": 517,
+      "sha256": "7413c2a20c8df1988255402e3747d767dfff1c4c395b45e14139f0afc278bb16"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerAIRequestGoodsEventArgs.cs",
+      "bytes": 618,
+      "sha256": "4ac680bad264f9d9daaa4d8a2b1de01314df220f21a18adaf43f44523496fcff"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerAIRequestReceivedGoodsEventArg.cs",
+      "bytes": 703,
+      "sha256": "035ab7580057a226ecbd259d7b2449ec37fda22f7c07b03c73e2559b91150fc4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerCalculateDrunkPercentageEventArgs.cs",
+      "bytes": 411,
+      "sha256": "9d950917b924f1ebb169c54531c73392a5f5c92471dad1cc512c71c191d5349f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerCalculateExpenditureEventArgs.cs",
+      "bytes": 619,
+      "sha256": "af6fa1cae2facad6274f9a19ea3ed1f535c339b86af809351550bca08c308cce"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerCalculatePopularityEventArgs.cs",
+      "bytes": 420,
+      "sha256": "04bdb77fe1e27478de9c0a1b560010434c711f455f2b2cd0eec62a4e7d759184"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerCalculateTaxesEventArgs.cs",
+      "bytes": 607,
+      "sha256": "1a2604e3993689fe2758df5ebbc04052e63c8af2b49e06bb4c9fef7393b901b6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerFoodConsumptionTickEventArgs.cs",
+      "bytes": 473,
+      "sha256": "1b57509106ef84445e2e180a215ddc94ec9c66a754476993006dcc7829028449"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerMarketInteractionEventArgs.cs",
+      "bytes": 604,
+      "sha256": "066b465b778ecf0a7b37183b8f90dae9b9028b7e910baf24d96f5ced6fc6b80a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerSubtractResourceEventArgs.cs",
+      "bytes": 594,
+      "sha256": "3c983bc0ba6a32bead2b0760cec2139e7d863220f232971b05315474cf9ec784"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerTaxExpenditureEventArgs.cs",
+      "bytes": 409,
+      "sha256": "27b2d6dad0b2463ac91c27a359d1059f4e72e08665c464c2a1d26bc3e74525e1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerTaxIncomeEventArgs.cs",
+      "bytes": 379,
+      "sha256": "da478cff36e2049a9a2ba58aed462630f3d395141ade4a80150467d83d453ec5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Player/PlayerToggleIngameMenuVisiblityEventArgs.cs",
+      "bytes": 335,
+      "sha256": "bc0ef734621506e6468d0b39ad60c2a834eb8b0e0863900d919d7ebadd26d850"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/PlayerR3EventHooks.cs",
+      "bytes": 5589,
+      "sha256": "7a6b940f9b562b1fbea13db750c1d08eb27f49760fcfc6f80a6ad62a2bcb38aa"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/ProjectileR3EventHooks.cs",
+      "bytes": 961,
+      "sha256": "8ea8431770e05c1cfb65bb5f5f175f870926663f51718dcaca40cd6a7f530fb5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Projectiles/ProjectileDeleteEventArgs.cs",
+      "bytes": 328,
+      "sha256": "d85ae1346186910f807af72e4a7d2d7a49e4be59b413ac5841f91a7fc2de4974"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Projectiles/ProjectileSpawnEventArgs.cs",
+      "bytes": 1689,
+      "sha256": "b0d637d7749c67f522619549bccfa8d41682ccc05a05612ad820810badd18bf2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Projectiles/SpawnFireEventArgs.cs",
+      "bytes": 861,
+      "sha256": "aafe04ac247ca55db708b9d8c96550a09734799fca7245a91b490303cfa26eb7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/R3EventHook.cs",
+      "bytes": 1242,
+      "sha256": "b961eb2633b85328a40e3e79d0e2d78565eb7be55e90790a94499e7f77bcbbe8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/R3PacketEventHook.cs",
+      "bytes": 1400,
+      "sha256": "424ebfcb0ff49683c5ff30a0f568deefaa5c801c6819db42faf0369fbff305b1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Steamworks/SteamworksInitializedEventArgs.cs",
+      "bytes": 206,
+      "sha256": "bb36091a38fca16ae9c9a5a2c179d57aeaf21255c6a27ade46df05b42a6fe63f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/SteamworksR3EventHooks.cs",
+      "bytes": 412,
+      "sha256": "ee2354ac28f2818c834dbcd40a6e0274fada12c898cf37eef39591b4b51a2d36"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/TribeR3EventHooks.cs",
+      "bytes": 1867,
+      "sha256": "d9efeb28238cf5d0f3dfddae864179dbfad793848b3b7a6dfcb6672d6e23497c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Tribes/TribeAssignUnitEventArgs.cs",
+      "bytes": 472,
+      "sha256": "2fb16ad77bbf4cdb8fe417b7ba8501deb28b89683ffaccf36c44b6a23b067135"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Tribes/TribeCreateEventArgs.cs",
+      "bytes": 493,
+      "sha256": "4353eecf3b6685e2f5aad4e18d4d75a32d3119f239beedfb30445f1912cc8162"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Tribes/TribeDeleteEventArgs.cs",
+      "bytes": 300,
+      "sha256": "2639c22cbc422ea6f9b2d45ad540185dcc1eef23ce366b72b3c82df3efb8b773"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Tribes/TribeGetNextPatrolWaypoint.cs",
+      "bytes": 529,
+      "sha256": "f74bfbb372617356316721c03df57710dcd52b17909077c9301227bfe5293676"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Tribes/TribeIssueOrderMoveHereEventArgs.cs",
+      "bytes": 894,
+      "sha256": "2773ae30cad9177e4af6ecd2c081e193d2c1ba1dd6a192164a6717e8d2f1c912"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Tribes/TribeIssueOrderWithTargetEventArgs.cs",
+      "bytes": 819,
+      "sha256": "084f0d1d45f59fb230aba772891b45087e32614637da29392eaf3ac24e07d52e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Trigger/TriggerEventArgs.cs",
+      "bytes": 402,
+      "sha256": "82a76d91bf8523f231f470b3e19cc30ae837b35a765b93341fe5bf8df3dac145"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/TriggerR3EventHooks.cs",
+      "bytes": 640,
+      "sha256": "5733438d9e6b7f1d91a4fcb30870a0f831f75cb8d2fce345309d63c8ef0eae67"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/UnitR3EventHooks.cs",
+      "bytes": 18042,
+      "sha256": "ccb46018a517964ac89c18fe1267ec7ed4b30ac482bdbf72c103960dee738e0a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitAIStateEventArgs.cs",
+      "bytes": 484,
+      "sha256": "c6aa2004a49142cb18f21a6d30fc418d5658d1015ac2633b3fc0a6184cd099be"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitAppleFarmerDropOffAppleEventArgs.cs",
+      "bytes": 345,
+      "sha256": "9b324b2a0bbefa46d1f3a2f446897f73b55778f56d26549eece3cb5cbb060dff"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitAppleFarmerPickUpAppleEventArgs.cs",
+      "bytes": 343,
+      "sha256": "769a16a413a5d9921c7acadfae593c87ed96516dc8162b45c8f28514cea02bce"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitArmourerDropOffIronEventArgs.cs",
+      "bytes": 337,
+      "sha256": "1ca02a53a88630cadd54e3b5f496178f30858641e8137760bf72820b95a730a1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitArmourerDropOffProduceEventArgs.cs",
+      "bytes": 343,
+      "sha256": "7801ab656f74a551b803532e81211e12b3e92bad220fa02c2d8ed201a6ef64c0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitArmourerPickUpIronEventArgs.cs",
+      "bytes": 335,
+      "sha256": "b9d76923aa31d10d374765112ab34966c57d9b368f35f6231b9eab419ba30e09"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitArmourerPickUpProduceEventArgs.cs",
+      "bytes": 341,
+      "sha256": "211e9af320fe13378b629aa27ac0b76ed35254c1f7e18d5a9b9731980a53f176"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitArmourerProduceEventArgs.cs",
+      "bytes": 329,
+      "sha256": "807090236675236a0a8b931530aef42642ebcd9e34041ad2fc73244c71b26388"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitArmourerStoreProduceEventArgs.cs",
+      "bytes": 339,
+      "sha256": "91369cedd3e49225ffce60d67d92e91d088063cc75175e3e0e0d1fcf79ee27a8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBakerDropOffBreadEventArgs.cs",
+      "bytes": 333,
+      "sha256": "b636837a74361b19bf9301bb92ea1b0fbd31ff1f219dd87bd811bc9e81632f78"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBakerPickUpBreadEventArgs.cs",
+      "bytes": 331,
+      "sha256": "6356853ec08f02444654efdf8b018f60604bb9c0cf7eae25abd152a286564c23"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBakerPickUpFlourEventArgs.cs",
+      "bytes": 331,
+      "sha256": "e9c4567e585a0ce2ae0fe6c90ff45c8684a78a8d8da0b529abdf1252c2f2f47b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBlacksmithDropOffIronEventArgs.cs",
+      "bytes": 341,
+      "sha256": "243f5ea81a7c66dd161acefac5f3856eca44a1a47cb44a420ce5b9523cd3132f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBlacksmithDropOffProduceEventArgs.cs",
+      "bytes": 347,
+      "sha256": "ec86781fcdb3d4f8505ec3cede7947d2e58bda818acbff2c6dbd83649bba100b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBlacksmithPickUpIronEventArgs.cs",
+      "bytes": 339,
+      "sha256": "43868c514fd7b864ee045b9a174000fa638017f678a83a4924aace6c9658a0c0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBlacksmithProduceEventArgs.cs",
+      "bytes": 333,
+      "sha256": "2e427fcb7b68fd295845790bfacef24654736779241f68103c4c0a96708e4391"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBrewerDropOffAleEventArgs.cs",
+      "bytes": 331,
+      "sha256": "532326a8ef1c0c783e99a3490bf6d41d52ea458a6462da142830021718eaa67b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBrewerDropOffHempEventArgs.cs",
+      "bytes": 333,
+      "sha256": "036bd3e92262db7ec7d09474bc992af571cb167d1bc413380244a34be8346a12"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBrewerPickUpAleEventArgs.cs",
+      "bytes": 329,
+      "sha256": "aac44e9e7b67d8ab9f6dd4f6437e84cb31ca565f8586749df371fa36e3d0f776"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBrewerPickUpHempEventArgs.cs",
+      "bytes": 331,
+      "sha256": "fd67ad521b64471bdb3ff6417cffdc976c358ecc06ea1d449a888b999b53ad88"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitBrewerProducedAleEventArgs.cs",
+      "bytes": 333,
+      "sha256": "42fe53672fb2a8c9fa8d82bbd1c96eafeb46030f51b739dffa4f7c8e160f0e3f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitCalculateBonusYieldEventArgs.cs",
+      "bytes": 613,
+      "sha256": "a79fcc243c840b6495d775b61197e74a164b08d02164586e5043e2c2ddc9669b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitCattleFarmerDropOffCheeseEventArgs.cs",
+      "bytes": 349,
+      "sha256": "aa971eb22f5160be709792d4d80d8e55fd8c631451fb021d457480cc48f9643c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitCattleFarmerPickUpCheeseEventArgs.cs",
+      "bytes": 347,
+      "sha256": "08a0737b891f10cf6e989ddd549c366aa5bacd57c9919e7bf6e130b85718dedf"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitCreateEventArgs.cs",
+      "bytes": 912,
+      "sha256": "3b5100e7b3aa1b8d4e03e496ff995585df4c4c59ed7484d62b02d799933fb835"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitDeleteEventArgs.cs",
+      "bytes": 385,
+      "sha256": "5d533393f3d5730dea41dfeacd2ffc962254bd3d7b88a28f9993f0d17a0dc63e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitEnterKillingPitEventArgs.cs",
+      "bytes": 582,
+      "sha256": "7d24962251722ca0f8d20c331d689d54d70310ae74bd1efe2f163cddea47ea77"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitFletcherDropOffPlanksEventArgs.cs",
+      "bytes": 341,
+      "sha256": "58c89c9dc8a5c8d31a45bc2d294c0e589b365edc992869e16bc7c0a5cac629f4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitFletcherDropOffProduceEventArgs.cs",
+      "bytes": 341,
+      "sha256": "ef64cb04b94f37fcd2f4ac8857682b39aa32539882dd0b959ba9b9ac17748d2c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitFletcherPickUpPlanksEventArgs.cs",
+      "bytes": 339,
+      "sha256": "cd3fd1d3ccaff70093287326461b6d9156c1c2a34e3b638779e25826537f2947"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitHealByBedouinHealerEventArgs.cs",
+      "bytes": 521,
+      "sha256": "f484d12b99d145722795f5c4aa8a14ebdb7c771e1bec7e25f6b9c589b99be189"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitHempFarmerDropOffHempEventArgs.cs",
+      "bytes": 341,
+      "sha256": "40bf2efcbd4be3c5e32a028b1ceefb6e3674cadca1e817f1d67250ef1e01ec64"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitHempFarmerPickUpHempEventArgs.cs",
+      "bytes": 339,
+      "sha256": "4d2e5330904ae047822e1c9bfc25fcd7d5d4628d8fda7a657a3495733a3d7c2b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitHunterDropOffMeatEventArgs.cs",
+      "bytes": 333,
+      "sha256": "d2c7273a3b75f9a556a98ca2087fad15160646af634725fbe38ee39f1f5670d8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitHunterPickUpMeatEventArgs.cs",
+      "bytes": 331,
+      "sha256": "b9343dfd77be461451fb7e76cadf128195c5ccb9bd006d287aa3641d08de617e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitHunterQueryTargetEventArgs.cs",
+      "bytes": 519,
+      "sha256": "8a7ccc9fa7d84472e0e607105e0b0cbb9190ed58124e53859d8ab67fd42ce77b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitInnkeeperDropOffAleEventArgs.cs",
+      "bytes": 337,
+      "sha256": "ef5915432d429ee7ec653a459a02f8fb2d3bf25340f4dbbf919adb054b8c8206"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitInnkeeperPickUpAleEventArgs.cs",
+      "bytes": 335,
+      "sha256": "d044c020a3f07243c6c34222a38b7726d62f6203548ce8ab050333402cd59c8d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitKilledByMeleeEventArgs.cs",
+      "bytes": 470,
+      "sha256": "9ecd47e0c93e82b61e98b40e838cca5b490af8b19da292c51bb61e7d4d03af6f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitKilledByProjectileEventArgs.cs",
+      "bytes": 468,
+      "sha256": "48b16f3308df83e9d0650fc1b35349b5b629d0cfbc03ebdbf7cdb84f6b9cf50f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitMillerDropOffFlourEventArgs.cs",
+      "bytes": 335,
+      "sha256": "9bd7f251d5616191ad43eed9453d9062914dde4183d6298da29683cb9efdc1ba"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitMillerPickUpFlourEventArgs.cs",
+      "bytes": 333,
+      "sha256": "2d528a8c6e59ec13070f2060f26e67598a598e66cea523ce892055be71f48433"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitMillerPickUpWheatEventArgs.cs",
+      "bytes": 333,
+      "sha256": "4bf10d98edf230d9c623d67337493a71e752478b8ca5875990feb4b7c6e92aeb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitMiner2DropOffIronEventArgs.cs",
+      "bytes": 333,
+      "sha256": "162e07ac527b4cf9006694bbdf6cd29ad532bce678e85f1bd0245cf0a7ab32d1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitMiner2PickUpIronEventArgs.cs",
+      "bytes": 331,
+      "sha256": "104f89ebbb74289e47de472e7da23866cac62859a7cc0355d66e2533d6a6f5b8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitMoveHereEventArgs.cs",
+      "bytes": 603,
+      "sha256": "b35c9b5e19f55dc5c2c78deb78d81532891a053b09e68fcefe30e67bf90fe5d6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitMovementEventArgs.cs",
+      "bytes": 312,
+      "sha256": "3bc3ce1b0e3c7bb224d80fd87932574404bb7ab7bbeb07a6c4b7c1711690dd1a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitPitcherDropOffRawPitchEventArgs.cs",
+      "bytes": 343,
+      "sha256": "c4fc13e09aa2980e21f81ed719cc1ccc5ccd7e8a66c6ae5b88424b791082ce2d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitPitcherPickUpRawPitchEventArgs.cs",
+      "bytes": 341,
+      "sha256": "59b79e1e028b3e42dd5b6f6f48c4c074e0b2971475a67a8821d0e1fa5f9b312c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitPoleturnerDropOffPlanksEventArgs.cs",
+      "bytes": 345,
+      "sha256": "e8bad5796568bf527e5a4f198c0c7948eae694aae76b761382d4983a1ccfab2d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitPoleturnerDropOffProduceEventArgs.cs",
+      "bytes": 347,
+      "sha256": "365baa85c122e823cef762d3c9021b2ebc98c06485a145e7d89c0d4eac4279d2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitPoleturnerPickUpPlanksEventArgs.cs",
+      "bytes": 343,
+      "sha256": "b2a0fa5a26c1db9005a6ddd40a2a86a1bba387d850104f31af407b97c4dad917"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitQuarryGruntDropOffStoneEventArgs.cs",
+      "bytes": 345,
+      "sha256": "7b8d3d9d5531800849b444d4ada767a850f0967ba065e02603ed0653064d6dda"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitQuarryGruntPickUpStoneEventArgs.cs",
+      "bytes": 343,
+      "sha256": "bb0e58573fea87372f8e090cfb915c086e537430e7e3160d33d1b15746368735"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitQuarryOxDepartEventArgs.cs",
+      "bytes": 327,
+      "sha256": "d4f9828af0a4154151f8347ab9dd00e98f0a48461899ed273877c41c304ce572"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitQuarryOxDropOffStoneEventArgs.cs",
+      "bytes": 339,
+      "sha256": "84a5207896dd868f683d6e18378f470099df94cb8e9f9f97bc34d6c2b65ff346"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitTakeDamageByMeleeEventArgs.cs",
+      "bytes": 626,
+      "sha256": "4d59cf6c0dfa11c02042f28b3959fa78204d4d0faa9a14891790165b20ec6ab1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitTakeDamageByProjectileEventArgs.cs",
+      "bytes": 650,
+      "sha256": "462ba43ccaebc59b8de992a9c49ba0e4850bb0fe74de669a4ede1c964ef9cd21"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitTakeDamageByProjectileExEventArgs.cs",
+      "bytes": 670,
+      "sha256": "c952e4ba50d3e94f67542949f984e64a61f868c57014ef835e6935353e9f25d4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitTannerDropOffCowHidesEventArgs.cs",
+      "bytes": 341,
+      "sha256": "0b3adf57637253962e65e563856fd3851c31d1b5f8541e94aaa4aa0e1d17b1b9"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitTannerProduceEventArgs.cs",
+      "bytes": 325,
+      "sha256": "1603d1b57f66ccd4239b9182de9b28455cefd0a970334ebe94e54caaf4376911"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitTannerStoreCowHidesEventArgs.cs",
+      "bytes": 337,
+      "sha256": "57765fff918cad51b4d06945a5aaf3d8a676a8b1fd388874d273dbe65fd01592"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitTransitionEventArgs.cs",
+      "bytes": 767,
+      "sha256": "5f0e0366efbdd5f6f99b08e6592775579ac472efaedaa49aaa82121f7135a52b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitUnityVisualInterpolateEventArgs.cs",
+      "bytes": 358,
+      "sha256": "8af5312d949e23e3eda89383637e7c7b68b9874e3141217592e309605a9bc66d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitUnityVisualRemoveEventArgs.cs",
+      "bytes": 328,
+      "sha256": "ba074f8730888a2e04f95339da1d3b0f083349e880ccd36b774a5d66ba5f4602"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitUnityVisualSpawnEventArgs.cs",
+      "bytes": 579,
+      "sha256": "a6a4fd45abe11b7445743133dfde1d772967dc2ce27e78b88158577b7664ce34"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitWheatFarmerDropOffWheatEventArgs.cs",
+      "bytes": 345,
+      "sha256": "33ba4a0cac0ff56225e600a4609641150993d50c0ec9d9a04829a108f67cd72f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitWheatFarmerPickUpWheatEventArgs.cs",
+      "bytes": 343,
+      "sha256": "a6724e246e61b64fdb018e972cd5d6851accb453c2c1550ca23f554a7938db07"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitWoodcutterDropOffPlanksEventArgs.cs",
+      "bytes": 345,
+      "sha256": "919d67218f036ab14198a0a79d20707f44a2552b12e285debc0e16abb6357f71"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Units/UnitWoodcutterPickUpPlanksEventArgs.cs",
+      "bytes": 343,
+      "sha256": "34f2492d4065590da8f743996890fcdb0b1de2180205d56fd9347597a377f5d4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Vegetation/VegetationCreateEventArgs.cs",
+      "bytes": 979,
+      "sha256": "fde6fff0dcd27a2187a2f1b0c263806a8eb30866a1c2d45b1038bd10e50509a7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Vegetation/VegetationDeleteEventArgs.cs",
+      "bytes": 349,
+      "sha256": "baa05a4cbb448f7ef2ffb71c426922db2dcd6a55be76918eb5b65c3ad8c7b45c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Vegetation/VegetationGrowthEventArgs.cs",
+      "bytes": 352,
+      "sha256": "7a5d37d99e40188632caf030fecc3e07fe46a06145e5992090a545e6e0d3c920"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Vegetation/VegetationSubtractResourceEventArgs.cs",
+      "bytes": 567,
+      "sha256": "12213f5d7543018a4930f0561abda05cde0b3a0660b9eb99c8a83d826e7ec85a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Vegetation/VegetationTreeDamagedEventArgs.cs",
+      "bytes": 630,
+      "sha256": "4660da0e711feb631ff26d37ae205eafa3f8e4c6921541b0e15a5765ac4bde6f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/Vegetation/VegetationTreeFellEventArgs.cs",
+      "bytes": 474,
+      "sha256": "0364e3f544dc758050cf409b99499fca6ae3011184a613168ba23e9b34b1f9ab"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/EventAPI/VegetationR3EventHooks.cs",
+      "bytes": 1906,
+      "sha256": "a5b88adafed55f323e25d5ac4bfc740637b3e36d0a4684dfd8e4cdca19be475b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/AudioClipExtensions.cs",
+      "bytes": 6952,
+      "sha256": "775a396545c69dc0ddd1c6eb71706bef806d238bc81d6545e20e0c2f381729a0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/BuildingExtensions.cs",
+      "bytes": 4668,
+      "sha256": "953b7aa5b28c9276f63602f6296707e190e8b6a7ca9fa21cf9be13e90b03443b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/EnumExtensions.cs",
+      "bytes": 18893,
+      "sha256": "842aaa1c6f8b9afab6cfc2c19988c16221231eacecc046a7cb98f2a1d1458a14"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/GoodExtensions.cs",
+      "bytes": 3559,
+      "sha256": "0e96cf20aa430ca6d9502d8646edb70a6817cfa4886978d139f626bb121124e4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/JsonExtensions.cs",
+      "bytes": 663,
+      "sha256": "8222330c52374eacfa7cc2de2af97d959fe8fe2c0165e05fd1deb6cff391127d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/LuaExtensions.cs",
+      "bytes": 12235,
+      "sha256": "6a20f8f43e047769ae625be342b7cb43af7d679bdc5f49831fb582e939415e86"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/SteamAppsExtensions.cs",
+      "bytes": 2736,
+      "sha256": "7f182eda391564cacc25e31115b02be63850e494a8461ac1986598ab0967fce8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/TextureExtensions.cs",
+      "bytes": 3028,
+      "sha256": "71999058c011b22275d791a54df160b0a6e8f4865ce262410a9eda4e13e1ad2e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/TribeExtensions.cs",
+      "bytes": 3461,
+      "sha256": "27ef21bfc0173b199e535f9e7e20ab488b995dba39fd5fd3814f80cbd5c84be6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/UnityEngineVector3Extensions.cs",
+      "bytes": 2373,
+      "sha256": "cc56e9d37e100530fd8a60add4b94bd755769f4cd247e8f53f5b77dcc128942e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Extensions/UnmanagedVector2Extensions.cs",
+      "bytes": 1722,
+      "sha256": "fa5b41006564179c4ea25b7a2ab9d1aeb256347d886386795616d3b0b18353c8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/GameGlobals/GameGlobalsManager.cs",
+      "bytes": 112747,
+      "sha256": "b1af18d6ea9ff3dabdce23fb02b9b54566a9a60431e3695e5a919b191ce69dd6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/DebugMenuManager.cs",
+      "bytes": 1145,
+      "sha256": "038d0be464fdb50728e24b0a58fff7eb19e8752c021f67e2f5274da3385b3271"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/MapEditor/MapEditorTileInspector.cs",
+      "bytes": 18381,
+      "sha256": "c2f1876a239e4405968c43ef3ebb5815a0fc538924d067ee7589c9150a9cab93"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/MapEditor/MapEditorUndoAction.cs",
+      "bytes": 1010,
+      "sha256": "1ff2caec55b7b83f83318dd7aed65514d999fc09e7057b6afc83c7fc342a699f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/MapEditor/MapRegionSelector.cs",
+      "bytes": 3792,
+      "sha256": "4b449a4996541dcef899fcd5e6fbf225e05229b4d434066c93baa95bffe5a9ce"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/MapEditor/MassTileHeightEditor.cs",
+      "bytes": 17264,
+      "sha256": "480159d37432b9421ca89e1afbe26afef1ce447d532f5117d9907a783c868ec4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/MapEditor/MirrorTool.cs",
+      "bytes": 8517,
+      "sha256": "b9127a2708088cabe3ab6afca4c8cc6cbe3116e5e272b1a8ae25e98da2bf6943"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/MapEditor/TilePropertyMutatorTool.cs",
+      "bytes": 2188,
+      "sha256": "458f73f92b4fbd307535816fcaab968cda8a6c45123ebfb27fe7e4b11efd82d8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/UserMenuRenderer.cs",
+      "bytes": 40005,
+      "sha256": "901dfd11a2bd65d88e12c03636ccb7afbae70ddf6379b289d106e83861cbb58a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/Visualizers/DebugGridVisualizer.cs",
+      "bytes": 18517,
+      "sha256": "605902662687e55b54ca63083d4bbcc82fb63c99d6fc0fcd5906c4247bfe7602"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/Visualizers/KeepProximityVisualizer.cs",
+      "bytes": 3991,
+      "sha256": "bf64151dcaf3239fafdab7ca51bfd49d970d1c5b26cc913399709d70060c328d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ImMenu/Visualizers/LogicDebugInfoVisualizer.cs",
+      "bytes": 18037,
+      "sha256": "4e2a4319f0212b569b26be1df65101f19779183b3009bced9e6ded79f9885aaf"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/CallstackHelper.cs",
+      "bytes": 1172,
+      "sha256": "0a2aa1d0b3ea586bb212cf16fcbbc3c6303a05e471bb2372dc8f2a4b76204e87"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/ChoreManagerOptionsInternal.cs",
+      "bytes": 6180,
+      "sha256": "51ee8898bb99205c0d1b522a9e538006a938b0b02b85ecd85965d158af87038c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/EngineMemoryDescriptor.cs",
+      "bytes": 482,
+      "sha256": "477322e7118f3ce66dda454ede92d0f3ab032f9c9c0eb509730e4c4dfb2c62b1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/AIAdvantage.cs",
+      "bytes": 244,
+      "sha256": "6eab30041a637372df05f7af8ef44f9512d3f3100933a01ec84403a8ca3fdf4d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/AILordMessageType.cs",
+      "bytes": 3538,
+      "sha256": "7d115cde3b17773fc7c9f4d4ba82293cc2cfef5c73a92ef014d4950ff22af824"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/AIRequest.cs",
+      "bytes": 297,
+      "sha256": "b9d956950923106ad0d6cc5befdec32962216c9231a81807ff7aa39eb27b4a2f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/AIRequestOrderType.cs",
+      "bytes": 233,
+      "sha256": "0f3264add262c5bf50f7e85fdfb9ad6dcc3a83453daf692c92e06a0a200b6192"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/AISellBuyPhase.cs",
+      "bytes": 294,
+      "sha256": "73d8d0a166905ea07f39ad6bc8e8c2eae7ded5d36b6cb68f52b231548bf5995f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/AITribeRole.cs",
+      "bytes": 775,
+      "sha256": "9190c369ad46d43adc782575d90ced5ce812265026b175ad6ac71c8c316c7569"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/AliveState.cs",
+      "bytes": 1008,
+      "sha256": "5232cd084fa7d124abfd6b9b9cf6876e6dc92a90178dd86559cc93b6619463b6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/ChorePhase.cs",
+      "bytes": 368,
+      "sha256": "42bb68c16a2f7a5f5c407df4b5b12cd3f8abb7184e7d11ab46de29356b647771"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/ChoreType.cs",
+      "bytes": 9210,
+      "sha256": "52a8e828e25b3a26f8c7503aa0050ad2495672c295cd49e36356fd6767f51bbc"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/CompactPlayerIdMask.cs",
+      "bytes": 444,
+      "sha256": "c2f320842c1e541dd77404b47cf7efe43b3ccedacc305b05a25fc4fefb21d621"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/eGameTypeModes.cs",
+      "bytes": 309,
+      "sha256": "f7b2b56d92054185a9bb41993bf8f28dfe9793743db080043a2b9df9c06e3d15"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/EnemyHPModifier.cs",
+      "bytes": 284,
+      "sha256": "517d1dd5d021a5caa922e273af86c72fe84642839af848d37cd5ae9c445f8422"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/eTimerModes.cs",
+      "bytes": 417,
+      "sha256": "b1bcb5519cc9e85ff0944c09f2da3782b4465de44fa2a1ecc7896ba02a5436e3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/ExtremePower.cs",
+      "bytes": 279,
+      "sha256": "73a559dffacf9742db4035a20e4094e5f224c1068f2a194b5cb7ed3976e938bc"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/GatePathOverrideMode.cs",
+      "bytes": 451,
+      "sha256": "49f6630df8482a62095d5064c2e65394785639bdb874bf25d3ef9171c9b6ae34"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/GranaryFoodType.cs",
+      "bytes": 302,
+      "sha256": "ef375062740c646653a09677b2a4cd13ce5b259b1d834890c4ac837148816aa2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/LuaExecutionContext.cs",
+      "bytes": 561,
+      "sha256": "aa15de589a796692e5dc2d6d9dcc7403513ae6fc4a5391ddae8d68465487d8e5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/MoatTargetMode.cs",
+      "bytes": 138,
+      "sha256": "0e089c2bbfaccce1b737eb93aff8311a3b7ab4b2fc51b9baa64e183f59a29cff"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/MoatWorkType.cs",
+      "bytes": 133,
+      "sha256": "f6605775311e9b57834ec8104efcb98bd0aea887281b33817907ef0926bed37d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/PackedPathDirection.cs",
+      "bytes": 396,
+      "sha256": "c38ece9cf125b879bafef125d9e0c224e0a637f7e23dc701adb802572aad2308"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/PathConnectionClass.cs",
+      "bytes": 369,
+      "sha256": "edfddd34845e1fa0e753d65585c90fe05148652e117a930a5f2ae980f4948adc"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/PathConnectionQueryMode.cs",
+      "bytes": 266,
+      "sha256": "e59b08533c643efb3ac3264ad911acfd8a0cc8500cd14eff04b281c4c64fb7ab"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/PathEdgeMask.cs",
+      "bytes": 360,
+      "sha256": "754aa23443bd992d8fe384a51c26f14df14a0682b76313a761351aff69135a1b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/PathfindingProfile.cs",
+      "bytes": 227,
+      "sha256": "803b11d75c4354db9a660c141c9312583bb67d02ab20214fc5c758461b426d72"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/PitchState.cs",
+      "bytes": 535,
+      "sha256": "05d0832c49069fb1c395f12fee52c0ed0961481a027196f67eb8110262481aca"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/PlayerRelationship.cs",
+      "bytes": 562,
+      "sha256": "77212008ebfb54e5e64220b7c0f23dafbb9ea4c25925759d7f5bd5a0be5ae0a7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/ProjectileType.cs",
+      "bytes": 1273,
+      "sha256": "5b0e9b86df1993aa5dc8825d182d977164a720eee07a80e9be2790f48866ddb0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/RationsMode.cs",
+      "bytes": 600,
+      "sha256": "c03d85bcbd9e9c2033885bfcb69ddb75cb618317a71f9e996369110167194f4d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/SelectedRechargeablesResultType.cs",
+      "bytes": 138,
+      "sha256": "a776ba21ea65684901636804ab934b8597ce24a02069bbb0f6ebeda2bf33e580"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/SkirmishMode.cs",
+      "bytes": 215,
+      "sha256": "d74a3356e31e5a246e1a84a8c384fe7c6ba54c6689ac98db2ca1b32132ab4868"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/SteamNetworkingSend.cs",
+      "bytes": 7512,
+      "sha256": "615815489c7dbc3e85bbc38468b0c88105f7edb26d8f5df265d03f9cc06baafb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TaxesMode.cs",
+      "bytes": 3576,
+      "sha256": "4b4ca9855d2da8d5f72a336864e31ae34bb7d65bd61bcdbd316cb5839a8fa884"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TileProperty.cs",
+      "bytes": 9351,
+      "sha256": "22c6609937e2564de26eed98a66f49c281bbabb01ba4db4e27270ccae826e55b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TilePropertyMasks.cs",
+      "bytes": 1404,
+      "sha256": "912402d07f363aae490f3d1240dcc9c390be19b7dfee6cf2f834459455d52db6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TileType.cs",
+      "bytes": 1564,
+      "sha256": "77407b4c93911120e39356ae57765724b9ba0eaaab9c4e197a0dd896e8a19912"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TreeGrowthStage.cs",
+      "bytes": 203,
+      "sha256": "e6ac1a44421ecba7b4c262e1db6511a66a5634c49f771a68c6be6a9125548ff8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TribeAICommand.cs",
+      "bytes": 3476,
+      "sha256": "b7a946a7e30b86c6c5fe818eb828f852988adb198db2fc3ee7f17587cda33f30"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TribeMoveType.cs",
+      "bytes": 955,
+      "sha256": "61231f1e2501bd9fe2cbe84c63e716145fc6df5278824d87143dfb4d5c3c2df8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TribePatrolMode.cs",
+      "bytes": 495,
+      "sha256": "a927e2d43877747466080073d03105b6debeaec99a0c9e46e9e081896ee7bd5c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/TribeStance.cs",
+      "bytes": 980,
+      "sha256": "305ea5c55a6d1abb6b57bd0edcd8018ee60f27fda48f41a39f7c867afea4881f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/UnitSelectionType.cs",
+      "bytes": 457,
+      "sha256": "c690f2669325733d3948506976b44b734ebca3d6d7755fbd6ed02c933dfc39a6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/VegetationType.cs",
+      "bytes": 2014,
+      "sha256": "cd5909a9bf1cb91efaec5b7caa78399ee1f161de301ce5cf0e85b5b91f7fabac"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums/WinLossState.cs",
+      "bytes": 387,
+      "sha256": "bc84373e7ef1e355a03d28996f174f649d7644a4a20fff14cc33a499edfe0f08"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Enums.cs",
+      "bytes": 38811,
+      "sha256": "8a92ec6c16e9e2e239cea93953d525c3dbfe17a68ba6795f6e7a3ed14ce5668e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/EStructs.cs",
+      "bytes": 14335,
+      "sha256": "8e242937ac8439fec61919df295646fdd60e7a9ff6a67d78ed55d90628cfec9e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameBuilding.cs",
+      "bytes": 11601,
+      "sha256": "ec766b71b8fb34122c3f04c7a9e6ae7f155f8b324148b51b008a32b4d5184acb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameBuildingCost.cs",
+      "bytes": 384,
+      "sha256": "25695a31533c58a54cfa3dbfbd438f4f0d56a04141304608119831574b9036c4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameCursorManager.cs",
+      "bytes": 11571,
+      "sha256": "6f906cab63ea2605df78687cf2403f9caa2b6a620c3c92ba3c767c3735ac2095"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameMapRulesInfo.cs",
+      "bytes": 31597,
+      "sha256": "03cee1f91ba836f118e96f3dda0887b490b112809a1ab4a12d6efcb1cf5d1166"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GamePathfindingContextView.cs",
+      "bytes": 1967,
+      "sha256": "3348082be3a0d1c321f002e0ddb1b1854e66ccc473eb825f440ecddde317c145"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GamePitchDescriptor.cs",
+      "bytes": 3364,
+      "sha256": "0468b6b00c36c216808da64c31fbfb83f9e331046f28f6c421a7fb51eae42a38"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GamePlayerResources.cs",
+      "bytes": 223772,
+      "sha256": "4932a3cc1223898fcd5f27eadc28e92c8474270aaf04ed4a8f228fec6a9056e6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameProjectile.cs",
+      "bytes": 4935,
+      "sha256": "49c361c631c5869fd7aeee13d995efd526d66c26e450b0cc5bce47cbc10c9298"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameProjectileManager.cs",
+      "bytes": 2381,
+      "sha256": "b9d40aa7c5185983ad7dac71a85ff39607a6119fcb9362dc2aa06bf7c58b7390"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameTileManagerView.cs",
+      "bytes": 22218,
+      "sha256": "3ba3efc1cd9793e0c4de7edb77f29add7356a7586d96b02254cca7fa53d05bbc"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameTribe.cs",
+      "bytes": 18962,
+      "sha256": "65cb2519450605de23e3bb8b69dfe35fcd4c5cfd4971f5e3ff3d0ed6e3a7b454"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameTribeManager.cs",
+      "bytes": 16825,
+      "sha256": "9e0dde65c4cc57ec50c9c7598831248ea586e7bdd361e65caf66b8db871cea90"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameUnit.cs",
+      "bytes": 17039,
+      "sha256": "f3095223ba51653b151ccaa6177c2289a5668a0c0d9a33714ea76ebdb2f01a64"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameUnitManager.cs",
+      "bytes": 4908,
+      "sha256": "d9b4ddd7cafa8674c004382b85f3943faa0e544933e86cc7efd590414b38825f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/GameVegetation.cs",
+      "bytes": 5085,
+      "sha256": "74a4793338f13c29fa30356b5fb7990e3d0788f83f303b7c8823dc3f55caa29d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/InternalAIC.cs",
+      "bytes": 16791,
+      "sha256": "e4a2ac783f70d66d201fa9f9d007abb8c18bd67fea93fc0a832e83cc9db6571e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/MinWinAPI.cs",
+      "bytes": 10498,
+      "sha256": "6b44e545de2a4e5a99575cd93b9a2a887c2ad6ff8bd2a78cb20c107d9adc5bbc"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/MoatWorkTask.cs",
+      "bytes": 728,
+      "sha256": "771c46472d53abbe1a2342bc8af74b6bfd5dfe7bbc80cd4c7da93028f0ba3558"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/PackedGoodPrice.cs",
+      "bytes": 401,
+      "sha256": "a66bd25cf286f95da12ff43adaefa275e466566d872281276a688008f4270d88"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/PathConnectionRecord.cs",
+      "bytes": 1531,
+      "sha256": "52e5055c48a6f762b9c308a5a19b3caebef2f9c50f7e58dd228e336a63b15ad7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/Query/GameStructQuery.cs",
+      "bytes": 8090,
+      "sha256": "19e277b2695c536241031142f0ae5c7c56e77a0d1cd81a6a6d76905eac52332d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/SelectedUnitInfo.cs",
+      "bytes": 375,
+      "sha256": "cd45c22b581741cfc82a5fc3665b59cc0838826cb56a40250afaf2d77e1d8ed2"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/UnitGoodCost.cs",
+      "bytes": 1260,
+      "sha256": "5ccb15d357e5be0120d70e3824472e655b778014a680febed05dd4d4854630a9"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/UnmanagedVector2.cs",
+      "bytes": 683,
+      "sha256": "5ee625daf09d7adbe7b4d78d09a80c03106fd83b9ed9aa7bad309fe1193ca1e3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/VTables/BuildingFunctionsVTable.cs",
+      "bytes": 16503,
+      "sha256": "5b6fa07014a35726d98bc6e5e7d7977371fee724105f333a8fc917e3ff9f6a29"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/VTables/GatehouseFunctionsVTable.cs",
+      "bytes": 851,
+      "sha256": "75f9e8ed007a5c54842072f81b7796ab135dd1ad541bcde45239fe809cd14e77"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Interop/VTables/UnitFunctionsVTable.cs",
+      "bytes": 5812,
+      "sha256": "1a923cb81aa1956ee320942341caff5c7fdb0201cf00f42259eface447f0a247"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/IO/DirectoryHelpers.cs",
+      "bytes": 5167,
+      "sha256": "04d6fa4c8b5ef9bec7bda307a511c0cb9563cb0f456c068e855c373a895dddf1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/IO/PathNetCore.cs",
+      "bytes": 13497,
+      "sha256": "d8c0a2c90301ed057299c84c59ce0da28cbb2ebc038d1d65329a27af539ac4c0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/IO/SimpleSemVer.cs",
+      "bytes": 2513,
+      "sha256": "10f3787cd58b468656abc382b55c981944e61cd9ba1b2e30fdf5c8756950ba28"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/IO/ZipUtil.cs",
+      "bytes": 4785,
+      "sha256": "7e4aab23fe44b1ea87a1649538d20810a45f5032e0827ed5f379531296043f4e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Logging/BepInExSink.cs",
+      "bytes": 4056,
+      "sha256": "b0a404f57eba768fd1155b4ff7f32be97f86adfdb70edcf869c2cf8c687f0027"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Logging/LogHelper.cs",
+      "bytes": 3919,
+      "sha256": "6c3b631841864bbfb0a98eecb7f8276bb21c69d5bd0664dfbbf4fa16de239adc"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Logging/ModLoggerFactory.cs",
+      "bytes": 3111,
+      "sha256": "0be24206b91cd98410e57f3d8d54de15b2b11ef3997f6d20c317c882388cadea"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Logging/ModLogHelper.cs",
+      "bytes": 4457,
+      "sha256": "a136d2ea3fcf9230aeaf63fb49057b43a2b4c6f5b374ef70bb3f84195a9c6de0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Logging/ThreadIdEnricher.cs",
+      "bytes": 618,
+      "sha256": "eb2e521e551aab4e4bdd3cc06175538766b393506194b4c2f67cc94af180de54"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/CodeGen/LUAExposedAttribute.cs",
+      "bytes": 238,
+      "sha256": "ad872863c429f15079541b5b662cd145a0757e40e715d734bb6868852cf359d8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/CodeGen/StructFieldSetter.cs",
+      "bytes": 3148,
+      "sha256": "4d653957785861c2735548201a0c11ebd47efd6cce640f7728a6915db6b446e1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/DocsGen/LuaApiDocGenerator.cs",
+      "bytes": 15420,
+      "sha256": "23162272ccfd20d57d665b0a05f26b4d1120621ccb06259685d3cd736face4b1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/DocsGen/LuaApiExportAttribute.cs",
+      "bytes": 2463,
+      "sha256": "2f4af4d002fff7f2e49be131ac1fa28fc099e67f4145eaee6a3dc27d5a048994"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/DocsGen/LuaApiNamespaceAttribute.cs",
+      "bytes": 1179,
+      "sha256": "feb44228c4ce600cadfe96294db3d1233f7eb489fb0e422134f9fd6e22071c04"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/EventSystem/ILUAR3Hook.cs",
+      "bytes": 370,
+      "sha256": "36716ce0728bbe0bc755e46f4c5b9371542d702396ac237e142bdacccccecfe6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/EventSystem/ILUAReactiveProperty.cs",
+      "bytes": 681,
+      "sha256": "e6d4348f22ff630c78a5d1776ddc7c7ed46062972a4b730051183456970934f6"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/EventSystem/LUAHookManager.cs",
+      "bytes": 2026,
+      "sha256": "1a0e85c5c742a2893d786b569d1707f22c284b82565f9554af6a8c4fb823ce42"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/EventSystem/LUAR3Hook.cs",
+      "bytes": 1737,
+      "sha256": "017eeec09a11f0ddf3f06987e16916ad93c43bcdbef8b73048ea1d5035de2582"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/EventSystem/LUAR3Subscription.cs",
+      "bytes": 665,
+      "sha256": "367dd9cce6742bb249d0383a9b4f833a8707a13424335ffb2292c5eeeb69af31"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/EventSystem/LUAReactiveProperty.cs",
+      "bytes": 1584,
+      "sha256": "540a8058a89c4a64d67bc06a4ff24d0b99dd7503d31d3d8179a7c0d5c20a6485"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaAIAPI.cs",
+      "bytes": 537,
+      "sha256": "39e701fb24cb71793bed93c82daecc44bd1558a99edef1c1879979bff761d1c8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaAssemblyGlobalProxy.cs",
+      "bytes": 4734,
+      "sha256": "64356b06e54679ecc36787f006a15eb5caad0fd091e7b37f1e6ebac53cce4453"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaBepInEx.cs",
+      "bytes": 2741,
+      "sha256": "1f8748cfb7071a67b245c906c308c3294a12ea3129a75c86923cb78b61d14f88"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUABuildingAPI.cs",
+      "bytes": 13157,
+      "sha256": "bdde2b1ce2a148fadfae22a1b15d7ea76b842080bc631583a75b00ffc481113d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAInterop.cs",
+      "bytes": 326,
+      "sha256": "bb8155fd66df32075d5ccde769f0f59845cee5fd7805509847fab7b037b616b0"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAIO.cs",
+      "bytes": 12853,
+      "sha256": "6de5309dc730caa4ba818bfc950c32e2d11d8eba670bb02d464a7834e911a6c1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAJson.cs",
+      "bytes": 4937,
+      "sha256": "49acef5cdfaf4de2c38c38da50d97a8db733f40680e1af9953d5e7231c1d967c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaManager.cs",
+      "bytes": 50320,
+      "sha256": "4054fd48de01d7560aeaa6bcf530dd12673f828be3c3437a4e616c65c9443104"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAMetadataAPI.cs",
+      "bytes": 676,
+      "sha256": "7a12a70f1f7c1ab942e26c22ff15935fea6a28d3afe725f7f7458c2fed0e59c3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaMisc.cs",
+      "bytes": 5141,
+      "sha256": "8097d41bf5c205593cc5c788cba9542058332d4e5861cc87e003dff7b89454ee"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUANetworkAPI.cs",
+      "bytes": 11999,
+      "sha256": "595bacd9731a041eee02c82181cd40c0f4f1500ae69fa1e882cff935d8aeb932"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAPersistentAPI.cs",
+      "bytes": 4876,
+      "sha256": "e0d0f6a226232c704d00da71458847935c7e9abd7667272fee123bd2f9d63217"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaPitchAPI.cs",
+      "bytes": 8940,
+      "sha256": "189e2bbe0fd5d5c4cfe819449ed89740f19c8c3f4bb4457621a414d93a634520"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAPlayerAPI.cs",
+      "bytes": 9423,
+      "sha256": "e28741fd29263408eb8b54ad48ca07e03c3657a10428c1a5d9559cecdfb56f7a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAProjectileAPI.cs",
+      "bytes": 3548,
+      "sha256": "7d00b44f21f8dd94c15a8575e091870c6d8afc5bcb4a2295cb563f5f0cd39b46"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUASoundAPI.cs",
+      "bytes": 3832,
+      "sha256": "9a57df39c85202fe890ec6c2b4fc53e5c1807d5b68aa91e03541bf60c6c39243"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaTableExtensions.cs",
+      "bytes": 2303,
+      "sha256": "089cca63b141db2746eb91e02e8b75cca4852a3f8b6e67c53e631255c8400ef3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUATileAPI.cs",
+      "bytes": 8270,
+      "sha256": "8311edd422ff8d494e8d8e40e2710c1409cf02019b5a094c4f2d2d1060483858"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUATimeAPI.cs",
+      "bytes": 7198,
+      "sha256": "6d1c31993088f9d9e2032b29df3a190cf12eb0b758815266a030d330516aaa6d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LuaTranslateAPI.cs",
+      "bytes": 620,
+      "sha256": "d16eeb4de032b654ed23a328a13871594f778d72f4262d4e00552c7887474851"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUATribeAPI.cs",
+      "bytes": 5505,
+      "sha256": "459f047f30fecc78d1bb8b63d008ae874024cd08fbff1b58a1623074a82bb6e3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUATriggerAPI.cs",
+      "bytes": 570,
+      "sha256": "43ddb937ee1000b453ecf0552c971531767dd869bd39f126894fdcb04d157765"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAUnitAPI.cs",
+      "bytes": 18883,
+      "sha256": "b748285ab7f30d943378a712be97f6e14b0e4e223e0c1d02d1eb82fe0b3030a4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAUtil.cs",
+      "bytes": 881,
+      "sha256": "ef09a2f13921565f29cb3f70583b0891e646a8a31362643e01505b1030c94c10"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/LUAVegetationAPI.cs",
+      "bytes": 7597,
+      "sha256": "e1a7cde63535b6bf74f9d6ddd20b43d6a5084e7b9b3484a78d57323e6c396f0c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/Noesis/LuaCommand.cs",
+      "bytes": 1180,
+      "sha256": "3e0330d86823ce85523a9853c31edf3b660f610374457ef4ebd6a9248ce8e067"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/Noesis/LuaNoesisInjectionMode.cs",
+      "bytes": 418,
+      "sha256": "e6b0e1e276835e7701ea87fae0815111784bf78b5254fd83fd1d456a0c277602"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/Noesis/LuaUIManager.cs",
+      "bytes": 5417,
+      "sha256": "6dbcb8614da36ebd3045bb63fe23442e572ca043f66613e74ec12c27da40f180"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/LUA/Noesis/LuaViewModel.cs",
+      "bytes": 1964,
+      "sha256": "4b5640254e14e692ed0cccbb3804d89b1ab7bb79c8db6ecb0af02a355c2d25a9"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/AIVLoader_Hooks.cs",
+      "bytes": 2751,
+      "sha256": "b3d44a7d96d6ac2cc8496af40d5cc5c7208b6c139c49f527ceb77e63bf6c64b3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/Callbacks/NoesisCallbacks.cs",
+      "bytes": 2942,
+      "sha256": "d4b36aceac10907ca6e06750858238df351b048d1cfcba359c0595ef11c76115"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/CustomisationFileManager_Hooks.cs",
+      "bytes": 3682,
+      "sha256": "f1e83fe89f95ef653d493a91effab02e0789b3710dbaa05de031f998fb6b691a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/Director_Hooks.cs",
+      "bytes": 2612,
+      "sha256": "fbce503f2c9f3c57190c10879600a6a11dd7ad14e7ddd9f82f624cdd2bb51927"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/FatControler_Hooks.cs",
+      "bytes": 2693,
+      "sha256": "837ac78ab6a981f00b94489f29a56a523c06de190fb2699fb07191d8930abee5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/FrontendMenus_Hooks.cs",
+      "bytes": 2383,
+      "sha256": "e0a04e8e18cf484962de74af2bcd8b8fc4b7494a382760cbda0336f9d0c857ff"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/FRONT_Multiplayer_Hooks.cs",
+      "bytes": 10830,
+      "sha256": "98378d7a06843fffedde86c55a2aec67027f3dc19e217171cdf72a3e67ac2bd7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/GameData_Hooks.cs",
+      "bytes": 739,
+      "sha256": "97a4a95f571885df275862e2f1d19fb2b3c97fc064b7dd844f32a1498ceea419"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/GameMap_Hooks.cs",
+      "bytes": 1612,
+      "sha256": "89bbbfa898b4154aaa574dd7271a6f20979ac62be6efb4a3cf0220869eafc13c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/GameTile_Hooks.cs",
+      "bytes": 2165,
+      "sha256": "853e483f7c7d531292cb96cad3f83608bdbb6add8032aa6a220e6ca9a294275d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/HUD_Buildings_Hooks.cs",
+      "bytes": 1470,
+      "sha256": "72d3b65e60dbbd3c025e8dbc634faca42fa13000cc3bc286703524c3dbb8c90a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/HUD_MPChatMessages_Hooks.cs",
+      "bytes": 1027,
+      "sha256": "5f5cb55c908b3c8a1f93530327c7b5720c14eaf006e175db3300ba5bc83220f1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/ConfigSettings_LoadConfigILHooks.cs",
+      "bytes": 1099,
+      "sha256": "1a12b086e3a3b8b2da23e876a9a55f23703c37350c6c11c67bac662b557d5d7d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/Director_FrameRateControlILHooks.cs",
+      "bytes": 5890,
+      "sha256": "4af3cd67e3aa91d5b8e91ca9c55c62df09db777f3bda4cce249c366383b107e9"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/EngineInterface_ILHooks.cs",
+      "bytes": 1381,
+      "sha256": "ddfd68e198d2d159038abf004f7de6f621cbcfb829c60cbff1ac818c2288ccd7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/FRONT_MultiplayerILHooks.cs",
+      "bytes": 4451,
+      "sha256": "4f865623fa1d5df200864396663c248af052cc28140d81f52f35b09f5168bf7f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/GameData_ILhooks.cs",
+      "bytes": 1101,
+      "sha256": "552f94f5401de8e315a82a6fba15500f9659501d0950b8033d54d8cc64f89a3b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/GameMap_AddUpdateChimpILHooks.cs",
+      "bytes": 1191,
+      "sha256": "ed00b4a881e5c19b0df57a9197c01f335c27bef5867bf57e0d642cdf80744d89"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/HUD_InGameMenuILHooks.cs",
+      "bytes": 2380,
+      "sha256": "b0f4e7fbc5e856562ce1873933e6ddf9ffa69ebfe0596094a1c08c55a052122d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/ILHooksManager.cs",
+      "bytes": 7491,
+      "sha256": "16d51688c0ac0fe3d8af7af94ab215b9f9c25a416b8ed23b9d2447e6a65c251f"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/KeyManager_Update_ILHooks.cs",
+      "bytes": 956,
+      "sha256": "137d034d053d52e929aa7ededa8985c5597f3d30fcd68b79a5ba9cb52cc63c3c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/MainViewModel_ButtonEnterCreateTroopILHooks.cs",
+      "bytes": 5178,
+      "sha256": "5ca36828c91f412ca0a41f6d06c049345dc2e2caf72859b381ed10875ef6c526"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/MapFileManager_MapFileSizeILHooks.cs",
+      "bytes": 1300,
+      "sha256": "b9c70aa1f8eebfa6a0b5a87b8b712298eafe81cae82ac8b77bdcebeb79c99f40"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/MyAudioManager_PlayMusicILHooks.cs",
+      "bytes": 6225,
+      "sha256": "8d7f4591af35fbd729ec0d775a29c65629e87d84c7cdd844d16b4f9187232017"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/OnScreenText_ILHooks.cs",
+      "bytes": 2602,
+      "sha256": "5f4f66c04a57d37782a56decdcf6b7917e8dd2a7bbbb63cf3fbc70df0bf4ad32"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/Platform_MultiplayerILHooks.cs",
+      "bytes": 7821,
+      "sha256": "a6562c9f2f8e2017e3ddbfd439db210ad1d80f56bf0de48af5bd0f94144c1713"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/SpriteLoader_ILHooks.cs",
+      "bytes": 1191,
+      "sha256": "e79806f8fdfbac8fd9c881fd3c6d54e6795135516a2e9f38efc9f4dffdd8603a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ILHooks/SteamManager_ILHooks.cs",
+      "bytes": 1347,
+      "sha256": "014f0bfcd63f91e825a8ff4c2c29c42b6e04ddc70345e04480a74d4c7d51bcf4"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/Input_Hooks.cs",
+      "bytes": 2995,
+      "sha256": "45552dcc663e7808368ee88a8ea12a9d668307cec47aa05797507e5e5331e6e1"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/MainViewModel_Hooks.cs",
+      "bytes": 2504,
+      "sha256": "33ec61588b7124d6e55a7898bcfffe264045ffa40f0ff968387d13491a39a928"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ManagedDetour.cs",
+      "bytes": 502,
+      "sha256": "bf9b415ede7f7eaf08192fbd0c0e879a478d0ee652359e3cd222526fa80a467c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/ManagedHookManager.cs",
+      "bytes": 14217,
+      "sha256": "3016e962fbee3c4ef292acc24ffc7f32862738749d0496f4b2670ccf0f345a9c"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/MapFileManager_Hooks.cs",
+      "bytes": 4114,
+      "sha256": "3f2fca971d6a75d993ebc22a025857d11057060b46c1c50d991d08ee2dabe61b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/MyAudioManager_Hooks.cs",
+      "bytes": 3574,
+      "sha256": "d6f1c134d44f1c02b1d81c93ee5e1e5e9277301640c39ea87967d8d63758d8be"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/NoesisGUI_Hooks.cs",
+      "bytes": 948,
+      "sha256": "f2a5a4f1ec54336497d0f59bacea71671c9e9b5dcc437ed2a29a9a845f539586"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/NoesisMediaElement_Hooks.cs",
+      "bytes": 1279,
+      "sha256": "ea4f720a6500d27c15f616e947f2979d354ca0973fbbc71baf7ac30829241892"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/NoesisTextureProvider_Hooks.cs",
+      "bytes": 3163,
+      "sha256": "f140bfe7fa388c253dc425ec632fccfa477d52f501c1562ac56742dc960200d8"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/NoesisXamlProvider_Hooks.cs",
+      "bytes": 1096,
+      "sha256": "67fc37c485fc338588024c4444d51b2899ec11d51fc307e7cc45efeebb460fe5"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/OnScreenText_Hooks.cs",
+      "bytes": 1957,
+      "sha256": "3a3dc932c5496da92c500e85a93e858202a1115a3877738b4f4716ed5fba1bce"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/Platform_Multiplayer_Hooks.cs",
+      "bytes": 5096,
+      "sha256": "a289386a157dcfbc4e61242285033d440f5a13d5c3d1500eab1634a5571aba12"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/Platform_Workshop_Hooks.cs",
+      "bytes": 1396,
+      "sha256": "65d6380676cee6d1c2f03cc7f4fc90a746a57667b9cd2d3de96a030d7b288f44"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/SFXManager_Hooks.cs",
+      "bytes": 1914,
+      "sha256": "7d69e9cb3555dbfc3147f902ed86850c31fda79e21c4e30fc43604a32a9bc01b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/SpriteMapping_Hooks.cs",
+      "bytes": 2130,
+      "sha256": "21d6ef6ac370d6e8997168e3932956e1e1bbec118598ff9d6bd23121fddf8105"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/SteamManager_Hooks.cs",
+      "bytes": 1010,
+      "sha256": "7c1e42e52cc90ef3b39d50ce90dd780d2cbefac10c1b2ccd2918d055bfedae0e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ManagedHooks/Translator_Hooks.cs",
+      "bytes": 2552,
+      "sha256": "387f825548e03e2d1182d64edd386d56c2d9c4e2497e4d2dc207ba7b2832947e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Math/CoordinateConverter.cs",
+      "bytes": 2216,
+      "sha256": "b961f76a2d28cf5e761e7f96747c809bc2b3d30f13cb4c16f0705a09670eb56a"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Math/MathUtil.cs",
+      "bytes": 282,
+      "sha256": "695a9380dd83fed59391631267595ac4ab592f7d6a0bb71a5a59687d6f09f556"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/Metadata/ISaveable.cs",
+      "bytes": 369,
+      "sha256": "92baddf07144b52b30c4a83dffc1792a04cc4c20c249253556f19bcc0b234131"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/NativeHooks/DetourManager.cs",
+      "bytes": 1728,
+      "sha256": "8a11d13c7c34959ed2bd4c48861d6e0da22fde93acb20b65c542a62b25b29754"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/NativeHooks/NativeCrashHandler.cs",
+      "bytes": 2957,
+      "sha256": "ca8d0269b9f336f729f511cf17dba201404e7d3f5c3a1baadcf93052d1993e6d"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/netstandard.dll",
+      "bytes": 84992,
+      "sha256": "fada723de68eca78dc6e4279ebf1c886810dcd7b4a970290cb7ac068ef04b766"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/NoesisUtil/INoesisElementBindingAware.cs",
+      "bytes": 429,
+      "sha256": "8260daf905e0e4379ae4d62b1c67ba96f2e14403cad22b4901863a57c1fc553b"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/NoesisUtil/RelayCommand.cs",
+      "bytes": 746,
+      "sha256": "fd4301cd2c79c188a2f95fdf2b675eddab4df50ff30f90d5774aeb74d30d2252"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/SHCDESE.csproj",
+      "bytes": 8366,
+      "sha256": "a23cc4f1f0c43b343c5854bb207b902c4f19706f84ea5e0fbcd786f76ce67470"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/System.ValueTuple.dll",
+      "bytes": 16136,
+      "sha256": "7cd7ac314a72774b5e2255fd798f876926c63e19f9b8304cae25df012beabbcb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/System.Xml.Linq.dll",
+      "bytes": 137216,
+      "sha256": "e30ca84d504878d66c592a9492f1eabc73a34ce7dff3ab7ca3f66b64063a8357"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/UI/AnalogLogoMediaPlayer.cs",
+      "bytes": 14825,
+      "sha256": "48a33b1a82e68796ecee6d3350828ff58708c344b7f6d65c4f5d3a46ef20a803"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/UI/AnalogLogoRendererDriver.cs",
+      "bytes": 991,
+      "sha256": "c3e9102cee77caa2354bcf8888e047c4b363ffe67ad4a553b8aa36e4a66e1149"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/UI/ComboBoxDropDownFix.cs",
+      "bytes": 6398,
+      "sha256": "656e818799fa92d903e6cea56a2fff32172a9cf6cde49cf7a0e0a198ebbdae7e"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/UI/KeyboardCaptureBinding.cs",
+      "bytes": 2006,
+      "sha256": "807728893e1ff27222b24e5b6244a955fc78b1f37e664f57f724e3e70f032fcd"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/UI/LobbyModToolTip.cs",
+      "bytes": 3588,
+      "sha256": "7ef14d1cbac701ec771c54228dd3084eec58226ae50797deffc530b13363cbea"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/UI/ToolTipResolutionScale.cs",
+      "bytes": 2819,
+      "sha256": "d1bcbba7b87ae42a2befb183051713422568007bc76c1abb9673f38f46a24c35"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ViewModels/LobbyModSettingsBaseViewModel.cs",
+      "bytes": 13763,
+      "sha256": "9b4aadd37247258131cc80275c60dfd2f822da25cd5e535379454feac92a70eb"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ViewModels/LobbyModSettingsHubViewModel.cs",
+      "bytes": 3607,
+      "sha256": "fedae14f4696f127165c4a2839f57569db7d6e1e4a4af73fd860d476297dfde3"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ViewModels/MainMenuModLogoEntry.cs",
+      "bytes": 2191,
+      "sha256": "e3c8c0f851d684ba385f0d424ef8952a642630b61b0ff711bf76efb3d31dae37"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.BepInEx/ViewModels/MainMenuViewModel.cs",
+      "bytes": 22704,
+      "sha256": "10e1e7398d6176bc403e96b87ce2244212ffaf8ae4b08b2323bb5e4cbd71a843"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.NativeCrashHandler/CrashHandler.cpp",
+      "bytes": 26327,
+      "sha256": "573e3db9d7a9ce057613391d2134575c71460739e1fe20f76b02bb0140863964"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.NativeCrashHandler/CrashHandler.h",
+      "bytes": 834,
+      "sha256": "8f7d9c013fd26dae3a787717531d986d21d5ebf6d929f855e8b1f8a09fb6e7c7"
+    },
+    {
+      "path": "mods/shcde-script-extender-v2.6.0/src/SHCDESE.NativeCrashHandler/SHCDESE.NativeCrashHandler.vcxproj",
+      "bytes": 3883,
+      "sha256": "81d06e56f290cc76141888400deca329dff59bda428ade55469f3da12c520a3a"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 128583,
+      "sha256": "fa05ec440fc22583b38a7d14300994c268531a4df3bb44cc4d0e4a8346161bd4"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1727,
+      "sha256": "c39de3df50347fbbd0fd70a01b0dfb30ece6289e9285e63026207d8f021f7f99"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3455,
+      "sha256": "600474b9ef7ffd3de2e0720bb62bce47cfbef8144ba20f988e0cfd0295ab6c0f"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 3125,
+      "sha256": "2e19bad699f32ad912d89fbd9b57893a318cdcc2b7b1a8d41908c0ec714decff"
+    },
+    {
+      "path": "release/bepinex-runtime-5.4.23.5.scdemod",
+      "bytes": 650985,
+      "sha256": "76a8f848776e758924c884429d11d94c9334464b7068345f7153550bc72a341f"
+    },
+    {
+      "path": "release/scde-multiplayer-compatibility-0.3.1.scdemod",
+      "bytes": 23336,
+      "sha256": "e2c0c5f81ba1cc1dde9e3e3c844fcd19667f4a8ba17aadc1151dada74b15f12d"
+    },
+    {
+      "path": "release/se-update-helper/early-managed-guard.patch",
+      "bytes": 495,
+      "sha256": "5486d8eb82445628d7a927510377ebb85ee8a7277b23c564bbd13df89ce323bf"
+    },
+    {
+      "path": "release/se-update-helper/EarlyManagedGuard.cs",
+      "bytes": 4894,
+      "sha256": "621fa8ce92045963cd39115560b98ae52fabb2c2fa1bd47fb03a6f4c59d6f70f"
+    },
+    {
+      "path": "release/se-update-helper/EarlyManagedGuard.exe",
+      "bytes": 9728,
+      "sha256": "f2de3e46889a69385b51a8a25bd874c22bea52f0b2ddf42e3d8e11da03fae8fc"
+    },
+    {
+      "path": "release/se-update-helper/GPL-3.0.txt",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "release/se-update-helper/LGPL-3.0.txt",
+      "bytes": 7551,
+      "sha256": "8b0fda3bdf1eb0e6bed38b6743fd7b4e10bb143bb3078b301ab9ca70b1966c7c"
+    },
+    {
+      "path": "release/se-update-helper/Mono.Cecil.dll",
+      "bytes": 339456,
+      "sha256": "7ae470288fff4a402899c254d0a76cefef55877f5c54f96e83c797cc5bb6e2f6"
+    },
+    {
+      "path": "release/se-update-helper/Mono.Cecil.LICENSE.txt",
+      "bytes": 1096,
+      "sha256": "337e09e19b9e83a660c8999c1812b45069d3b8da042d62069b36a8952fa97770"
+    },
+    {
+      "path": "release/se-update-helper/THIRD_PARTY_NOTICES.txt",
+      "bytes": 1510,
+      "sha256": "8d0423a0f42a230617433e5b348f73614aab961e2456abac7abe21f302a0b27a"
+    },
+    {
+      "path": "release/shcde-script-extender-2.6.0+scdemm.1.scdemod",
+      "bytes": 53801592,
+      "sha256": "bdf30ae5b06d231b6c526f97b91518415feee83c184fd8882b417acb44da3ed5"
+    },
+    {
+      "path": "src/core/compatibility-profile.js",
+      "bytes": 1243,
+      "sha256": "164050cd94ef2865d9c71e82324b3f8de52f636040f1b0e82a06f918e8bb8dba"
+    },
+    {
+      "path": "src/core/config-store.js",
+      "bytes": 1786,
+      "sha256": "793e9a91b45cc4777d7006e3fa29d826652f443f308a1a5f6040d83f8c4c0e4e"
+    },
+    {
+      "path": "src/core/constants.js",
+      "bytes": 251,
+      "sha256": "3f5bf3d38e272ad1a7ef2539b33eab9d548dc4be0affdcefa6d99a01337e3ed2"
+    },
+    {
+      "path": "src/core/deployer.js",
+      "bytes": 7988,
+      "sha256": "3d923a0366527c6a2aa76f281afbe9cf40f011468542e7b55480d538be6083ed"
+    },
+    {
+      "path": "src/core/detect-game.js",
+      "bytes": 2727,
+      "sha256": "8921d7f2f3aabbbc5d23b941fed72377da95263a8c988f702aefc6c632ad52d5"
+    },
+    {
+      "path": "src/core/launch-progress.js",
+      "bytes": 4123,
+      "sha256": "b677b9451218574227932af6ca07114736b5c95465654b0768136d181de31b7c"
+    },
+    {
+      "path": "src/core/localization.js",
+      "bytes": 8803,
+      "sha256": "1280be3b9e30061976e122f1947ca66ab7725a56aefe422553ed3fc92d1d479e"
+    },
+    {
+      "path": "src/core/manager-update.ps1",
+      "bytes": 2540,
+      "sha256": "820145206edf2b7c8e6ad7e2b80a8cd2f3a60dad01656a959628d81f7a35115e"
+    },
+    {
+      "path": "src/core/manager-updates.js",
+      "bytes": 5511,
+      "sha256": "e314f303e3187177084df86b1b82d7914c75e8c8751da042bb262f45a74c233c"
+    },
+    {
+      "path": "src/core/manager.js",
+      "bytes": 31563,
+      "sha256": "7a687f08877c38a01bf6d0eb1bcf0711da732cf55b3f5437b9cc27ba27c3c6e5"
+    },
+    {
+      "path": "src/core/mod-package.js",
+      "bytes": 8025,
+      "sha256": "a0515b3cbc02aa69971af374a91df49e314aa34bd5c67022c78c4bf3fa5b67a0"
+    },
+    {
+      "path": "src/core/paths.js",
+      "bytes": 992,
+      "sha256": "820445afc03ab9555ec95dad480fef79c6e0919621afbe47e586e30d9fbe1b52"
+    },
+    {
+      "path": "src/core/release-updates.js",
+      "bytes": 6054,
+      "sha256": "f82be62467113416c9cc3806ce9d941d280a34435bff9f666d9c63a35932e22d"
+    },
+    {
+      "path": "src/core/se-compatibility.js",
+      "bytes": 2372,
+      "sha256": "6d57a052bed6fdcd1e13fd4086ceaa9320936186c5fff7eb56af3704be082462"
+    },
+    {
+      "path": "src/core/se-core-package.js",
+      "bytes": 6759,
+      "sha256": "7b2825e0301360542609c19144c5c4810ce9f1e05cbf05f86b509de352a36ed5"
+    },
+    {
+      "path": "src/core/se-core-updater.js",
+      "bytes": 8006,
+      "sha256": "f82986618b24ae18cc77a2f28e0a37eccf6f23556ffbb3a9afc90906ea11ffd0"
+    },
+    {
+      "path": "src/core/se-package.js",
+      "bytes": 11208,
+      "sha256": "18df81fe2fefe727effa031f7fcabb4973dcb6c1a2212f9cd32fb7c5fee1cf00"
+    },
+    {
+      "path": "src/core/user-settings.js",
+      "bytes": 4414,
+      "sha256": "a7c6c9bda76d88d863c1a1a1f02491652b46220f5a01fb965d71d652e274a03d"
+    },
+    {
+      "path": "src/core/workshop-updates.js",
+      "bytes": 1711,
+      "sha256": "7bfb3d22361a187ac0618fa680efa174d6fbcd032dd7a7cafbabeaacef304b51"
+    },
+    {
+      "path": "src/core/workshop.js",
+      "bytes": 4073,
+      "sha256": "207eac1b649d55153e3ca287ab994b7bf81e19ca591f4ca3d40c9b3839d8529d"
+    },
+    {
+      "path": "src/i18n.js",
+      "bytes": 523,
+      "sha256": "6ad79c3152f846d09a6b971290fa8fc5e09946ea679797343135f61c19b77870"
+    },
+    {
+      "path": "src/import-preload.js",
+      "bytes": 435,
+      "sha256": "d4e074a390a597ba9d4d367e130fa43f239aec41b5a13594681ae815f896101c"
+    },
+    {
+      "path": "src/import-window.js",
+      "bytes": 11931,
+      "sha256": "0eeb85f4837a083acd638fee7edf3c889a5d22524f0b12a0cd656dd01fb48815"
+    },
+    {
+      "path": "src/launch-preload.js",
+      "bytes": 310,
+      "sha256": "5d4452ba20a719c001a2238baa48facbbc837a929b819951d8ded3a09200e152"
+    },
+    {
+      "path": "src/launch-window.js",
+      "bytes": 2935,
+      "sha256": "5b574b4506f55e48c4543fde066fc73db88edec0b8bad6435b518a4191827112"
+    },
+    {
+      "path": "src/locales/en.json",
+      "bytes": 9853,
+      "sha256": "cd69e7d9158e9b45f2f7fe0cd613e2c29b692269efb20ee2f0875075041aae5b"
+    },
+    {
+      "path": "src/locales/zh-CN.json",
+      "bytes": 9656,
+      "sha256": "a849ff278a81b2d7ea480f296522e50d1e8bea285a3a5ef3a2d3e7b1800b9b55"
+    },
+    {
+      "path": "src/main.js",
+      "bytes": 8657,
+      "sha256": "a9b955b7835aba40e9f849499ab3e94379a58fae255965a7bf3d1716c90e1924"
+    },
+    {
+      "path": "src/manager-update.js",
+      "bytes": 1336,
+      "sha256": "9add9d85654f45438d3b64d293b1e8cd0d05b8c24bfe636d2c090c586a3a63cd"
+    },
+    {
+      "path": "src/preload.js",
+      "bytes": 1495,
+      "sha256": "6710a8ff28f4be70c24a3ffd37537b4e2a5418b2afa4cac5134943e522ed2215"
+    },
+    {
+      "path": "src/renderer/app.js",
+      "bytes": 18170,
+      "sha256": "55711a00091b9e1650eab9b703ccb13b20bb7670360b0c12115121a449f355e0"
+    },
+    {
+      "path": "src/renderer/import.css",
+      "bytes": 3239,
+      "sha256": "1fbc2c74c973017996e3c32b7d8e2432035a4dc68ee660ea87c2209b9d129ed7"
+    },
+    {
+      "path": "src/renderer/import.html",
+      "bytes": 2388,
+      "sha256": "27c034de4d835717178345b3a7d1e1a1fee3f1872cf7483538a007b6aa15438d"
+    },
+    {
+      "path": "src/renderer/import.js",
+      "bytes": 6921,
+      "sha256": "51c32ef49252f499fb805aea5a0b823feaac6e73f5b3dfcc6ee8cccda3d9d265"
+    },
+    {
+      "path": "src/renderer/index.html",
+      "bytes": 4419,
+      "sha256": "c503d7bd9d92a4ddf8ad90ec21953d3e0912d37e1c8903758fb61b0fc85b90a1"
+    },
+    {
+      "path": "src/renderer/launch.css",
+      "bytes": 1508,
+      "sha256": "5b75a1eec558902879098ed445ed414ad2cd9e7dcb0f0f47fdda1c4764da8757"
+    },
+    {
+      "path": "src/renderer/launch.html",
+      "bytes": 1052,
+      "sha256": "4473e482e7610346e0ddc05626e4d407fb6d1b10078c58c90062df5ec3736173"
+    },
+    {
+      "path": "src/renderer/launch.js",
+      "bytes": 2362,
+      "sha256": "04f10d4740fe3664434c5bef8ee28629f38c6d0e3a11120be3e82431e55efb40"
+    },
+    {
+      "path": "src/renderer/styles.css",
+      "bytes": 11715,
+      "sha256": "e9292cf2ac8c1a814d5f017530e8117cbdf1fbb979027cf5e3f2d3701f6fbe9c"
+    },
+    {
+      "path": "test/core.test.js",
+      "bytes": 45044,
+      "sha256": "3f1e284dbc3f07782f2bf2417e872280ac41191a8afe8a1bf8fdb22419f48356"
+    },
+    {
+      "path": "test/launch-progress.test.js",
+      "bytes": 3881,
+      "sha256": "db9ef1d8e4dcb5a8e17ad0592c209cc2ddb17a8ee00c0268d5b45a92c524b386"
+    },
+    {
+      "path": "test/localization.test.js",
+      "bytes": 10427,
+      "sha256": "1282b8565fcf02e30a9ced85dc77acc24e9a6116f932e216f4ca2453fdd87976"
+    },
+    {
+      "path": "test/manager-updates.test.js",
+      "bytes": 7366,
+      "sha256": "a8b86a62e5c52d953015735a91c60d66c43f4e1e7535a37ba77f3478328de56c"
+    },
+    {
+      "path": "test/release-updates.test.js",
+      "bytes": 3295,
+      "sha256": "c3425dc44149236c902f62d039e9e7611b3456851da80f01523be28de19f0be8"
+    },
+    {
+      "path": "test/se-compatibility.test.js",
+      "bytes": 2098,
+      "sha256": "11eb16dd921343de2af9bc80d752d44d507352dd17a74dff646278d3c405c060"
+    },
+    {
+      "path": "test/se-core-updater.test.js",
+      "bytes": 19179,
+      "sha256": "56fa17e463ab7309a7a21702968dc0d93dd8b934ed9225cf99f319dd03a9a023"
+    },
+    {
+      "path": "test/se-package.test.js",
+      "bytes": 8072,
+      "sha256": "fc1658c5a4230843f06e9128176755435dad43c2882fdcccbe8f96dafb61512e"
+    },
+    {
+      "path": "test/se-toggle.test.js",
+      "bytes": 4570,
+      "sha256": "0d682ee5e4d0b320cd75d0b8acca368a85ae10733f411464c3cda6ed2b867479"
+    },
+    {
+      "path": "test/startup.test.js",
+      "bytes": 9491,
+      "sha256": "7a4f32dd7eccdea5ffcf20531adee26ddb1ef8bbe77b38adc896b93ca64391fb"
+    },
+    {
+      "path": "test/workshop-updates.test.js",
+      "bytes": 1592,
+      "sha256": "1b7feacc6b478cba8e9b386e6e0a5ea6b6ff5ebd60aea203606eb0ba19d46504"
+    },
+    {
+      "path": "test/workshop.test.js",
+      "bytes": 7355,
+      "sha256": "60d5687f7668c8de31b77133b6c28e6d62f0673345d3be6c69883b9e6f02c25a"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 3292,
+      "sha256": "2cb345c30f17db15aa88f41e973ce113817a41d335aceb548753ab65a131239d"
+    },
+    {
+      "path": "tools/build-se-update-helper.js",
+      "bytes": 1285,
+      "sha256": "bbfc98d3a02aaf9ac06621cfd91eab8b53e4a04354df0ba8a3859fe37527814c"
+    },
+    {
+      "path": "tools/Mono.Cecil.dll",
+      "bytes": 339456,
+      "sha256": "7ae470288fff4a402899c254d0a76cefef55877f5c54f96e83c797cc5bb6e2f6"
+    }
+  ]
+}

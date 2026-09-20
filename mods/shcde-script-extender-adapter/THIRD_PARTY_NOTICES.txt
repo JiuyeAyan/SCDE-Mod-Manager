@@ -1,0 +1,23 @@
+SHCDE Script Extender 2.6.0 by Rawra / Viktor Legodzinski
+Source: https://gitlab.com/rawra-stronghold-crusader/shcde-script-extender
+License: GNU LGPL v3. See LGPL-3.0.txt and GPL-3.0.txt.
+
+This adapter is based on Script Extender 2.6.0; its manager package version is 2.6.0+scdemm.1.
+SHCDESE.dll is modified with a five-instruction entry guard in
+MapModManager.TryUpdateModsFromRemote. If SCDEModManagerLaunchId is non-empty, it returns
+before installing/updating Workshop Mods or triggering a restart. Without that environment
+variable, the original method body executes unchanged. Other supplied binaries/resources are unchanged.
+It does not include a second BepInEx core or Doorstop loader. BepInEx Runtime 5.4.23.5 is provided separately.
+The upstream .bat/.sh vanilla launchers are deliberately omitted because they target the Steam installation.
+The upstream config is omitted: BepInEx creates the plugin's defaults on first use and retains player settings.
+The unmodified 2.6.0 source is available from the upstream project linked above.
+The modified MapModManager.cs, equivalent source patch, and reproducible Cecil patcher source
+are included in SCDEMM-notices. The patcher accepts only the recorded upstream DLL SHA-256.
+The upstream source/distribution used as build input is not overwritten.
+
+The early guard supplements Multiplayer Mod Compatibility's existing runtime bridge, so another
+plugin initializing Steam before that bridge loads cannot bypass the manager's deployment policy.
+Existing SE Mods still load. This is a manager integration change, not an official SE release.
+
+Dependency binaries bundled by upstream remain under their respective licenses.
+This integration does not authenticate third-party authors or sandbox game plugins.

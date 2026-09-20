@@ -1,0 +1,10 @@
+{
+  "GUID": "com.jiuyeayan.scde.multiplayer-compatibility",
+  "Author": "JiuyeAyan",
+  "Name": "Multiplayer Mod Compatibility",
+  "Description": "SCDE Mod Manager runtime compatibility bridge.",
+  "Version": "0.3.1",
+  "Manifest": 1,
+  "NetworkMode": 1,
+  "VersionCheckUrl": ""
+}

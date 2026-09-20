@@ -1,0 +1,55 @@
+﻿using System;
+
+namespace SHCDESE.Interop.Enums;
+
+/// <summary>
+/// Defines the specific type of a projectile entity in the game world.
+/// </summary>
+public enum ProjectileType : UInt16
+{
+    Unknown = 0x0,
+    ArcherArrow = 0x1,
+    CatapultRocks = 0x2,
+    TrebutchetRocks = 0x3,
+    MangongelRocks = 0x4,
+    Steam1 = 0x5,
+    AfterImage = 0x6,
+    CrossbowBolt = 0x7,
+    EngineerLava = 0x8,
+    StaticFire = 0x9,
+    Flag1 = 0xA,
+    Flag3 = 0xB,
+    Flag2 = 0xC,
+    CrusaderFlag = 0xD,
+    Brazier = 0xE,
+    Heads = 0xF,
+    UnkFlag1 = 0x10,
+    UnkFlag2 = 0x11,
+    UnkFlag3 = 0x12,
+    UnkFlag4 = 0x13,
+    BallistaBolt = 0x14,
+    Steam2 = 0x15,
+    Disease = 0x16,
+    Cow = 0x17,
+    UnkMissile24 = 0x18,
+    UnkMissile25 = 0x19,
+    UnkBlast = 0x1A,
+    CatapultOrTrebutchetRocksImpactDebris1 = 0x1B,
+    Crow = 0x1C,
+    Seagull = 0x1D,
+    CatapultOrTrebutchetRocksImpactDebris2 = 0x1E,
+    BodySplash = 0x1F,
+    RockChipsFire1 = 0x20,
+    SlingerStone = 0x21,
+    ArabGrenadierOrBedouinAmbusherOrDiseaseCloud = 0x22,
+    RockChips3 = 0x23,
+    GrenadierGrenade = 0x24,
+    ArabBallistaBolt = 0x25,
+    BedouinLance = 0x26,
+    UnkJavelin39 = 0x27,
+    UnkInfo1 = 0x28,
+    UnkInfo2 = 0x29,
+    UnkInfo3 = 0x2A,
+    UnkInfo4 = 0x2B,
+    Condor = 0x31,
+}

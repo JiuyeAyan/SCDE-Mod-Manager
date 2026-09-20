@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SCDE Mod Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-titlebar"><span id="app-title">SCDE Mod Manager</span></header>
+
+    <main class="workspace">
+      <section class="game-config">
+        <div class="section-label">
+          <strong data-i18n="gameDirectory"></strong>
+          <span data-i18n="gameDirectoryHint"></span>
+        </div>
+        <div class="path-field">
+          <span id="game-path"></span>
+          <span id="game-status" class="status-dot" aria-hidden="true"></span>
+        </div>
+        <div class="directory-actions">
+          <button id="detect-game" class="button" data-i18n="autoDetect"></button>
+          <button id="choose-game" class="button" data-i18n="chooseDirectory"></button>
+        </div>
+      </section>
+
+      <section class="command-row">
+        <div class="metric-strip" aria-label="Status">
+          <article>
+            <span data-i18n="gameCopy"></span>
+            <strong id="stage-label"></strong>
+          </article>
+          <article>
+            <span data-i18n="fileConflicts"></span>
+            <div class="metric-value">
+              <strong id="conflict-count">0</strong>
+              <small data-i18n="conflictUnit"></small>
+            </div>
+          </article>
+        </div>
+
+        <div class="primary-actions">
+          <button id="import-mod" class="button action-button">
+            <span class="plus-icon" aria-hidden="true">+</span>
+            <span data-i18n="importMods"></span>
+          </button>
+          <button id="launch-game" class="button action-button launch-button">
+            <span data-i18n="launchWithMods"></span>
+            <svg class="play-icon" viewBox="0 0 12 14" aria-hidden="true">
+              <path d="M1 1.25 11 7 1 12.75Z" />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <section id="manager-update" class="conflict-panel hidden" aria-live="polite">
+        <strong id="manager-update-title"></strong>
+        <p id="manager-update-hint"></p>
+        <button id="manager-update-later" class="button compact" type="button"></button>
+        <button id="manager-update-install" class="button compact" type="button"></button>
+      </section>
+
+      <section class="library-section">
+        <div class="library-heading">
+          <h1 data-i18n="installedMods"></h1>
+          <div id="system-components" class="system-components"></div>
+          <div class="library-actions">
+            <button id="open-mods" class="button compact" data-i18n="openModFolder"></button>
+            <button id="open-stage" class="button compact" data-i18n="openConfigFolder"></button>
+          </div>
+        </div>
+
+        <div class="mod-table-wrap">
+          <div class="mod-table">
+            <div class="mod-table-header" role="row">
+              <span data-i18n="modName"></span>
+              <span data-i18n="author"></span>
+              <span data-i18n="description"></span>
+              <span data-i18n="action"></span>
+              <span data-i18n="enabled"></span>
+              <span data-i18n="loadOrder"></span>
+            </div>
+            <div id="mod-list" class="mod-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="conflict-panel" class="conflict-panel hidden">
+        <strong data-i18n="conflictDetected"></strong>
+        <p id="conflict-summary"></p>
+      </section>
+    </main>
+
+    <div id="busy" class="busy">
+      <div class="spinner"></div>
+      <strong>SCDE Mod Manager</strong>
+      <span id="busy-detail"></span>
+    </div>
+    <div id="toast" class="toast hidden" role="alert"></div>
+    <section id="release-notice" class="release-notice hidden" aria-live="polite">
+      <div class="release-notice-heading"><strong id="release-notice-title"></strong><button id="release-notice-close" class="button compact" type="button"></button></div>
+      <p id="release-notice-hint"></p>
+      <div id="release-notice-items"></div>
+    </section>
+
+    <script src="../i18n.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

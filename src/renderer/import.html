@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Import Mods — SCDE Mod Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="import.css" />
+  </head>
+  <body>
+    <header class="app-titlebar">SCDE Mod Manager <span class="title-separator"> / </span><span data-i18n="title"></span></header>
+    <main class="import-workspace">
+      <div class="import-heading">
+        <div><h1 data-i18n="title"></h1><p data-i18n="hint"></p></div>
+        <button id="manual" class="button compact" data-i18n="manual"></button>
+        <button id="refresh" class="button compact" data-i18n="refresh"></button>
+      </div>
+      <div class="import-toolbar">
+        <input id="search" type="search" autocomplete="off" />
+        <button id="select-all" class="button compact" data-i18n="selectAll"></button>
+        <button id="clear" class="button compact" data-i18n="clear"></button>
+      </div>
+      <div id="status" class="import-status" role="status" aria-live="polite"></div>
+      <details id="scan-details"><summary data-i18n="locations"></summary><div id="locations"></div></details>
+      <details id="issues" class="hidden"><summary id="issues-summary"></summary><div id="issues-list"></div></details>
+      <div class="import-table">
+        <div class="import-columns import-table-heading"><span></span><span data-i18n="name"></span><span data-i18n="version"></span><span data-i18n="description"></span><span data-i18n="source"></span></div>
+        <div id="candidates"></div>
+        <div id="empty" class="import-empty hidden" data-i18n="empty"></div>
+      </div>
+      <footer>
+        <span id="selection-count"></span>
+        <div class="pagination"><button id="previous" class="button compact">←</button><span id="page"></span><button id="next" class="button compact">→</button></div>
+        <button id="cancel" class="button compact" data-i18n="cancel"></button>
+        <button id="confirm" class="button compact launch-button" data-i18n="confirm"></button>
+      </footer>
+    </main>
+    <script src="../i18n.js"></script>
+    <script src="import.js"></script>
+  </body>
+</html>

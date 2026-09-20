@@ -1,0 +1,12 @@
+node_modules/
+dist/
+**/build/
+**/bin/
+**/obj/
+*.log
+manager-data/
+.env
+.env.*
+*.pfx
+*.pem
+

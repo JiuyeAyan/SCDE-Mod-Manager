@@ -1,0 +1,18 @@
+html, body { min-width: 0; min-height: 0; }
+.launch-content { padding: 24px 28px; display: flex; flex: 1; flex-direction: column; min-height: 0; gap: 18px; }
+.launch-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
+h1 { margin: 0; font-size: 21px; font-weight: 600; }
+#elapsed { color: var(--text-muted); font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.current-stage { display: flex; gap: 16px; align-items: center; padding: 16px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel-soft); }
+.current-stage > div:last-child { min-width: 0; }
+.current-stage .spinner { flex-shrink: 0; width: 24px; height: 24px; }
+#phase { font-size: 14px; font-weight: 500; }
+#current { margin: 5px 0 0; color: var(--text-muted); font-size: 13px; overflow-wrap: anywhere; }
+.loading-history { flex: 1; min-height: 50px; overflow-y: auto; }
+.loading-row { display: flex; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line-soft); padding: 10px 2px; font-size: 13px; }
+.loading-row span { overflow-wrap: anywhere; }
+.loading-row small { color: var(--text-muted); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.loading-row.active span { color: #fff; }
+.loading-hint, footer { color: var(--text-muted); font-size: 12px; line-height: 1.6; margin: 0; }
+footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+footer .button { flex-shrink: 0; }

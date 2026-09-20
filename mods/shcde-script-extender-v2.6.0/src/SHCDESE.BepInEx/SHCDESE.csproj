@@ -1,0 +1,159 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SHCDESE</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <OutputPath>$(SolutionDir)bin\</OutputPath>
+    <DebugType>Portable</DebugType>
+    <Authors>Viktor Legodzinski</Authors>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591;8618</NoWarn>
+    <SkipPostBuild>false</SkipPostBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BepInEx.BaseLib" Version="5.4.21" />
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="Iced" Version="1.21.0" />
+    <PackageReference Include="MessagePack" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+    <PackageReference Include="NLua" Version="1.7.9" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="PolyHook2.NET" Version="1.1.9" />
+    <PackageReference Include="PolySharp" Version="1.16.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="R3" Version="1.3.1" />
+    <PackageReference Include="RedBird.Backends.NativeX64" Version="1.1.0" />
+    <PackageReference Include="RedBird.X64" Version="1.1.0" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="System.IO.Hashing" Version="10.0.11" />
+    <PackageReference Include="System.Memory" Version="4.6.3" />
+    <PackageReference Include="System.Text.Json" Version="10.0.11" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\deps\Assembly-CSharp-publicized.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="com.rlabrecque.steamworks.net">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ImCTE.NET">
+      <HintPath>..\..\deps\universal-unity-imgui-api\ImCTE.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ImGui.NET">
+      <HintPath>..\..\deps\universal-unity-imgui-api\ImGui.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ImNodes.NET">
+      <HintPath>..\..\deps\universal-unity-imgui-api\ImNodes.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ImPlot.NET">
+      <HintPath>..\..\deps\universal-unity-imgui-api\ImPlot.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ImPlot3D.NET">
+      <HintPath>..\..\deps\universal-unity-imgui-api\ImPlot3D.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="Noesis.NoesisGUI">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\Noesis.NoesisGUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="UnityEngine">
+      <Private>false</Private>
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <Private>false</Private>
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\Unity.InputSystem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <Private>false</Private>
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <Private>false</Private>
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>$(UnityLibsPath)\Stronghold Crusader Definitive Edition_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="universal-unity-imgui-api">
+      <HintPath>..\..\deps\universal-unity-imgui-api\universal-unity-imgui-api.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="netstandard.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="System.Xml.Linq.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="System.ValueTuple.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <!-- note: I wish I didnt have to do this, but msbuild apparently sucks -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SkipPostBuild)' != 'true'">
+
+    <WriteLinesToFile File="$(IntermediateOutputPath)ps-args.txt" Lines="$(TargetDir)&#xD;&#xA;$(SolutionDir)mod_output&#xD;&#xA;$(TargetName)&#xD;&#xA;000shcdese&#xD;&#xA;$(SolutionDir)&#xD;&#xA;3024040" Overwrite="true" />
+    <Exec Command="pwsh -noprofile -executionpolicy bypass -File &quot;$(SolutionDir)scripts\post-build.ps1&quot; -ArgsFile &quot;$(IntermediateOutputPath)ps-args.txt&quot;" />
+  </Target>
+</Project>

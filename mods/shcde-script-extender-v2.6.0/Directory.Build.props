@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <UnityLibsPath Condition=" '$(UnityLibsPath)' == '' ">H:\SteamLibrary\steamapps\common\Stronghold Crusader Definitive Edition</UnityLibsPath>
+  </PropertyGroup>
+</Project>

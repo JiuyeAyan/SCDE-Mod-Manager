@@ -1,0 +1,15 @@
+﻿using System;
+
+namespace SHCDESE.Interop.Enums;
+
+public enum eGameTypeModes
+{
+    GAMETYPE_CAMPAIGN = 0,
+    GAMETYPE_BUILDER = 1,
+    GAMETYPE_MAP = 2,
+    GAMETYPE_MULTIPLAYER = 3,
+    GAMETYPE_TUTORIAL = 4,
+    GAMETYPE_SIEGE_THAT_BUILDER = 6,
+    GAMETYPE_MAP_TRAIL = 11,
+    GAMETYPE_MAP_TRAIL2 = 13
+}
