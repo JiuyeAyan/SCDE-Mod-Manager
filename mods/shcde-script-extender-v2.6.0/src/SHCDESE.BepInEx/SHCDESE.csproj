@@ -24,27 +24,28 @@
     <PackageReference Include="BepInEx.BaseLib" Version="5.4.21" />
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="Iced" Version="1.21.0" />
-    <PackageReference Include="MessagePack" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+    <PackageReference Include="MessagePack" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
     <PackageReference Include="NLua" Version="1.7.9" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="Pfim" Version="0.11.4" />
     <PackageReference Include="PolyHook2.NET" Version="1.1.9" />
     <PackageReference Include="PolySharp" Version="1.16.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="R3" Version="1.3.1" />
-    <PackageReference Include="RedBird.Backends.NativeX64" Version="1.1.0" />
-    <PackageReference Include="RedBird.X64" Version="1.1.0" />
+    <PackageReference Include="RedBird.Backends.NativeX64" Version="1.3.2" />
+    <PackageReference Include="RedBird.X64" Version="1.3.2" />
     <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
-    <PackageReference Include="System.IO.Hashing" Version="10.0.11" />
+    <PackageReference Include="System.IO.Hashing" Version="10.0.12" />
     <PackageReference Include="System.Memory" Version="4.6.3" />
-    <PackageReference Include="System.Text.Json" Version="10.0.11" />
+    <PackageReference Include="System.Text.Json" Version="10.0.12" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">

@@ -1,4 +1,6 @@
 const path = require("node:path");
+const fs = require("node:fs");
+const crypto = require("node:crypto");
 const { BrowserWindow, dialog, ipcMain, shell } = require("electron");
 const { detectSteamLibraries } = require("./core/detect-game");
 const { readInstalledMods } = require("./core/mod-package");
@@ -58,7 +60,7 @@ function registerImportWindow(manager) {
     return session;
   };
   const list = (active) => [...active.items.values()].map((item) => ({
-    ...item, installedVersion: active.installed.get(item.id) || "",
+    ...item, installedVersion: active.installed.get(item.id)?.version || "",
   }));
   ipcMain.handle("import:scan", async (event) => {
     const active = current(event);
@@ -75,14 +77,16 @@ function registerImportWindow(manager) {
     for (const [key, item] of active.items) if (item.source === "workshop") active.items.delete(key);
     try {
       const config = await manager.configStore.load();
-      active.installed = new Map((await readInstalledMods(manager.modsRoot)).map((mod) => [mod.id, mod.version]));
+      const installed = await readInstalledMods(manager.modsRoot);
+      active.installed = new Map(installed.map((mod) => [mod.id, mod]));
       const libraries = await detectSteamLibraries(config.gameDir);
       const result = await scanWorkshop(libraries, {
         signal: controller.signal,
+        installedMods: installed,
+        excludedIds: manager.requiredSystemModIds,
         onItem: (item) => {
-          if (!active.updatesOnly || findWorkshopUpdates(
-            [...active.installed].map(([id, version]) => ({ id, version })), [item], manager.requiredSystemModIds
-          ).length) active.items.set(item.path, { ...item, source: "workshop" });
+          const update = findWorkshopUpdates(installed, [item], manager.requiredSystemModIds)[0];
+          if (!active.updatesOnly || update) active.items.set(item.path, { ...(update || item), source: "workshop" });
         },
       });
       return { ...result, items: list(active), language: config.language || "en" };
@@ -137,13 +141,20 @@ function registerImportWindow(manager) {
         const actual = await readPackageMetadata(file);
         const preview = active.items.get(file);
         if (!actual || actual.id !== preview.id || actual.version !== preview.version) throw new Error("MOD_CHANGED_RESCAN");
+        if (preview.packageSha256) {
+          const hash = crypto.createHash("sha256");
+          for await (const chunk of fs.createReadStream(file)) hash.update(chunk);
+          if (hash.digest("hex") !== preview.packageSha256) throw new Error("MOD_CHANGED_RESCAN");
+        }
       }
       if (active.updatesOnly) {
         const installed = await readInstalledMods(manager.modsRoot);
         if (findWorkshopUpdates(installed, paths.map((file) => active.items.get(file)),
           manager.requiredSystemModIds).length !== paths.length) throw new Error("MOD_CHANGED_RESCAN");
       }
-      active.result = await manager.installPackages(paths);
+      const expectedDigests = Object.fromEntries(paths.filter(file => active.items.get(file).packageSha256)
+        .map(file => [path.resolve(file), active.items.get(file).packageSha256]));
+      active.result = await manager.installPackages(paths, { expectedDigests });
       active.importing = false;
       active.window.close();
       return true;
@@ -178,7 +189,7 @@ function registerImportWindow(manager) {
     active.initialUpdates = updates;
     for (const item of updates || []) {
       active.items.set(item.path, item);
-      active.installed.set(item.id, item.installedVersion);
+      active.installed.set(item.id, { id: item.id, version: item.installedVersion });
     }
     active.promise = new Promise((resolve, reject) => { active.resolve = resolve; active.reject = reject; });
     session = active;
@@ -236,6 +247,7 @@ function registerImportWindow(manager) {
       const candidates = [];
       await scanWorkshop(await detectSteamLibraries(config.gameDir), {
         signal: controller.signal, onItem: (item) => candidates.push(item),
+        installedMods: installed, excludedIds: manager.requiredSystemModIds,
       });
       const currentMods = await readInstalledMods(manager.modsRoot);
       const updates = findWorkshopUpdates(currentMods, candidates, manager.requiredSystemModIds);

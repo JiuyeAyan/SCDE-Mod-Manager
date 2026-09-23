@@ -2,6 +2,7 @@
 using RedBird.Core.Memory;
 using RedBird.X64.Hooks;
 using RedBird.X64.Hooks.Transaction;
+using RedBird.X64.Memory.Scanners;
 using SHCDESE.API.LowLevel;
 using SHCDESE.BepInEx.Bootstrap;
 using SHCDESE.Logging;
@@ -14,13 +15,10 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 public class BulkVEHDetours
 {
-    private HookTransaction? tx;
-    public BulkVEHDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkVEHDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
 
         // The game has a custom VEH installed just for access violation exceptions for a fail-fast exit.
         // To properly produce crash dumps, this hook disables it entirely and lets the SE VEH and unity parse the exception.
@@ -34,7 +32,6 @@ public class BulkVEHDetours
                 });
         }
 
-        tx.Commit();
     }
 
     internal static void RestoreOriginalHandler()

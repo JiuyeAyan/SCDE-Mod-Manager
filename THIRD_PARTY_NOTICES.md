@@ -6,11 +6,11 @@ The Manager's package metadata declares MIT. That does **not** apply to every bu
 
 - Author: Rawra / Viktor Legodzinski.
 - Upstream: https://gitlab.com/rawra-stronghold-crusader/shcde-script-extender
-- Bundled upstream baseline: 2.6.0; adapted package: 2.6.0+scdemm.1.
+- Bundled upstream baseline: 2.8.0; adapted package: 2.8.0+scdemm.1. The upstream source directory retains its historical `v2.6.0` name; it is not the bundle version.
 - Upstream source license: GNU LGPL version 3; see `mods/shcde-script-extender-v2.6.0/LICENSE.txt` and `mods/shcde-script-extender-adapter/GPL-3.0.txt`.
 - Adaptation: five instructions guard `MapModManager.TryUpdateModsFromRemote` when `SCDEModManagerLaunchId` is set. The source patch and patcher are included under `mods/shcde-script-extender-adapter` and in the adapted package's `SCDEMM-notices` directory.
 - This is not an official upstream build. Existing Mods still load; native automatic Workshop deployment/restart is intentionally disabled in managed launches.
-- Upstream README states that its source license does not necessarily cover artwork/branding. Before making this repository public, review redistribution terms for upstream assets and dependencies, including fonts, branding/media and native libraries. No blanket permission or completed legal audit is claimed here.
+- Upstream README states that its source license does not necessarily cover artwork/branding. Public repository visibility does not grant new permission for upstream assets or dependencies, including fonts, branding/media and native libraries. No blanket permission or completed legal audit is claimed here.
 
 ## BepInEx and related runtime dependencies
 
@@ -30,4 +30,4 @@ Author: JiuyeAyan. Source, component notice and package are included. The compon
 
 Electron, Chromium, Node.js, adm-zip, yauzl and transitive dependencies retain their own licenses. Exact npm versions are locked in `package-lock.json`; installed packages provide their corresponding license files. Electron distribution license files are supplied separately in `licenses/`.
 
-This private upload is for owner review. It does not change the visibility of upstream projects, grant new third-party permissions, or certify that all future SE releases are compatible.
+This public source update does not change the visibility of upstream projects, grant new third-party permissions, or certify that all future SE releases are compatible.

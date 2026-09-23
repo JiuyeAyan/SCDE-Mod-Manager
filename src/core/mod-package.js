@@ -3,15 +3,24 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const AdmZip = require("adm-zip");
 const { safeJoin } = require("./paths");
-const { readSEPackageMetadata, stageSEPackage, refreshInstalledSEMetadata } = require("./se-package");
+const { readSEPackageMetadata, stageSEPackage, refreshInstalledSEMetadata, safeArchivePath } = require("./se-package");
+const { MANIFEST_SCHEMA_VERSION, normalizeDependencyVersions, normalizePackageSha256, normalizePersistentPaths } = require("./manifest-contract");
 
 const MOD_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{1,63}$/;
+const WINDOWS_RESERVED_ID = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i;
+
+function isValidModId(id) {
+  return typeof id === "string" && MOD_ID_PATTERN.test(id) && !id.endsWith(".") && !WINDOWS_RESERVED_ID.test(id);
+}
 
 function validateManifest(manifest) {
   if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) {
     throw new Error("manifest.json 必须是 JSON 对象。");
   }
-  if (!MOD_ID_PATTERN.test(manifest.id || "")) {
+  if (manifest.schemaVersion !== undefined && manifest.schemaVersion !== MANIFEST_SCHEMA_VERSION) {
+    throw new Error(`Unsupported manifest.schemaVersion: ${manifest.schemaVersion}`);
+  }
+  if (!isValidModId(manifest.id)) {
     throw new Error("manifest.id 只能包含 2–64 位小写字母、数字、点、横线或下划线。");
   }
   for (const field of ["name", "version"]) {
@@ -29,7 +38,7 @@ function validateManifest(manifest) {
     if (!dependency || typeof dependency !== "object" || Array.isArray(dependency)) {
       throw new Error("manifest.dependencies 中的每一项都必须是对象。");
     }
-    if (!MOD_ID_PATTERN.test(dependency.id || "")) {
+    if (!isValidModId(dependency.id)) {
       throw new Error("依赖 Mod 的 id 格式无效。");
     }
     if (dependency.id === manifest.id) {
@@ -40,20 +49,16 @@ function validateManifest(manifest) {
     }
     dependencyIds.add(dependency.id);
 
-    const version = dependency.version === undefined ? "" : dependency.version;
-    if (typeof version !== "string") {
-      throw new Error(`依赖 ${dependency.id} 的 version 必须是字符串。`);
-    }
-    if (dependency.version !== undefined && !version.trim()) {
-      throw new Error(`依赖 ${dependency.id} 的 version 不能为空。`);
-    }
     return {
       id: dependency.id,
-      version: version.trim(),
+      ...normalizeDependencyVersions(dependency),
     };
   });
 
+  const persistentPaths = normalizePersistentPaths(manifest.persistentPaths);
+  const packageSha256 = normalizePackageSha256(manifest.packageSha256);
   return {
+    schemaVersion: MANIFEST_SCHEMA_VERSION,
     id: manifest.id,
     name: manifest.id === "bepinex-runtime" ? "BepInEx Runtime" : manifest.name.trim(),
     version: manifest.version.trim(),
@@ -65,6 +70,8 @@ function validateManifest(manifest) {
     gameVersion:
       typeof manifest.gameVersion === "string" ? manifest.gameVersion.trim() : "",
     dependencies: normalizedDependencies,
+    ...(persistentPaths ? { persistentPaths } : {}),
+    ...(packageSha256 ? { packageSha256 } : {}),
     ...(manifest.scriptExtender && typeof manifest.scriptExtender.guid === "string" ? {
       scriptExtender: { ...Object.fromEntries(["guid", "versionCheckUrl", "minimumVersion", "maximumVersion"]
         .map(key => [key, typeof manifest.scriptExtender[key] === "string" ? manifest.scriptExtender[key] : ""])),
@@ -75,13 +82,9 @@ function validateManifest(manifest) {
 
 function normalizeEntryName(entryName) {
   const normalized = entryName.replaceAll("\\", "/").replace(/^\.\//, "");
-  if (
-    !normalized ||
-    normalized.startsWith("/") ||
-    /^[a-zA-Z]:/.test(normalized) ||
-    normalized.split("/").includes("..") ||
-    normalized.includes("\0")
-  ) {
+  try {
+    safeArchivePath(normalized);
+  } catch {
     throw new Error(`Mod 包中包含不安全路径：${entryName}`);
   }
   return normalized;
@@ -107,11 +110,11 @@ async function readInstalledMods(modsRoot) {
   return mods.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
 }
 
-async function installModPackage(packagePath, modsRoot) {
+async function installModPackage(packagePath, modsRoot, options = {}) {
   if ([".map", ".semod"].includes(path.extname(packagePath).toLowerCase())) {
     const metadata = await readSEPackageMetadata(packagePath);
     if (!metadata) throw new Error("No installable Script Extender Mod in this file");
-    return installPreparedMod(metadata, modsRoot, (temporaryRoot) => stageSEPackage(packagePath, temporaryRoot, metadata));
+    return installPreparedMod(metadata, modsRoot, (temporaryRoot) => stageSEPackage(packagePath, temporaryRoot, metadata), options);
   }
   if (path.extname(packagePath).toLowerCase() !== ".scdemod") {
     throw new Error("请选择扩展名为 .scdemod 的 Mod 包。");
@@ -158,10 +161,10 @@ async function installModPackage(packagePath, modsRoot) {
       await fs.writeFile(destination, entry.getData());
     }
     return { ...manifest, packageSha256: digest };
-  });
+  }, options);
 }
 
-async function installPreparedMod(manifest, modsRoot, prepare) {
+async function installPreparedMod(manifest, modsRoot, prepare, { validatePrepared } = {}) {
   await fs.mkdir(modsRoot, { recursive: true });
   const targetRoot = path.join(modsRoot, manifest.id);
   const temporaryRoot = path.join(modsRoot, `.install-${manifest.id}-${crypto.randomUUID()}`);
@@ -170,6 +173,7 @@ async function installPreparedMod(manifest, modsRoot, prepare) {
   try {
     await fs.mkdir(path.join(temporaryRoot, "payload"), { recursive: true });
     installed = await prepare(temporaryRoot);
+    if (validatePrepared) await validatePrepared(installed, temporaryRoot);
     await fs.writeFile(path.join(temporaryRoot, "manifest.json"), `${JSON.stringify(installed, null, 2)}\n`, "utf8");
 
     let hadPreviousVersion = false;
@@ -197,6 +201,7 @@ async function installPreparedMod(manifest, modsRoot, prepare) {
 
 module.exports = {
   installModPackage,
+  installPreparedMod,
   normalizeEntryName,
   readInstalledMods,
   validateManifest,

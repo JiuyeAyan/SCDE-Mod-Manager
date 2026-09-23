@@ -24,14 +24,11 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 internal unsafe class BulkPlayerDetours
 {
-    private HookTransaction? tx;
-    public BulkPlayerDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkPlayerDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         tx.AddDetour(c_game_player_subtract_resources_hook,
             "45 85 C0 0F 84 ? ? ? ? 44 89 4C 24",
@@ -435,7 +432,7 @@ internal unsafe class BulkPlayerDetours
                 {
                     rationsPopModifier = globals.GoodBadThingPopModifierMultiplier.GetValue() * r_GoodBadThingBoost;
                 }
-                res->r_RationsPopularityModifier2 = (uint)rationsPopModifier;
+                res->r_GoodBadThingsPopularityModifier = (uint)rationsPopModifier;
                 int v33 = v31 + rationsPopModifier;
                 if (rationsPopModifier < v20)
                     v15 = 8;
@@ -446,6 +443,7 @@ internal unsafe class BulkPlayerDetours
 
                 res->r_CurrentPopularity = (uint)v33;
 
+                ctx.Pointer->R8 = 50;   // Jester pop
                 ctx.Pointer->RDX = unchecked((uint)v33); // EDX = current popularity
                 ctx.Pointer->RSI = unchecked((uint)v15); // ESI = worst modifier source?
 
@@ -455,8 +453,6 @@ internal unsafe class BulkPlayerDetours
                 Placement = RedBird.Abstractions.Hooks.OverwrittenInstructionPlacement.Suppress,
                 HookSize = 0x347
             });
-
-        tx.Commit();
 
     }
 

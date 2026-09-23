@@ -14,10 +14,10 @@ function render() {
   byId("elapsed").textContent = t.elapsed.replace("{time}", time(now - state.startedAt));
   byId("phase").textContent = t[state.phase] || t.runtime;
   const active = state.items.find(item => !item.endedAt);
-  const ended = ["exited", "unconfirmed", "ready"].includes(state.phase);
+  const ended = ["exited", "unconfirmed", "ready", "failed"].includes(state.phase);
   byId("spinner").classList.toggle("hidden", ended);
   byId("current").textContent = active ? active.name : (state.phase === "menu" ? t.menuHint : ended ? "" : t.pending);
-  byId("hint").textContent = t.hint;
+  byId("hint").textContent = state.phase === "failed" ? `${t.failedHint} ${state.detail || ""}` : t.hint;
   byId("close-hint").textContent = t.closeHint;
   byId("close").textContent = t.close;
   const next = JSON.stringify([state.items, state.phase, state.language]);

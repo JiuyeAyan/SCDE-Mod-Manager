@@ -1,5 +1,6 @@
 ﻿using RedBird.Core.Memory;
 using RedBird.Core.Memory.Scanners;
+using RedBird.X64.Hooks.Transaction;
 using RedBird.X64.Memory.Scanners;
 using SHCDESE.API.LowLevel;
 using SHCDESE.Logging;
@@ -12,11 +13,10 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 public class BulkTileDetours
 {
-    public BulkTileDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkTileDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        DataScanner scanner = DataScanner.Create(region);
 
         DataScanner c_game_update_visual_resourcetile_scan = scanner.Scan(CompiledPattern.Parse("48 89 5C 24 ?? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC ?? 4C 8D 05"));
         if (c_game_update_visual_resourcetile_scan.Found)

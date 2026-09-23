@@ -56,6 +56,7 @@ public enum TilePropertyFlag : UInt32
     MapBorder = 1 << 5,
 
     // << 6 ?
+    Unknown6 = 1 << 6,
 
     /// <summary>
     /// An impassable edge. (0x00000080)
@@ -75,8 +76,9 @@ public enum TilePropertyFlag : UInt32
 
     /// <summary>
     /// A component of crenelated walls. (0x00000200)
+    /// This variant can still be climbed from assassins, etc.
     /// </summary>
-    CrenelationComponent = 1 << 9,
+    CrenelatedLow = 1 << 9,
 
     /// <summary>
     /// Occupied by a building structure. This tile is impassable. (0x00000400)
@@ -121,6 +123,7 @@ public enum TilePropertyFlag : UInt32
     HasStone = 1 << 17,
 
     // 1 << 18?
+    Unknown18 = 1 << 18,
 
     /// <summary>
     /// Contains iron ore resource. (0x00080000)
@@ -138,11 +141,14 @@ public enum TilePropertyFlag : UInt32
     Ford = 1 << 21,
 
     /// <summary>
-    /// A modifier for crenelated walls. (0x00400000)
+    /// A crenelated wall. (0x00400000)
+    /// This variant is unclimable from assassins, etc.
     /// </summary>
-    CrenelationModifier = 1 << 22,
+    CrenelatedHigh = 1 << 22,
 
     // 1 << 23?
+
+    Unknown23 = 1 << 23,
 
     /// <summary>
     /// A wheat farm tile. (0x01000000)
@@ -237,7 +243,7 @@ public enum TilePropertyFlag : UInt32
     /// <summary>
     /// A crenelated wall. Impassable. (0x00400300)
     /// </summary>
-    CrenelatedWall = CrenelationModifier | CrenelationComponent | IsWall,
+    CrenelatedWall = CrenelatedHigh | CrenelatedLow | IsWall,
 
     /// <summary>
     /// A flight of stairs on a wall or tower. Impassable. (0x00000900)

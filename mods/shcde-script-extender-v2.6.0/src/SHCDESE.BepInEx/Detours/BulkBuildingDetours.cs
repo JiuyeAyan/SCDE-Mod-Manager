@@ -38,24 +38,22 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 public unsafe class BulkBuildingDetours
 {
-    private HookTransaction? tx;
     /// <summary>
     /// Scans the game's memory for all building-related function signatures and applies the corresponding detours.
     /// </summary>
     /// <param name="memory">A <see cref="ReadOnlySpan{T}"/> of bytes representing the memory block of the loaded `CrusaderDE.dll`.</param>
     /// <param name="region">The memory region to scan for function signatures.</param>
+    /// <param name="tx">Shared transaction.</param>
+    /// <param name="scanner">Shared scanner.</param>
     /// <remarks>
     /// This method should only be called once during the script extender's initialization phase, after the
     /// `CrusaderDE.dll` has been loaded and its memory is accessible. It initializes and enables all the hooks
     /// defined within this class.
     /// </remarks>
-    public BulkBuildingDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkBuildingDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         // These hooks need to be done within the CrusaderDE.dll module!
         tx.AddDetour(c_game_build_wall_hook,
@@ -464,7 +462,7 @@ public unsafe class BulkBuildingDetours
                     bool result = false;
                     GameUnitManagerAPI unitApi = GameUnitManagerAPI.Instance;
 
-                    int unitId = unitApi.GetUnitArray().GetIndexByOffset(unitOffset) + 1;
+                    int unitId = unitApi.GetUnitArray().GetIndexByOffset(unitOffset);
                     int buildingId = GameBuildingManagerAPI.Instance.GetCurrentContextBuildingId();
                     //LogHelper.Verbose($"unitId={unitId}, buildingId={buildingId}");
 
@@ -494,7 +492,6 @@ public unsafe class BulkBuildingDetours
                 asm.pop(rcx);
             }, hookSize: 34);
 
-        tx.Commit();
     }
 
     //

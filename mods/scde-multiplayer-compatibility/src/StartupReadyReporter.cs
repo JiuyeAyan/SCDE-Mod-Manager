@@ -12,6 +12,23 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
         private static readonly FieldInfo ViewModel = typeof(CrusaderDE.MainViewModel).GetField("instance", BindingFlags.NonPublic | BindingFlags.Static);
         private static bool finished;
 
+        internal static void ReportFailure(string message)
+        {
+            finished = true; // Never publish ready after an unsupported or invalid MMC startup.
+            if (String.IsNullOrEmpty(LaunchId)) return;
+            string detail = (message ?? "MMC initialization failed").Replace('\r', ' ').Replace('\n', ' ');
+            if (detail.Length > 2000) detail = detail.Substring(0, 2000);
+            SCDEMultiplayerCompatibilityPlugin.LogSettingsGuardWarning("SCDEMM_STARTUP_FAILED " + LaunchId + " " + detail);
+            try
+            {
+                File.WriteAllText(Path.Combine(Paths.GameRootPath, "_scde_manager", "startup-failed.txt"), LaunchId + "\n" + detail);
+            }
+            catch (Exception error)
+            {
+                SCDEMultiplayerCompatibilityPlugin.LogSettingsGuardWarning("Startup failure file unavailable: " + error.Message);
+            }
+        }
+
         internal static void Tick()
         {
             if (finished || String.IsNullOrEmpty(LaunchId)) return;

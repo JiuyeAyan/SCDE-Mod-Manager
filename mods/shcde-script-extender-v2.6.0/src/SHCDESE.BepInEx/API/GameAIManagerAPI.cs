@@ -4,6 +4,7 @@ using SHCDESE.API.Components.AI;
 using SHCDESE.API.Components.ModManager;
 using SHCDESE.API.Components.Network;
 using SHCDESE.API.LowLevel;
+using SHCDESE.Extensions;
 using SHCDESE.GameGlobals;
 using SHCDESE.Interop;
 using SHCDESE.Interop.Enums;
@@ -37,7 +38,7 @@ namespace SHCDESE.API;
 /// This class is a thread-safe singleton. Access it via <see cref="Instance"/>.
 /// </para>
 /// </remarks>
-[LuaApiNamespace("Player")]
+[LuaApiNamespace("AI")]
 public sealed class GameAIManagerAPI
 {
     private static readonly Lazy<GameAIManagerAPI> _lazy = new(() => new GameAIManagerAPI());
@@ -48,6 +49,7 @@ public sealed class GameAIManagerAPI
     // ---------------------------------------------------------------------------------------
 
     private SimpleNativeArray<InternalAIC> _aicArray;
+    private SimpleNativeArray<AISellCategoryPair> _aiSellCategoryArray;
 
     /// <summary>
     /// Cache of the most recently spoken subtitle text per lord, keyed by lowercase internal name.
@@ -57,6 +59,8 @@ public sealed class GameAIManagerAPI
 
     // Total number of distinct message types supported per lord in the game's translation table.
     private const int MessageTypeStride = 34;
+
+    private const int AISellCategoryPairAmount = 20;
 
     // ---------------------------------------------------------------------------------------
     // Public State
@@ -87,11 +91,119 @@ public sealed class GameAIManagerAPI
 
         LogHelper.Information($"Loading AIC Array");
         _aicArray = new SimpleNativeArray<InternalAIC>((byte*)GameGlobalsManager.Instance.AILordManagerRVA + (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle, Enum.GetValues(typeof(Enums.AILords)).Length);
+        _aiSellCategoryArray = new SimpleNativeArray<AISellCategoryPair>((byte*)GameGlobalsManager.Instance.AIResourceSellCategoryTableVA - 4, AISellCategoryPairAmount);
     }
 
     internal void Unload()
     {
         LordDataDict.Clear();
+    }
+
+    /// <summary>
+    /// Sets a category for a good.
+    /// </summary>
+    /// <param name="good">The good.</param>
+    /// <param name="category">The new <see cref="AISellCategory"/>.</param>
+    [LuaApiExport("SetAISellCategoryForGood")]
+    public unsafe void SetAISellCategoryForGood(eGoods good, AISellCategory category)
+    {
+        if (!TryFindAISellCategoryPairByGood(good, out NativePointer<AISellCategoryPair> pair))
+            return;
+
+        pair.Pointer->category = category;
+    }
+
+    /// <summary>
+    /// Returns the currently assigned category for a good.
+    /// </summary>
+    /// <param name="good">The good.</param>
+    /// <returns>Current <see cref="AISellCategory"/>; Otherwise <see cref="AISellCategory.Unknown0"/>.</returns>
+    [LuaApiExport("GetAISellCategoryForGood")]
+    public unsafe AISellCategory GetAISellCategoryForGood(eGoods good)
+    {
+        if (!TryFindAISellCategoryPairByGood(good, out NativePointer<AISellCategoryPair> pair)) 
+        {
+            return AISellCategory.Unknown0;
+        }
+        return pair.Pointer->category;
+    }
+
+    /// <summary>
+    /// Gets a good amount from the AI's to-be-purchased list.
+    /// </summary>
+    /// <param name="playerId">The playerId.</param>
+    /// <param name="good">The good to buy.</param>
+    /// <returns>The amount of goods.</returns>
+    [LuaApiExport("GetGoodFromPendingPurchases")]
+    public unsafe int GetGoodFromPendingPurchases(int playerId, eGoods good)
+    {
+        if (!GamePlayerManagerAPI.Instance.TryGetPlayerResourcesById(playerId, out GamePlayerResources* res))
+        {
+            LogHelper.Error($"Could not find player by id: {playerId}");
+            return 0; ;
+        }
+        int* pendingArray = (int*)&res->r_AIPendingMarketPurchaseAmountNull;
+        return pendingArray[(int)good];
+    }
+
+    /// <summary>
+    /// Adds a good to the AI's to-be-purchased list.
+    /// Beware: The AI buys it in one-go and requires the full amount of money.
+    /// </summary>
+    /// <param name="playerId">The playerId.</param>
+    /// <param name="good">The good to buy.</param>
+    /// <param name="amount">The amount of goods.</param>
+    [LuaApiExport("AddGoodToPendingPurchases")]
+    public unsafe void AddGoodToPendingPurchases(int playerId, eGoods good, int amount)
+    {
+        if (!GamePlayerManagerAPI.Instance.TryGetPlayerResourcesById(playerId, out GamePlayerResources* res))
+        {
+            LogHelper.Error($"Could not find player by id: {playerId}");
+            return;
+        }
+        int* pendingArray = (int*)&res->r_AIPendingMarketPurchaseAmountNull;
+        pendingArray[(int)good] += amount;
+    }
+
+    /// <summary>
+    /// Sets a good amount of the AI's to-be-purchased list.
+    /// Beware: The AI buys it in one-go and requires the full amount of money.
+    /// </summary>
+    /// <param name="playerId">The playerId.</param>
+    /// <param name="good">The good to buy.</param>
+    /// <param name="amount">The amount of goods.</param>
+    [LuaApiExport("SetGoodToPendingPurchases")]
+    public unsafe void SetGoodToPendingPurchases(int playerId, eGoods good, int amount)
+    {
+        if (!GamePlayerManagerAPI.Instance.TryGetPlayerResourcesById(playerId, out GamePlayerResources* res))
+        {
+            LogHelper.Error($"Could not find player by id: {playerId}");
+            return;
+        }
+        int* pendingArray = (int*)&res->r_AIPendingMarketPurchaseAmountNull;
+        pendingArray[(int)good] = amount;
+    }
+
+    /// <summary>
+    /// Retrieve the <see cref="AISellCategoryPair"/> for a specific good.
+    /// Do not use <paramref name="pAiSellCategoryPair"/> when false.
+    /// </summary>
+    /// <param name="good">The good to find.</param>
+    /// <param name="pAiSellCategoryPair">The found <see cref="AISellCategoryPair"/>.</param>
+    /// <returns><see langword="true"/> if found; otherwise <see langword="false"/>.</returns>
+    internal unsafe bool TryFindAISellCategoryPairByGood(eGoods good, out NativePointer<AISellCategoryPair> pAiSellCategoryPair)
+    {
+        pAiSellCategoryPair = null;
+        for (int i = 0; i < AISellCategoryPairAmount; i++)
+        {
+            pAiSellCategoryPair = &_aiSellCategoryArray._array[i];
+
+            if ((int)pAiSellCategoryPair.Pointer->item != (int)good)
+                continue;
+
+            return true;
+        }
+        return false;
     }
 
     // ---------------------------------------------------------------------------------------
@@ -130,7 +242,7 @@ public sealed class GameAIManagerAPI
             return;
         }
 
-        CustomLordEntry entry = BuildLordEntry(lordNameLower, lordInfo, luaInitPath);
+        CustomLordEntry entry = BuildLordEntry(lordNameLower, lordInfo, luaInitPath, modInfo);
         LordDataDict.Add(lordNameLower, entry);
 
     }
@@ -139,12 +251,14 @@ public sealed class GameAIManagerAPI
     /// Constructs a <see cref="CustomLordEntry"/> from parsed lord metadata,
     /// mapping message type strings to <see cref="AILordMessageType"/> enum values.
     /// </summary>
-    private CustomLordEntry BuildLordEntry(string lordNameLower, LordInfo lordInfo, string luaInitPath)
+    private CustomLordEntry BuildLordEntry(string lordNameLower, LordInfo lordInfo, string luaInitPath, ModInfo modInfo)
     {
         CustomLordEntry entry = new CustomLordEntry
         {
             LordInfo = lordInfo,
             InternalName = lordNameLower,
+            AssetProviderGuid = modInfo.GUID,
+            AssetMode = modInfo.AssetMode,
             DisplayName = "not-set"
         };
 
@@ -466,7 +580,8 @@ public sealed class GameAIManagerAPI
         // Lazily load the texture and wrap it in a Noesis source.
         if (cle.FaceTexture == null || cle.Face == null)
         {
-            if (GameAssetManagerAPI.Instance.TryLoadTexture(cle.LordInfo.FacePath, out Texture2D? texture) && texture != null)
+            string facePath = ResolveAssetReference(cle, cle.LordInfo.FacePath);
+            if (GameAssetManagerAPI.Instance.TryLoadTexture(facePath, out Texture2D? texture) && texture != null)
             {
                 cle.FaceTexture = texture;
                 cle.Face = new Noesis.TextureSource(texture);
@@ -499,7 +614,7 @@ public sealed class GameAIManagerAPI
             LogHelper.Information($"No join audio for lord [{nameLower}]");
             return false;
         }
-        audioPath = cle.LordInfo.JoinAudioPath;
+        audioPath = ResolveAssetReference(cle, cle.LordInfo.JoinAudioPath);
 
         LogHelper.Information($"Resolved join audio for lord [{nameLower}]: [{audioPath}]");
         return true;
@@ -527,7 +642,7 @@ public sealed class GameAIManagerAPI
             LogHelper.Information($"No leave audio for lord [{nameLower}]");
             return false;
         }
-        audioPath = cle.LordInfo.LeaveAudioPath;
+        audioPath = ResolveAssetReference(cle, cle.LordInfo.LeaveAudioPath);
 
         LogHelper.Information($"Resolved leave audio for lord [{nameLower}]: [{audioPath}]");
         return true;
@@ -561,8 +676,8 @@ public sealed class GameAIManagerAPI
         }
 
         LordMessageClip selected = clips[DeterministicRandom.Next(0, clips.Count)];
-        videoPath = selected.VideoPath;
-        audioPath = selected.AudioPath;
+        videoPath = ResolveAssetReference(cle, selected.VideoPath);
+        audioPath = ResolveAssetReference(cle, selected.AudioPath);
 
         string subtitleText = GetLocalizedText(selected.LocalizedText);
         if (!string.IsNullOrEmpty(subtitleText))
@@ -572,6 +687,17 @@ public sealed class GameAIManagerAPI
 
         LogHelper.Information($"Resolved clip for lord [{nameLower}] message type [{msgType}]");
         return true;
+    }
+
+    /// <summary>
+    /// Qualifies local-mode assets with their provider GUID so identical relative paths from different lords never collide.
+    /// </summary>
+    private static string ResolveAssetReference(CustomLordEntry entry, string relativePath)
+    {
+        if (entry.AssetMode != ModAssetMode.Local || string.IsNullOrWhiteSpace(relativePath))
+            return relativePath;
+
+        return GameAssetManagerAPI.CreateModAssetReference(entry.AssetProviderGuid, relativePath);
     }
 
     // ---------------------------------------------------------------------------------------

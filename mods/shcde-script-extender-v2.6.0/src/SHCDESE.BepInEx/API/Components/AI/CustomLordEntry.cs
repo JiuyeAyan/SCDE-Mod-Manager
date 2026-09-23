@@ -1,4 +1,5 @@
 ﻿using Noesis;
+using SHCDESE.API.Components.ModManager;
 using SHCDESE.Interop.Enums;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,12 @@ namespace SHCDESE.API.Components.AI;
 /// </remarks>
 public class CustomLordEntry
 {
+    /// <summary>Gets or sets the GUID of the asset provider that owns this lord.</summary>
+    public string AssetProviderGuid { get; set; } = null!;
+
+    /// <summary>Gets or sets whether this lord resolves its assets globally or inside its owning provider.</summary>
+    public ModAssetMode AssetMode { get; set; } = ModAssetMode.Global;
+
     /// <summary>Gets or sets the deserialized <c>lordmeta.json</c> data for this lord.</summary>
     public LordInfo LordInfo { get; set; } = null!;
 

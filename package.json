@@ -1,6 +1,6 @@
 {
   "name": "scde-mod-manager",
-  "version": "0.2.8",
+  "version": "0.2.10",
   "description": "Safe, profile-based mod manager for Stronghold Crusader: Definitive Edition",
   "main": "src/main.js",
   "author": "SCDE Mod Manager contributors",
@@ -8,9 +8,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test --experimental-test-isolation=none test/*.test.js",
-    "prepack": "node tools/build-se-update-helper.js",
     "pack": "electron-builder --dir",
-    "predist": "node tools/build-se-update-helper.js",
     "dist": "electron-builder --win portable"
   },
   "dependencies": {
@@ -25,6 +23,7 @@
     "appId": "com.scde.modmanager",
     "productName": "SCDE Mod Manager",
     "asar": true,
+    "beforePack": "tools/prepare-bundled-se.js",
     "portable": {
       "unpackDirName": true
     },
@@ -44,12 +43,12 @@
         "to": "system-mods/bepinex-runtime-5.4.23.5.scdemod"
       },
       {
-        "from": "release/scde-multiplayer-compatibility-0.3.1.scdemod",
-        "to": "system-mods/scde-multiplayer-compatibility-0.3.1.scdemod"
+        "from": "release/scde-multiplayer-compatibility-0.4.0.scdemod",
+        "to": "system-mods/scde-multiplayer-compatibility-0.4.0.scdemod"
       },
       {
-        "from": "release/shcde-script-extender-2.6.0+scdemm.1.scdemod",
-        "to": "system-mods/shcde-script-extender-2.6.0+scdemm.1.scdemod"
+        "from": "release/bundled-se",
+        "to": "system-mods/bundled-se"
       }
     ],
     "win": {

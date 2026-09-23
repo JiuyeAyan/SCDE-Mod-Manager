@@ -114,9 +114,10 @@
       "workshop": "Steam Workshop",
       "manualSource": "Manual selection",
       "installed": "Installed v{version}",
+      "contentChanged": "Contents changed (same version)",
       "failure": "Operation failed: {error}",
       "duplicate": "Select only one package per Mod; multiple versions of the same Mod are selected.",
-      "changed": "A selected package changed during the download. Rescan before importing.",
+      "changed": "A selected package changed after it was listed. Rescan before importing.",
       "previous": "Previous page",
       "next": "Next page",
       "trust": "Only import Mods from authors you trust; Mods can execute code."
@@ -126,9 +127,9 @@
       "hint": "Only previously imported Mods are listed. Nothing is updated until you select and confirm.",
       "confirm": "Update Selected",
       "cancel": "Not Now",
-      "version": "New Version",
+      "version": "Available Version",
       "source": "Installed Version",
-      "empty": "No newer versions found."
+      "empty": "No Mod updates found."
     },
     "launch": {
       "title": "Starting the game",
@@ -139,6 +140,8 @@
       "menu": "Mods initialized · Preparing the main menu",
       "exited": "The game exited before startup completed",
       "unconfirmed": "Startup status could not be confirmed",
+      "failed": "Multiplayer verification could not initialize",
+      "failedHint": "Exit the game and update the compatibility component before playing multiplayer. Details:",
       "ready": "Game ready",
       "pending": "Waiting for the game to report loading progress…",
       "menuHint": "Waiting for the game interface and assets…",

@@ -17,15 +17,10 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 public class BulkChoreDetours
 {
-    private HookTransaction? tx;
-
-    public BulkChoreDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkChoreDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         //tx.AddDetour(ref c_game_queue_chore_hook,
         //    "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 54 41 56 41 57 48 83 EC ? 0F BE F2",
@@ -61,7 +56,6 @@ public class BulkChoreDetours
             ((UInt64*)GameGlobalsManager.Instance.GameStateChoreHandlersVA)[106] = (UInt64)(Marshal.GetFunctionPointerForDelegate(c_game_chore_106_handler_impl));
         }
 
-        tx.Commit();
     }
 
     // -------------------------------------------------------------------------

@@ -2,7 +2,10 @@
 using Microsoft.Extensions.Logging;
 using RedBird.Abstractions.Hooks;
 using RedBird.Backends.NativeX64;
+using RedBird.Core.Memory;
+using RedBird.Core.Memory.Scanners;
 using RedBird.Core.Utilities;
+using RedBird.X64.Memory.Scanners;
 using Serilog;
 using Serilog.Core;
 using Serilog.Extensions.Logging;
@@ -26,9 +29,12 @@ using SHCDESE.UI;
 using SHCDESE.ViewModels;
 using Steamworks;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using UUIMGUI.Core;
 
@@ -107,13 +113,17 @@ public partial class Plugin : BaseUnityPlugin
 
             LoggerFactory = new SerilogLoggerFactory(Log.Logger, dispose: false);
             ModLoggerFactory.Initialize(LogLevelSwitch);
+            LogHelper.Information($"Plugin {PLUGIN_NAME} is loading!");
+
+            // Discover metadata and validate all mod dependencies before continueing.
+            if (!IgnoreDependencyIncompatibilities.Value && !ConfirmModCompatibility())
+                return;
 
             // Init steam early (we dont really care if this works or not)
             if (EnableEarlySteamInitialization.Value)
                 SteamAPI.Init();
 
             InitLanguageProviderEarly();
-            LogHelper.Information($"Plugin {PLUGIN_NAME} is loading!");
 
             // Set detouring engine
             if (!HookBackends.TrySetDefault(NativeDetourBackend.Instance))
@@ -209,6 +219,41 @@ public partial class Plugin : BaseUnityPlugin
         {
             LogHelper.Error(ex, "Error during plugin startup");
         }
+    }
+
+    /// <summary>
+    /// Warns when an active mod has a missing or version-incompatible dependency.
+    /// </summary>
+    /// <returns><see langword="true"/> when startup should continue.</returns>
+    private static bool ConfirmModCompatibility()
+    {
+        GameAssetModManager modManager = GameAssetModManager.Instance;
+        IReadOnlyList<ModCompatibilityIssue> issues = modManager.PrepareAllAndCheckCompatibility(PLUGIN_VERSION);
+        if (issues.Count == 0)
+            return true;
+
+        string modNames = string.Join("\n", issues.Select(issue => issue.DisplayName)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+                .Select(name => $"- {name}"));
+
+        string message = "One or more active mods have missing or incompatible dependencies:\n\n" +
+            modNames +
+            "\n\nUpdate the listed mods, or install/update their required dependencies. Continuing may cause errors or crashes.\n\n" +
+            "Yes: continue starting the game\nNo: stop the game";
+
+        int result = MinWinAPI.MessageBoxA(IntPtr.Zero, message, "Script Extender", MinWinAPI.MB_YESNO | MinWinAPI.MB_ICONWARNING | MinWinAPI.MB_DEFBUTTON2);
+
+        if (result == MinWinAPI.IDYES)
+        {
+            LogHelper.Warning($"The user chose to continue with {issues.Count} mod compatibility issue(s).");
+            return true;
+        }
+
+        LogHelper.Warning("The user chose to stop the game because of unmet mod dependencies.");
+        modManager.DiscardPreparedCandidates();
+        Environment.Exit(0);
+        return false;
     }
 
     /// <summary>
@@ -316,9 +361,13 @@ Enjoy!", "Script Extender", 0x40);
         {
             LogHelper.Information($"Initializing native-side...");
 
-            GameGlobalsManager.Instance.FindGameGlobals(context.Memory, context.Region);
+            AobCacheOptions cacheOptions = new AobCacheOptions(Path.Combine(IO.DirectoryHelpers.ModDataDirectory, "aobcache.json"));
+            Microsoft.Extensions.Logging.ILogger scannerLogger = Plugin.Instance.LoggerFactory.CreateLogger("Scanner");
+            DataScanner scanner = DataScanner.Create(context.Region, scannerLogger, cacheOptions);
 
-            DetourManager.Instance.ApplyNative(context.Memory, context.Region);
+            GameGlobalsManager.Instance.FindGameGlobals(context.Memory, context.Region, scanner);
+
+            DetourManager.Instance.ApplyNative(context.Memory, context.Region, scanner, cacheOptions);
             //DetourManager.Instance.ApplyManaged();
 
             GameMapArchiveManagerAPI.InitializeSubscribers();

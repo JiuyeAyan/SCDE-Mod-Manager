@@ -20,19 +20,16 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 public class BulkPathingDetours
 {
-    private HookTransaction? tx;
-    public BulkPathingDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkPathingDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
-        DataScanner c_game_get_next_reachable_pcl_to_destination_for_player_scan = scanner.Scan(CompiledPattern.Parse("40 55 41 54 41 55 41 56 48 8D AC 24"));
-        if (c_game_get_next_reachable_pcl_to_destination_for_player_scan.Found)
+        DataScanner c_game_pathfinding_find_next_component_toward_destinaton_scan = scanner.Scan(CompiledPattern.Parse("40 55 41 54 41 55 41 56 48 8D AC 24"));
+        if (c_game_pathfinding_find_next_component_toward_destinaton_scan.Found)
         {
-            c_game_get_next_reachable_pcl_to_destination_for_player = Marshal.GetDelegateForFunctionPointer<c_game_get_next_reachable_pcl_to_destination_for_player_delegate>((IntPtr)c_game_get_next_reachable_pcl_to_destination_for_player_scan.CurrentAddress);
+            c_game_pathfinding_find_next_component_toward_destinaton = Marshal.GetDelegateForFunctionPointer<c_game_pathfinding_find_next_component_toward_destinaton_delegate>((IntPtr)c_game_pathfinding_find_next_component_toward_destinaton_scan.CurrentAddress);
         }
         else LogHelper.Warning($"Failed to find c_game_queue_chore");
 
@@ -44,18 +41,17 @@ public class BulkPathingDetours
             HookTarget.FromRelativeCall("E8 ? ? ? ? 85 C0 75 ? 48 8B F3"),
             c_game_unit_selection_contains_only_assassins_hook_impl);
 
-        tx.Commit();
     }
 
     // __int64 __fastcall c_game_pathfinding_rebuild(__int64 pPathfindingContext, int forceImmediate)
     // 40 53 41 57 48 83 EC ? 48 8B D9
 
     // Returns the first PCL to enter when routing from currentPclId toward destinationPclId
-    // __int64 __fastcall c_game_get_next_reachable_pcl_to_destination_for_player(int *pPathfindingContext, int playerId, unsigned int currentPclId, unsigned int destinationPclId, int connectionClassMode)
+    // __int64 __fastcall c_game_pathfinding_find_next_component_toward_destinaton(int *pPathfindingContext, int playerId, unsigned int currentPclId, unsigned int destinationPclId, int connectionClassMode)
     // 40 55 41 54 41 55 41 56 48 8D AC 24
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate Int64 c_game_get_next_reachable_pcl_to_destination_for_player_delegate(IntPtr pPathfindingContext, int playerId, int targetPathConnectionLayerId, int sourcePathConnectionLayerId, PathConnectionQueryMode connectionClassMode);
-    internal static c_game_get_next_reachable_pcl_to_destination_for_player_delegate c_game_get_next_reachable_pcl_to_destination_for_player;
+    public delegate Int64 c_game_pathfinding_find_next_component_toward_destinaton_delegate(IntPtr pPathfindingContext, int playerId, int currentPclId, int destinationPclId, PathConnectionQueryMode connectionClassMode);
+    internal static c_game_pathfinding_find_next_component_toward_destinaton_delegate c_game_pathfinding_find_next_component_toward_destinaton;
 
     // __int64 __fastcall c_game_unit_validate_next_tile_surface_for_type(__int64 pPathfindingContext, int unitId, int currentTileId, int currentTileY, int direction)
     // 48 63 C2 4C 8D 1D ? ? ? ? 4C 69 D0 ? ? ? ? 43 0F BF 84 1A

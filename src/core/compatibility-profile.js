@@ -17,10 +17,18 @@ function createCompatibilityProfile(mods, enabledIds) {
     });
   const canonical = enabledMods.map((mod) => `${mod.id}\u0000${mod.version}`).join("\n");
   const fingerprint = crypto.createHash("sha256").update(canonical, "utf8").digest("hex");
+  // Local deployment provenance is order/content-sensitive; never use wrapper hashes as network identity.
+  const deployment = enabledIds.map(id => {
+    const mod = modById.get(id);
+    return { id, version: mod.version, packageSha256: mod.packageSha256 || "" };
+  });
+  const deploymentFingerprint = crypto.createHash("sha256").update(JSON.stringify(deployment), "utf8").digest("hex");
 
   return {
     schema: PROFILE_SCHEMA,
     fingerprint,
+    deploymentFingerprint,
+    deployment,
     mods: enabledMods,
   };
 }

@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 namespace SHCDESE.API;
 
 /// <summary>
-/// Provides a high-level API for creating, querying, and removing pitch (tar-trap) tiles.
+/// Provides a high-level API for creating, querying, and removing pitch tiles.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -41,7 +41,7 @@ public unsafe sealed class GamePitchManagerAPI
     public static GamePitchManagerAPI Instance => _lazy.Value;
 
     /// <summary>Maximum number of simultaneous pitch entries the game supports.</summary>
-    public const int MAX_PITCH_ENTRIES = 4000;
+    public const int MAX_PITCH_ENTRIES = 3999;
 
     // Offsets inside the TileManager struct
     private const UInt64 PitchArrayBaseOffset = 0x2038E48;
@@ -53,26 +53,21 @@ public unsafe sealed class GamePitchManagerAPI
 
     private GamePitchManagerAPI()
     {
+        GameTileManagerAPI tileApi = GameTileManagerAPI.Instance;
         _tileManagerVA = GameGlobalsManager.Instance.GameTileManagerVA;
+        _pitchArray = new SimpleNativeArray<GamePitchDescriptor>((byte*)Unsafe.AsPointer(ref tileApi.TileManager.PitchSlots.GetPinnableReference()), MAX_PITCH_ENTRIES + 1);
 
-        byte* arrayBase = (byte*)(_tileManagerVA + PitchArrayBaseOffset);
-        _pitchArray = new SimpleNativeArray<GamePitchDescriptor>(arrayBase, MAX_PITCH_ENTRIES);
-
-        LogHelper.Information($"PitchArray base: {new IntPtr(arrayBase).ToString("X16")}");
-        LogHelper.Information($"PitchArray count ptr: {(_tileManagerVA + PitchArrayCountOffset).ToString("X16")}");
+        LogHelper.Information($"PitchArray base: {new IntPtr(_pitchArray._array).ToString("X16")}");
     }
-
-    /// <summary>Pointer to the game's high-water mark for the pitch array.</summary>
-    private ref uint PitchArrayCount => ref *(uint*)(_tileManagerVA + PitchArrayCountOffset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsValidId(int pitchId) => pitchId > 0 && pitchId <= MAX_PITCH_ENTRIES;
 
     internal int FindFreePitchSlotInternal()
     {
-        byte* sentinelBase = (byte*)(_tileManagerVA + PitchArrayBaseOffset + PitchSentinelRelative);
+        byte* sentinelBase = (byte*)(((UInt64)_pitchArray._array) + PitchSentinelRelative);
         int stride = sizeof(GamePitchDescriptor);
-        for (int i = 1; i < MAX_PITCH_ENTRIES; i++)
+        for (int i = 1; i <= MAX_PITCH_ENTRIES; i++)
         {
             UInt16 sentinel = *(UInt16*)(sentinelBase + stride * (i - 1));
             if (sentinel == 0)
@@ -97,8 +92,7 @@ public unsafe sealed class GamePitchManagerAPI
     /// <summary>
     /// Attempts to retrieve a direct, raw pointer to a pitch entry by its slot ID.
     /// </summary>
-    /// <param name="pitchId">The one-based pitch ID (1 to <see cref="MAX_PITCH_ENTRIES"/> - 1),
-    /// as returned by <see cref="CreatePitch"/> or by a query. Resolved as <c>_array[pitchId - 1]</c>.</param>
+    /// <param name="pitchId">The pitch ID</param>
     /// <param name="entry">
     /// On success, a raw pointer to the entry in game memory; <c>null</c> otherwise.
     /// Writing through this pointer modifies the game state immediately.
@@ -117,15 +111,14 @@ public unsafe sealed class GamePitchManagerAPI
         if (_pitchArray._array == null)
             return false;
 
-        entry = &_pitchArray._array[pitchId - 1];
+        entry = &_pitchArray._array[pitchId];
         return true;
     }
 
     /// <summary>
     /// Attempts to retrieve a safe, wrapped pointer to a pitch entry by its slot ID.
     /// </summary>
-    /// <param name="pitchId">The one-based pitch ID (1 to <see cref="MAX_PITCH_ENTRIES"/> - 1),
-    /// as returned by <see cref="CreatePitch"/> or by a query. Resolved as <c>_array[pitchId - 1]</c>.</param>
+    /// <param name="pitchId">The pitch ID</param>
     /// <param name="entry">
     /// On success, a <see cref="NativePointer{GamePitchDescriptor}"/> wrapping the entry; otherwise an invalid pointer.
     /// </param>
@@ -217,7 +210,7 @@ public unsafe sealed class GamePitchManagerAPI
     /// <returns>A <see cref="GameStructQuery{GamePitchDescriptor}"/> to chain predicates onto.</returns>
     public GameStructQuery<GamePitchDescriptor> QueryPitch()
     {
-        return new GameStructQuery<GamePitchDescriptor>(_pitchArray._array, _pitchArray.Length);
+        return new GameStructQuery<GamePitchDescriptor>(_pitchArray._array + 1, _pitchArray.Length - 1);
     }
 
     /// <summary>

@@ -246,7 +246,7 @@ public unsafe static class UserMenuRenderer
             Row("TribeManager", ((UInt64)GameTribeManagerAPI.Instance.GetTribeManager().Pointer).ToString("X16"));
             Row("VegetationManager", ((UInt64)GameVegetationManagerAPI.Instance.GetVegetationManager().Pointer).ToString("X16"));
             Row("UnitManager", ((UInt64)GameUnitManagerAPI.Instance.GetUnitManager().Pointer).ToString("X16"));
-            Row("ProjectileManager", ((UInt64)GameProjectileManagerAPI.Instance.GetProjectileManager().Pointer).ToString("X16"));
+            Row("ProjectileManager", ((UInt64)GameProjectileManagerAPI.Instance.GetProjectilesArray().GetArrayAddress()).ToString("X16"));
             Row("CursorManager", ((UInt64)GamePlayerManagerAPI.Instance.GetCursorManager().Pointer).ToString("X16"));
             Row("TileManager", GameTileManagerAPI.Instance.GetTileManager().ToString("X16"));
             Row("PitchManager", GamePitchManagerAPI.Instance.GetPitchArray().GetArrayAddress().ToString("X16"));
@@ -254,6 +254,7 @@ public unsafe static class UserMenuRenderer
             Row("PathConnectionsManager", GamePathingManagerAPI.Instance.GetPathConnectionArray().GetArrayAddress().ToString("X16"));
             Row("ChoreManager", GameGlobalsManager.Instance.ChoreManagerVA.ToString("X16"));
             Row("PathingManager", GameGlobalsManager.Instance.PathfindingContextVA.ToString("X16"));
+            Row("AIVSystem", GameGlobalsManager.Instance.AIVSystemVA.ToString("X16"));
 
             ImGui.EndTable();
         }

@@ -31,15 +31,11 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 internal unsafe class BulkUnitDetours
 {
-    private HookTransaction? tx;
-
-    public BulkUnitDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkUnitDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
 
-        DataScanner scanner = DataScanner.Create(memory, currentImageBase);
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
         ContextHookOptions volatileRegs = new();
 
         tx.AddDetour(c_game_unit_takedamage_melee_hook,
@@ -1040,7 +1036,7 @@ internal unsafe class BulkUnitDetours
                 asm.X64FastcallSafe((UInt64)Marshal.GetFunctionPointerForDelegate(static (UInt64 rcx) =>
                 {
                     int buildingId = (int)rcx;
-                    LogHelper.Information($"buildingId={buildingId}");
+                    //LogHelper.Verbose($"buildingId={buildingId}");
                     if (!GameBuildingManagerAPI.Instance.IsValid(buildingId))
                     {
                         return false;
@@ -1074,7 +1070,7 @@ internal unsafe class BulkUnitDetours
                 asm.X64FastcallSafe((UInt64)Marshal.GetFunctionPointerForDelegate(static (UInt64 rcx) =>
                 {
                     int buildingId = (int)rcx;
-                    LogHelper.Information($"buildingId={buildingId}");
+                    //LogHelper.Verbose($"buildingId={buildingId}");
                     if (!GameBuildingManagerAPI.Instance.IsValid(buildingId))
                     {
                         return false;
@@ -1098,7 +1094,6 @@ internal unsafe class BulkUnitDetours
             }
         );
 
-        tx.Commit();
     }
 
     internal static HookHandle<X64InlineHook> c_game_unit_fsm_arabslave_attack_capability_wall3 = new();

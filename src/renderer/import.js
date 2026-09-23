@@ -53,6 +53,11 @@ function render() {
     version.className = "candidate-version"; version.textContent = `v${item.version}`;
     const description = document.createElement("div");
     description.className = "candidate-description"; description.textContent = item.description;
+    if (item.updateReason === "content-changed") {
+      description.textContent = `${t("contentChanged")} — ${item.description}`;
+      row.title = `${t("contentChanged")}\n${row.title}`;
+      checkbox.setAttribute("aria-label", `${item.name} v${item.version}: ${t("contentChanged")}`);
+    }
     const source = document.createElement("div");
     source.className = "candidate-source";
     if (updatesOnly) {

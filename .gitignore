@@ -9,4 +9,9 @@ manager-data/
 .env.*
 *.pfx
 *.pem
+diagnostics/
+backups/
+third_party/
+release/bundled-se-build-*/
+*.dmp
 

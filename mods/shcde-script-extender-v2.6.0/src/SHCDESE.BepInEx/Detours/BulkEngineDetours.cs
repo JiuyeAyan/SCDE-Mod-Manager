@@ -16,14 +16,11 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 public unsafe class BulkEngineDetours
 {
-    private HookTransaction? tx;
-    public BulkEngineDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkEngineDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         DataScanner c_game_memset_wrapper_scan = scanner.Scan(CompiledPattern.Parse("4C 63 D2 41 0F B6 C0"));
         if (c_game_memset_wrapper_scan.Found)

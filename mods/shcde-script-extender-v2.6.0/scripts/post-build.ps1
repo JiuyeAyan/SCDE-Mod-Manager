@@ -89,6 +89,7 @@ $managedFilesToCopy = @(
 	"netstandard.dll",
 	"System.Xml.Linq.dll",
 	"NVorbis.dll",
+    "Pfim.dll",
 	"Zhuqiaomon.dll", "Zhuqiaomon.pdb",
     "RedBird.Abstractions.dll", "RedBird.Abstractions.pdb",
     "RedBird.Backends.NativeX64.dll", "RedBird.Backends.NativeX64.pdb",

@@ -28,10 +28,21 @@ function compareVersions(first, second) {
 }
 
 function findWorkshopUpdates(installed, candidates, excludedIds = new Set()) {
-  const versions = new Map(installed.map((mod) => [mod.id, mod.version]));
-  return candidates.filter((item) => !excludedIds.has(item.id) && versions.has(item.id) &&
-    compareVersions(item.version, versions.get(item.id)) === 1)
-    .map((item) => ({ ...item, installedVersion: versions.get(item.id), source: "workshop" }));
+  const installedById = new Map(installed.map((mod) => [mod.id, mod]));
+  const updates = [];
+  for (const item of candidates) {
+    const current = installedById.get(item.id);
+    if (excludedIds.has(item.id) || !current) continue;
+    const comparison = compareVersions(item.version, current.version);
+    const sameVersion = item.version === current.version || comparison === 0;
+    const changedContent = sameVersion && /^[a-f0-9]{64}$/i.test(current.packageSha256 || "") &&
+      /^[a-f0-9]{64}$/i.test(item.packageSha256 || "") && current.packageSha256.toLowerCase() !== item.packageSha256.toLowerCase();
+    if (comparison === 1 || changedContent) {
+      updates.push({ ...item, installedVersion: current.version, source: "workshop",
+        updateReason: changedContent ? "content-changed" : "newer-version" });
+    }
+  }
+  return updates;
 }
 
 module.exports = { compareVersions, findWorkshopUpdates };

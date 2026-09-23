@@ -40,7 +40,9 @@ async function startup({ primary = true, fail = false, language = "zh-CN", respo
     async initialize() {}
     async restoreGameSession() {}
     async initializeLanguage() { return "zh-CN"; }
-    async ensureSystemMods() {
+    async ensureSystemMods(deployStage, tolerateSEVersionMismatch) {
+      assert.equal(deployStage, false, "opening the manager must never create or rebuild the game copy");
+      assert.equal(tolerateSEVersionMismatch, true);
       await initialized;
       if (fail) throw Object.assign(new Error("TEST_COMPONENT_UPGRADE_FAILED"), { code: "EPERM" });
     }
@@ -56,6 +58,7 @@ async function startup({ primary = true, fail = false, language = "zh-CN", respo
     require(name) {
       if (name === "electron") return electron;
       if (name === "node:path") return path;
+      if (name === "node:fs") return { readFileSync: () => JSON.stringify({ version: "2.8.0+scdemm.1" }) };
       if (name === "node:fs/promises") return fakeFs;
       if (name === "./core/manager") return { ModManager: Manager };
       if (name === "./core/se-core-updater") return { SECoreUpdater: class { async initialize() {} } };
@@ -160,7 +163,8 @@ test("a blocked system-component upgrade preserves the installed version and err
     systemPackages: [{ id: "test-component", version: "2.0.0", packagePath }],
   });
   await manager.initialize();
-  await manager.installPackages([packagePath]);
+  // Simulate a component already installed by an earlier trusted manager build.
+  await require("../src/core/mod-package").installModPackage(packagePath, manager.modsRoot);
   await writePackage("2.0.0");
   const target = path.join(manager.modsRoot, "test-component");
   const rename = fs.rename;

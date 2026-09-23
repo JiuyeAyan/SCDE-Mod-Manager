@@ -6,7 +6,7 @@
   
   **`SHCDE-SE` is a Script Extender for [Stronghold Crusader: Definitive Edition](https://store.steampowered.com/app/3024040/Stronghold_Crusader_Definitive_Edition/)**
 
-  [🇬🇧 English](README.md) | [🇩🇪 Deutsch](README_DE.md) | [🇷🇺 Русский](README_RU.md) | [🇵🇱 Polski](README_PL.md)
+  [🇬🇧 English](README.md) | [🇩🇪 Deutsch](docs/README_DE.md) | [🇷🇺 Русский](docs/README_RU.md) | [🇵🇱 Polski](docs/README_PL.md)
 
   <br/>
 
@@ -75,7 +75,7 @@ If you're still keen on bugfixes, check out the **[shcde-fixes](https://gitlab.c
     - [x] Date API
     - [x] Timer API
   - [x] **[Trigger API](docs/guides/triggers-system.md)**
-  - [x] **[Translation API](docs/guides/translate-api)**
+  - [x] **[Translation API](docs/guides/translate-api.md)**
   - [x] **[Sound API](docs/guides/sound-api.md)**
   - [x] **[Save API](docs/guides/save-data-api.md)**
   - [x] **[Metadata API](docs/guides/metadata-system.md)**
@@ -93,7 +93,7 @@ If you're still keen on bugfixes, check out the **[shcde-fixes](https://gitlab.c
     - [x] **[Tile-Inspector and Editor](docs/guides/map-editor-extensions.md#tile-inspectoreditor)**
 - [x] High-level Assembler and Detouring toolkit
   - [x] **[Iced](https://github.com/icedland/iced/tree/master)** as the primary Assembler/Disassembler engine.
-  - [x] **[RedBird.NET](gitlab.com/Rawra/redbird)** as the primary native manipulation library (detouring, raw-asm, etc)
+  - [x] **[RedBird.NET](https://gitlab.com/Rawra/redbird)** as the primary native manipulation library (detouring, raw-asm, etc)
 - [x]  [Dear ImGUI](https://github.com/ocornut/imgui) API via [UU-ImGUI](https://gitlab.com/rawra-rain-world-mods/rain-world-imgui-api)
 - [x] Reverse Engineering Databases
   - [x]   [ReClass.NET](https://github.com/ReClassNET/ReClass.NET) Project

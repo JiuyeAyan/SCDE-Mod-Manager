@@ -69,3 +69,20 @@ test("unconfirmed startup releases its polling timer without claiming success", 
   await progress.poll();
   assert.equal(progress.phase, "unconfirmed"); assert.equal(progress.stopped, true);
 });
+
+test("current startup failure stops progress without accepting old failure or later ready", async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "scde-progress-failure-"));
+  const progress = new LaunchProgress(() => {});
+  t.after(async () => { progress.stop(); await fs.rm(root, { recursive: true, force: true }); });
+  await fs.mkdir(path.join(root, "_scde_manager"));
+  await fs.writeFile(path.join(root, "_scde_manager/startup-failed.txt"), "previous\nOld failure");
+  await progress.watch(root, "current"); clearTimeout(progress.timer);
+  await progress.poll(); clearTimeout(progress.timer);
+  assert.equal(progress.phase, "runtime");
+  await fs.writeFile(path.join(root, "_scde_manager/startup-failed.txt"), "current\nUnsupported patch target");
+  await fs.writeFile(path.join(root, "_scde_manager/startup-ready.txt"), "current");
+  await progress.poll();
+  assert.equal(progress.phase, "failed");
+  assert.equal(progress.detail, "Unsupported patch target");
+  assert.equal(progress.stopped, true);
+});

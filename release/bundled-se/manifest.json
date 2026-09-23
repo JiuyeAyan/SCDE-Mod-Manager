@@ -1,0 +1,13 @@
+{
+  "id": "shcde-script-extender",
+  "name": "Script Extender",
+  "version": "2.8.0+scdemm.1",
+  "author": "Rawra",
+  "description": "SHCDE Script Extender with the manager-mode update guard. Upstream compatibility has not been runtime-verified.",
+  "dependencies": [
+    {
+      "id": "bepinex-runtime",
+      "version": "5.4.23.5"
+    }
+  ]
+}

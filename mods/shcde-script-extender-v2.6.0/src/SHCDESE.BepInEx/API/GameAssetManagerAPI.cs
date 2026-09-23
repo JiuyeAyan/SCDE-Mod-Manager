@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using SHCDESE.API.Components.Archive;
 using SHCDESE.API.Components.Assets;
+using SHCDESE.API.Components.ModManager;
 using SHCDESE.API.Components.Sprite;
 using SHCDESE.Extensions;
 using SHCDESE.Logging;
@@ -41,6 +42,12 @@ public sealed class GameAssetManagerAPI
     internal const string LOCALE_FOLDER_PREFIX = "Locales";
 
     internal const string DEFAULT_LOCALE = "en-US";
+
+    /// <summary>
+    /// Prefix for provider-qualified paths. It is deliberately path-like so game code may prepend its own
+    /// StreamingAssets folders without losing the mod identity.
+    /// </summary>
+    internal const string MOD_ASSET_REFERENCE_PREFIX = "_SE_LOCAL_ASSET_/";
 
     // Public overlay: normalized game path -> the last provider that supplied it.
     private readonly Dictionary<string, IndexedModResource> _fileIndex = new(StringComparer.OrdinalIgnoreCase);
@@ -168,7 +175,7 @@ public sealed class GameAssetManagerAPI
     /// <summary>
     /// Indexes a complete mod source once and derives public overrides, private resources, patches, atlases, and sparse sprite overrides from that pass.
     /// </summary>
-    internal bool RegisterModProvider(string guid, IModResourceSource source)
+    internal bool RegisterModProvider(string guid, IModResourceSource source, ModAssetMode assetMode)
     {
         if (!_registeredDirectories.Add(source.ContainerPath))
         {
@@ -178,15 +185,16 @@ public sealed class GameAssetManagerAPI
 
         Stopwatch stopwatch = Stopwatch.StartNew();
         int fileCount = 0;
-        List<string> atlasDefinitions = new();
+        List<string> atlasDefinitions = [];
         Dictionary<string, IndexedModResource> modFiles = new(StringComparer.OrdinalIgnoreCase);
 
         try
         {
             foreach (string relativePath in source.EnumerateFiles())
             {
-                IndexedModResource resource = new IndexedModResource(guid, relativePath, source);
+                IndexedModResource resource = new(guid, relativePath, source);
                 modFiles[relativePath] = resource;
+                LogHelper.Verbose($"Indexed: [{relativePath}]");
                 fileCount++;
             }
 
@@ -197,17 +205,18 @@ public sealed class GameAssetManagerAPI
                 const string overridePrefix = DEFAULT_OVERRIDE_RELATIVE_PATH + "/";
                 if (relativePath.StartsWith(overridePrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    IndexOverride(relativePath.Substring(overridePrefix.Length), resource, atlasDefinitions);
+                    if (assetMode == ModAssetMode.Global)
+                        IndexOverride(relativePath[overridePrefix.Length..], resource, atlasDefinitions);
                     continue;
                 }
 
                 const string patchPrefix = GameXAMLManagerAPI.DEFAULT_XAML_PATCH_RELATIVE_PATH + "/";
                 if (relativePath.StartsWith(patchPrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    string targetPath = relativePath.Substring(patchPrefix.Length);
+                    string targetPath = relativePath[patchPrefix.Length..];
                     if (!_patchIndex.TryGetValue(targetPath, out List<IndexedModResource>? patches))
                     {
-                        patches = new List<IndexedModResource>();
+                        patches = [];
                         _patchIndex[targetPath] = patches;
                     }
                     patches.Add(resource);
@@ -218,7 +227,7 @@ public sealed class GameAssetManagerAPI
             _sources.Add(source);
             DiscoverAtlasOverrides(atlasDefinitions, source.DisplayName);
             stopwatch.Stop();
-            LogHelper.Information($"Indexed {fileCount} files for [{guid}] from [{source.DisplayName}] in {stopwatch.ElapsedMilliseconds} ms.");
+            LogHelper.Information($"Indexed {fileCount} files for [{guid}] in [{assetMode}] asset mode from [{source.DisplayName}] in {stopwatch.ElapsedMilliseconds} ms.");
             return true;
         }
         catch (Exception ex)
@@ -240,7 +249,7 @@ public sealed class GameAssetManagerAPI
 
         Stopwatch stopwatch = Stopwatch.StartNew();
         int fileCount = 0;
-        List<string> atlasDefinitions = new();
+        List<string> atlasDefinitions = [];
         try
         {
             foreach (string relativePath in source.EnumerateFiles())
@@ -265,6 +274,7 @@ public sealed class GameAssetManagerAPI
     private void IndexOverride(string relativePath, IndexedModResource resource, List<string> atlasDefinitions)
     {
         _fileIndex[relativePath] = resource;
+        LogHelper.Verbose($"IndexOverride: [{relativePath}]");
 
         const string spritePrefix = "Sprites/";
         if (relativePath.StartsWith(spritePrefix, StringComparison.OrdinalIgnoreCase) && relativePath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
@@ -304,7 +314,7 @@ public sealed class GameAssetManagerAPI
             });
 
             JsonElement root = document.RootElement;
-            if (root.ValueKind != JsonValueKind.Object || 
+            if (root.ValueKind != JsonValueKind.Object ||
                 !TryGetPropertyIgnoreCase(root, "material", out JsonElement value) ||
                 value.ValueKind != JsonValueKind.String ||
                 !SpriteMaterialModeParser.TryParse(value.GetString(), out mode))
@@ -426,6 +436,89 @@ public sealed class GameAssetManagerAPI
             && files.TryGetValue(normalized, out resource);
     }
 
+    /// <summary>
+    /// Creates an opaque asset reference that preserves the owning mod GUID as the path moves through game code.
+    /// </summary>
+    internal static string CreateModAssetReference(string guid, string relativePath)
+    {
+        if (string.IsNullOrWhiteSpace(guid))
+            throw new ArgumentException("A mod GUID is required.", nameof(guid));
+        if (!ModResourcePath.TryNormalize(relativePath, out string normalizedPath))
+            throw new ArgumentException("A safe relative mod asset path is required.", nameof(relativePath));
+
+        return MOD_ASSET_REFERENCE_PREFIX + Uri.EscapeDataString(guid) + "/" + normalizedPath;
+    }
+
+    private static bool TryParseModAssetReference(string value, out string guid, out string relativePath)
+    {
+        guid = string.Empty;
+        relativePath = string.Empty;
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        string normalized = value.Replace('\\', '/');
+        int markerIndex = normalized.IndexOf(MOD_ASSET_REFERENCE_PREFIX, StringComparison.OrdinalIgnoreCase);
+        if (markerIndex < 0)
+            return false;
+
+        int guidStart = markerIndex + MOD_ASSET_REFERENCE_PREFIX.Length;
+        int pathStart = normalized.IndexOf('/', guidStart);
+        if (pathStart <= guidStart || pathStart == normalized.Length - 1)
+            return false;
+
+        try
+        {
+            guid = Uri.UnescapeDataString(normalized.Substring(guidStart, pathStart - guidStart));
+        }
+        catch (UriFormatException)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(guid) || !ModResourcePath.TryNormalize(normalized.Substring(pathStart + 1), out relativePath))
+        {
+            guid = string.Empty;
+            relativePath = string.Empty;
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Resolves a path inside one provider. Paths are interpreted relative to <c>Override/</c>, while an explicit
+    /// <c>Override/</c> prefix and other mod-root paths are also accepted.
+    /// </summary>
+    private bool TryGetModAssetResource(string guid, string relativePath, [NotNullWhen(true)] out IndexedModResource? resource)
+    {
+        resource = null;
+        if (!ModResourcePath.TryNormalize(relativePath, out string normalized))
+            return false;
+
+        const string overridePrefix = DEFAULT_OVERRIDE_RELATIVE_PATH + "/";
+        string overrideRelative = normalized.StartsWith(overridePrefix, StringComparison.OrdinalIgnoreCase)
+            ? normalized.Substring(overridePrefix.Length)
+            : normalized;
+
+        if (!string.IsNullOrEmpty(CurrentLanguage) &&
+            TryGetModResource(guid, $"{DEFAULT_OVERRIDE_RELATIVE_PATH}/{LOCALE_FOLDER_PREFIX}/{CurrentLanguage}/{overrideRelative}", out resource))
+        {
+            return true;
+        }
+
+        if (!string.Equals(CurrentLanguage, DEFAULT_LOCALE, StringComparison.OrdinalIgnoreCase) &&
+            TryGetModResource(guid, $"{DEFAULT_OVERRIDE_RELATIVE_PATH}/{LOCALE_FOLDER_PREFIX}/{DEFAULT_LOCALE}/{overrideRelative}", out resource))
+        {
+            return true;
+        }
+
+        if (TryGetModResource(guid, DEFAULT_OVERRIDE_RELATIVE_PATH + "/" + overrideRelative, out resource))
+            return true;
+
+        // Also permit explicit paths to files outside Override, such as another future provider root.
+        return TryGetModResource(guid, normalized, out resource);
+    }
+
     // ---------------------------------------------------------------------------------------
     // TEXTURE HANDLING
     // ---------------------------------------------------------------------------------------
@@ -435,7 +528,7 @@ public sealed class GameAssetManagerAPI
     /// </summary>
     /// <remarks>
     /// Checks the memory cache first. If the texture is not cached, it attempts to resolve the path
-    /// via the File Index (checking for <c>.png</c>, <c>.jpg</c>, <c>.tga</c> if no extension is provided).
+    /// via the File Index (checking for <c>.png</c>, <c>.jpg</c>, <c>.tga</c>, <c>.dds</c> if no extension is provided).
     /// </remarks>
     /// <param name="relativePath">The relative URI or path of the texture (e.g., <c>Assets/GUI/image.png</c>).</param>
     /// <param name="texture">The loaded Texture2D if found; otherwise, <c>null</c>.</param>
@@ -478,6 +571,22 @@ public sealed class GameAssetManagerAPI
 
     private bool TryResolveTextureResource(string key, [NotNullWhen(true)] out IndexedModResource? resource)
     {
+        if (TryParseModAssetReference(key, out string guid, out string localPath))
+        {
+            if (TryGetModAssetResource(guid, localPath, out resource)) return true;
+
+            if (!Path.HasExtension(localPath))
+            {
+                if (TryGetModAssetResource(guid, localPath + ".png", out resource)) return true;
+                if (TryGetModAssetResource(guid, localPath + ".jpg", out resource)) return true;
+                if (TryGetModAssetResource(guid, localPath + ".tga", out resource)) return true;
+                if (TryGetModAssetResource(guid, localPath + ".dds", out resource)) return true;
+            }
+
+            resource = null;
+            return false;
+        }
+
         if (_fileIndex.TryGetValue(key, out resource)) return true;
         if (GetLocalizedResource(key, out resource)) return true;
 
@@ -487,6 +596,7 @@ public sealed class GameAssetManagerAPI
             if (GetLocalizedResource(key + ".png", out resource)) return true;
             if (GetLocalizedResource(key + ".jpg", out resource)) return true;
             if (GetLocalizedResource(key + ".tga", out resource)) return true;
+            if (GetLocalizedResource(key + ".dds", out resource)) return true;
         }
         resource = null;
         return false;
@@ -527,13 +637,15 @@ public sealed class GameAssetManagerAPI
                 string atlasTextureKey = atlasPrefix + gmFileName + "/atlas.png";
                 string maskTextureKey = atlasPrefix + gmFileName + "/atlas_m.png";
 
-                if (!_fileIndex.TryGetValue(atlasTextureKey, out IndexedModResource? atlasTexture))
+                if (!_fileIndex.TryGetValue(atlasTextureKey, out IndexedModResource? atlasTexture) &&
+                    !_fileIndex.TryGetValue(Path.ChangeExtension(atlasTextureKey, ".dds"), out atlasTexture))
                 {
-                    LogHelper.Warning($"Found atlas.json for [{gmFileName}] but no atlas.png at [{atlasTextureKey}]. Skipping.");
+                    LogHelper.Warning($"Found atlas.json for [{gmFileName}] but no atlas.png/atlas.dds at [{atlasTextureKey}]. Skipping.");
                     continue;
                 }
 
-                _fileIndex.TryGetValue(maskTextureKey, out IndexedModResource? maskTexture);
+                if (!_fileIndex.TryGetValue(maskTextureKey, out IndexedModResource? maskTexture))
+                    _fileIndex.TryGetValue(Path.ChangeExtension(maskTextureKey, ".dds"), out maskTexture);
 
                 if (!_fileIndex.TryGetValue(relativeKey, out IndexedModResource? jsonResource))
                     continue;
@@ -575,6 +687,23 @@ public sealed class GameAssetManagerAPI
     {
         LogHelper.Debug($"Trying to resolve video path: [{relativePath}]");
         string normalizedKey = relativePath.Replace('\\', '/');
+
+        if (TryParseModAssetReference(normalizedKey, out string guid, out string localPath))
+        {
+            if (TryGetModAssetResource(guid, localPath, out IndexedModResource? localExact)
+                && localExact.TryGetPhysicalPath(out absolutePath)) return true;
+
+            string localPathWithoutExt = Path.ChangeExtension(localPath, null);
+            string[] localSupportedExtensions = [".webm", ".mp4"];
+            foreach (string ext in localSupportedExtensions)
+            {
+                if (TryGetModAssetResource(guid, localPathWithoutExt + ext, out IndexedModResource? localReplacement)
+                    && localReplacement.TryGetPhysicalPath(out absolutePath)) return true;
+            }
+
+            absolutePath = string.Empty;
+            return false;
+        }
 
         // Try Exact Match
         if (_fileIndex.TryGetValue(normalizedKey, out IndexedModResource? exact)
@@ -681,6 +810,18 @@ public sealed class GameAssetManagerAPI
         LogHelper.Debug($"Trying to resolve audio: [{relativePath}]");
         string normalizedKey = relativePath.Replace('\\', '/');
 
+        if (TryParseModAssetReference(normalizedKey, out string guid, out string localPath))
+        {
+            if (TryGetModAssetResource(guid, localPath, out resource)) return true;
+
+            string localPathWithoutExt = Path.ChangeExtension(localPath, null);
+            if (TryGetModAssetResource(guid, localPathWithoutExt + ".ogg", out resource)) return true;
+            if (TryGetModAssetResource(guid, localPathWithoutExt + ".wav", out resource)) return true;
+
+            resource = null;
+            return false;
+        }
+
         if (GetLocalizedResource(normalizedKey, out resource)) return true;
 
         string pathWithoutExt = Path.ChangeExtension(normalizedKey, null);
@@ -768,13 +909,18 @@ public sealed class GameAssetManagerAPI
         // Normalize separators
         string normalized = fullPath.Replace('\\', '/');
 
+        // Provider-qualified paths may already have game folders prepended. Preserve the marker and everything after it.
+        int providerReferenceIndex = normalized.IndexOf(MOD_ASSET_REFERENCE_PREFIX, StringComparison.OrdinalIgnoreCase);
+        if (providerReferenceIndex >= 0)
+            return normalized.Substring(providerReferenceIndex).TrimStart('/');
+
         // List of prefixes to strip, in order of priority
         string[] prefixesToStrip =
         [
             "StreamingAssets/EnglishSpeech/_SE_/",  // Special case
             "StreamingAssets/EnglishSpeech/",       // English speech folder
             "Assets/GUI/Speech/",                   // Non-English speech folder
-            "StreamingAssets/Music/",               // Music folder
+            //"StreamingAssets/Music/",               // Music folder
             "StreamingAssets/"                      // Generic StreamingAssets
         ];
 

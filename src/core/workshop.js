@@ -1,9 +1,13 @@
 const fs = require("node:fs/promises");
+const nativeFs = require("node:fs");
+const crypto = require("node:crypto");
 const path = require("node:path");
 const yauzl = require("yauzl");
 const { GAME_APP_ID } = require("./constants");
 const { validateManifest } = require("./mod-package");
 const { readSEPackageMetadata } = require("./se-package");
+const { normalizePackageSha256 } = require("./manifest-contract");
+const { compareVersions } = require("./workshop-updates");
 
 // A manifest is metadata, not game content. Bound decompression of untrusted listings.
 const MAX_MANIFEST_BYTES = 256 * 1024;
@@ -41,6 +45,8 @@ async function readPackageMetadata(filePath, signal) {
       stream = null;
     }
     if (!manifest || !payload) throw new Error("Missing manifest.json or payload files");
+    // Only a digest of the actual archive is usable, never one claimed inside it.
+    delete manifest.packageSha256;
     return { ...manifest, path: filePath };
   } finally {
     signal?.removeEventListener("abort", abort);
@@ -49,7 +55,8 @@ async function readPackageMetadata(filePath, signal) {
   }
 }
 
-async function scanWorkshop(libraries, { signal, onItem = () => {} } = {}) {
+async function scanWorkshop(libraries, { signal, onItem = () => {}, installedMods = [], excludedIds = new Set() } = {}) {
+  const installedById = new Map(installedMods.map(mod => [mod.id, mod]));
   const roots = [...new Map(libraries.map((library) => {
     const root = path.resolve(library, "steamapps", "workshop", "content", GAME_APP_ID);
     return [root.toLowerCase(), root];
@@ -76,6 +83,15 @@ async function scanWorkshop(libraries, { signal, onItem = () => {} } = {}) {
           const item = await readPackageMetadata(target, signal);
           signal?.throwIfAborted();
           if (!item) continue; // Ordinary maps are not installable global SE Mods.
+          const installed = installedById.get(item.id);
+          if (path.extname(target).toLowerCase() === ".scdemod" && installed && !excludedIds.has(item.id) &&
+              normalizePackageSha256(installed.packageSha256) &&
+              (item.version === installed.version || compareVersions(item.version, installed.version) === 0)) {
+            const hash = crypto.createHash("sha256");
+            for await (const chunk of nativeFs.createReadStream(target, { signal })) hash.update(chunk);
+            signal?.throwIfAborted();
+            item.packageSha256 = hash.digest("hex");
+          }
           onItem(item);
           count++;
         } catch (error) {

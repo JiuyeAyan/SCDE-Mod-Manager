@@ -88,6 +88,14 @@ async function prepareSE(update, folder, options) {
   const sha256 = await downloadSE(update, archive, options);
   const payload = path.join(folder, "payload");
   await extractSE(archive, payload, options.signal);
+  const manifest = await prepareExtractedSE(update, folder, options, { source: update.downloadUrl, sha256 });
+  await fs.rm(archive);
+  return manifest;
+}
+
+// Also used by the release build for an explicitly supplied, already-downloaded distribution.
+async function prepareExtractedSE(update, folder, options, provenance) {
+  const payload = path.join(folder, "payload");
   const original = safeJoin(payload, CORE_DLL), patched = original + ".patched";
   try {
     await (options.execFile || promisify(execFile))(path.join(options.helperRoot, "EarlyManagedGuard.exe"), [
@@ -101,9 +109,9 @@ async function prepareSE(update, folder, options) {
     await fs.copyFile(path.join(options.helperRoot, name), path.join(notices, name));
   }
   await fs.writeFile(path.join(notices, "UPDATE.json"), JSON.stringify({
-    upstreamVersion: update.version, source: update.downloadUrl, sha256,
+    upstreamVersion: update.version, ...provenance,
     upstreamSource: `https://gitlab.com/rawra-stronghold-crusader/shcde-script-extender/-/tree/v${update.version}`,
-    compatibility: "Not runtime-verified. The manager-mode updater guard was structurally checked and applied to this copy only.",
+    compatibility: "Not runtime-verified. MMC reflected APIs, SE direct dependencies, shared-runtime API references and the manager-mode updater guard were structurally checked. The guard was applied to this copy only.",
   }, null, 2));
   const manifest = {
     id: "shcde-script-extender", name: "Script Extender", version: `${update.version}${update.version.includes("+") ? "." : "+"}scdemm.1`, author: "Rawra",
@@ -111,8 +119,7 @@ async function prepareSE(update, folder, options) {
     dependencies: [{ id: "bepinex-runtime", version: "5.4.23.5" }],
   };
   await fs.writeFile(path.join(folder, "manifest.json"), JSON.stringify(manifest, null, 2));
-  await fs.rm(archive);
   return manifest;
 }
 
-module.exports = { downloadSE, extractSE, prepareSE };
+module.exports = { downloadSE, extractSE, prepareSE, prepareExtractedSE };

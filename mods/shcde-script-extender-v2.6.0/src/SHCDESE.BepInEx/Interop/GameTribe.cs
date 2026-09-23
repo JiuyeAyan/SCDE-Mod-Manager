@@ -25,7 +25,8 @@ public struct GameTribe : IEquatable<GameTribe>
     public UInt16 N00000813; //0x0024
     public UInt16 N00000813_2; //0x0024
     public UInt32 N000004C1; //0x0028
-    [LuaExposed] public UInt32 r_TimeSinceLastOrder; //0x002C
+    [LuaExposed] public Int16 r_TimeSinceLastOrder; //0x002C
+    public UInt16 N00016150; // 0x002E
     [LuaExposed] public UInt16 r_LeaderUnitId; //0x0030
     [LuaExposed] public UInt16 r_UnitsInGroup; //0x0032
     public UInt16 r_UnitsInGroup2; //0x0034

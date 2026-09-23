@@ -19,14 +19,11 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 internal class BulkSoundDetours
 {
-    private HookTransaction? tx;
-    public BulkSoundDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkSoundDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         // c_game_soundmanager_play_sound: 48 89 5C 24 ?? 57 48 83 EC ?? 83 79
         DataScanner c_game_soundmanager_play_mono_sound_scan = scanner.Scan(CompiledPattern.Parse("48 89 5C 24 ?? 57 48 83 EC ?? 83 79"));
@@ -40,7 +37,6 @@ internal class BulkSoundDetours
             HookTarget.FromRelativeCall("E8 ? ? ? ? E9 ? ? ? ? 44 8B C1"),
             c_game_soundmanager_play_speech_sound_hook_impl);
 
-        tx.Commit();
     }
 
     //

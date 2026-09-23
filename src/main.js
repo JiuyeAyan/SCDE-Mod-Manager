@@ -55,15 +55,15 @@ function getSystemPackages() {
     },
     {
       id: "shcde-script-extender",
-      version: "2.6.0+scdemm.1",
-      packagePath: path.join(packageRoot, "shcde-script-extender-2.6.0+scdemm.1.scdemod"),
+      version: JSON.parse(require("node:fs").readFileSync(path.join(packageRoot, "bundled-se/manifest.json"), "utf8")).version,
+      packagePath: path.join(packageRoot, "bundled-se/shcde-script-extender.scdemod"),
     },
     {
       id: "scde-multiplayer-compatibility",
-      version: "0.3.1",
+      version: "0.4.0",
       packagePath: path.join(
         packageRoot,
-        "scde-multiplayer-compatibility-0.3.1.scdemod"
+        "scde-multiplayer-compatibility-0.4.0.scdemod"
       ),
     },
   ];
@@ -199,7 +199,8 @@ app.whenReady().then(async () => {
     await manager.restoreGameSession();
     startupLanguage = await manager.initializeLanguage(app.getLocale());
     startupLocalization = await manager.getLocalization();
-    await manager.ensureSystemMods(true, true);
+    // Install manager-owned components only. Game-copy preparation belongs to Launch.
+    await manager.ensureSystemMods(false, true);
   })();
   registerHandlers();
   createWindow();

@@ -148,10 +148,15 @@ internal sealed class MapModManager
             if (string.IsNullOrEmpty(workshopMapPath))
                 continue;
 
-            if (MapArchive.TryLoad(workshopMapPath, out MapArchive? archive) && (archive.Info?.Manifest == ModManifest.BepInEx || archive.Info?.Manifest == ModManifest.Asset))
+            if (!MapArchive.TryLoad(workshopMapPath, out MapArchive? archive))
+                continue;
+
+            using (archive)
             {
-                if (TryStageModUpdate(workshopMapPath, archive))
+                if ((archive.Info?.Manifest == ModManifest.BepInEx || archive.Info?.Manifest == ModManifest.Asset) && TryStageModUpdate(workshopMapPath, archive))
+                {
                     stateChanged = true;
+                }
             }
         }
 

@@ -27,9 +27,8 @@ public unsafe sealed class GameProjectileManagerAPI
     private static readonly Lazy<GameProjectileManagerAPI> _lazy = new(() => new GameProjectileManagerAPI());
     public static GameProjectileManagerAPI Instance => _lazy.Value;
 
-    internal const int NUM_PREALLOC_PROJECTILES = 10000; // TODO: Whats the real prealloc count?
+    internal const int NUM_PREALLOC_PROJECTILES = 6000;
 
-    internal GameProjectileManager* _projectileManager;
     private SimpleNativeArray<GameProjectile> _projectileArray;
 
     /// <summary>
@@ -38,21 +37,9 @@ public unsafe sealed class GameProjectileManagerAPI
     /// </summary>
     private GameProjectileManagerAPI()
     {
-        _projectileManager = (GameProjectileManager*)GameGlobalsManager.Instance.GameProjectilesManagerVA;
-        _projectileArray = new SimpleNativeArray<GameProjectile>((byte*)&_projectileManager->ProjectilesArray, NUM_PREALLOC_PROJECTILES);
+        _projectileArray = new SimpleNativeArray<GameProjectile>((byte*)GameGlobalsManager.Instance.GameProjectilesManagerVA, NUM_PREALLOC_PROJECTILES);
 
-        LogHelper.Information($"_projectileManager: {new IntPtr(_projectileManager).ToString("X16")}");
-        LogHelper.Information($"_projectileArray: {new IntPtr(&_projectileManager->ProjectilesArray).ToString("X16")}");
-    }
-
-    /// <summary>
-    /// Gets a native pointer to the current game projectile manager instance.
-    /// </summary>
-    /// <returns>A <see cref="NativePointer{GameProjectileManager}"/> representing the game projectile manager.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public NativePointer<GameProjectileManager> GetProjectileManager()
-    {
-        return _projectileManager;
+        LogHelper.Information($"_projectileArray: {GameGlobalsManager.Instance.GameProjectilesManagerVA.ToString("X16")}");
     }
 
     /// <summary>
@@ -93,7 +80,7 @@ public unsafe sealed class GameProjectileManagerAPI
         if (_projectileArray._array == null)
             return false;
 
-        projectile = &_projectileArray._array[projectileId - 1];
+        projectile = &_projectileArray._array[projectileId];
         return true;
     }
 
@@ -129,15 +116,15 @@ public unsafe sealed class GameProjectileManagerAPI
     /// </example>
     [LuaApiExport("Create")]
     public Int64 CreateProjectile(
-        int sourceUnitId, int sourcePlayerId, 
+        int sourceUnitId, int sourcePlayerId,
         int sourceWorldTileX, int sourceWorldTileY, int sourceElevation,
         int targetWorldTileX, int targetWorldTileY, int targetElevation,
-        ProjectileType projectileType, 
+        ProjectileType projectileType,
         int targetUnitId)
     {
         LogHelper.Debug($"Creating projectile: srcUnitId={sourceUnitId}, srcPlayerId={sourcePlayerId}, src=({sourceWorldTileX}, {sourceWorldTileY}, {sourceElevation}), dest=({targetWorldTileX}, {targetWorldTileY}, {targetElevation}), projectileType={projectileType}, targetUnitId={targetUnitId}");
 
-        return BulkProjectileDetours.c_game_projectile_spawn_hook_impl(_projectileManager, sourceUnitId, (Int16)sourcePlayerId, sourcePlayerId,
+        return BulkProjectileDetours.c_game_projectile_spawn_hook_impl(_projectileArray._array, sourceUnitId, (Int16)sourcePlayerId, sourcePlayerId,
             sourceWorldTileX, sourceWorldTileY, sourceElevation,
             targetWorldTileX, targetWorldTileY, targetElevation,
             projectileType, targetUnitId);
@@ -185,7 +172,7 @@ public unsafe sealed class GameProjectileManagerAPI
             LogHelper.Warning($"Tried to delete invalid entity: {projectileId}");
             return;
         }
-        BulkProjectileDetours.c_game_projectile_delete_hook_impl(_projectileManager, projectileId);
+        BulkProjectileDetours.c_game_projectile_delete_hook_impl(_projectileArray._array, projectileId);
     }
 
     /// <summary>
@@ -264,7 +251,7 @@ public unsafe sealed class GameProjectileManagerAPI
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsValidId(int projectileId)
     {
-        if (projectileId <= 0 || projectileId > _projectileArray.Length)
+        if (projectileId <= 0 || projectileId >= _projectileArray.Length)
             return false;
 
         return true;
@@ -277,7 +264,7 @@ public unsafe sealed class GameProjectileManagerAPI
     /// </summary>
     public GameStructQuery<GameProjectile> QueryProjectiles()
     {
-        return new GameStructQuery<GameProjectile>(_projectileArray._array, _projectileArray.Length);
+        return new GameStructQuery<GameProjectile>(_projectileArray._array + 1, _projectileArray.Length - 1);
     }
 
     /// <summary>
@@ -329,7 +316,7 @@ public unsafe sealed class GameProjectileManagerAPI
         /// </summary>
         public static RefPredicate<GameProjectile> IsWithinRect(int x, int y, int width, int height) =>
             (in GameProjectile p) =>
-                p.r_CurrentTileX >= x && p.r_CurrentTileX < x + width && 
+                p.r_CurrentTileX >= x && p.r_CurrentTileX < x + width &&
                 p.r_CurrentTileY >= y && p.r_CurrentTileY < y + height;
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using MessagePack;
 using Noesis;
 using R3;
+using RedBird.Core.Memory;
 using SHCDESE.API.Components.MapEditor;
 using SHCDESE.API.Components.Network;
 using SHCDESE.API.LowLevel;
@@ -155,6 +156,233 @@ public unsafe sealed class GameTileManagerAPI
     {
         return _gp_pathfindingContext;
     }
+
+    #region Live native arrays
+
+    /// <summary>
+    /// The returned spans are direct writable views of the native TileManager arrays.
+    /// They must not be retained across a game or map lifecycle transition.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetPackedNeighborTileDeltas() => TileManager.PackedNeighborTileDeltas;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetPackedRowTileCounts() => TileManager.PackedRowTileCounts;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int16> GetPackedTileCoordinateLookup0() => TileManager.PackedTileCoordinateLookup0;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int16> GetPackedTileCoordinateLookup1() => TileManager.PackedTileCoordinateLookup1;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetGfxLayer() => TileManager.GFXGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetAlphaGfxLayer() => TileManager.AlphaGFXGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetConstructionGfxLayer() => TileManager.ConstructionGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetPillarGfxLayer() => TileManager.PillarGFXGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetWallGfxLayer() => TileManager.WallGFXGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int16> GetFloatingLayer() => TileManager.FloatingGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetRandomLayer() => TileManager.TileRandomNoiseGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetLogicLayer() => TileManager.LogicGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetLogic2Layer() => TileManager.Logic2Grid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetChangedLayer() => TileManager.ChangedGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetOrganismLayer() => TileManager.OrganismGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetStructureLayer() => TileManager.StructureGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetStructureWasLayer() => TileManager.StructureWasGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetChimpLayer() => TileManager.TileUnitIdGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int16> GetFlyLayer() => TileManager.FlyGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetHeightLayer() => TileManager.HeightGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetDefaultHeightLayer() => TileManager.DefaultHeightGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetWallOwnerLayer() => TileManager.WallOwnerGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetLuminescenceLayer() => TileManager.LuminesenceGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetShowHiLayer() => TileManager.ShowHiGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetMiscDisplayLayer() => TileManager.MiscDisplayGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetDamageLayer() => TileManager.DamageGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int16> GetMacroLayer() => TileManager.MacroGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetPathConnectionLayer() => TileManager.PathConnectionGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetPathLinkageLayer() => TileManager.PathEdgeMaskGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<CompactPlayerBitMask> GetOccupancyLayer() => TileManager.OccupancyGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetCertainPathLayer() => TileManager.CertainPathGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetWalkLayer() => TileManager.WalkGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetAiZoneLayer() => TileManager.AIZoneGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetAiInfoLayer() => TileManager.AIInfoGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetAiDangerLayer() => TileManager.AIDangerGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetAiProximityLayer() => TileManager.AIProximityGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownDzSpreadIdLayer() => TileManager.TownDzSpreadIdGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownNullConnectsLayer() => TileManager.TownNullConnectsGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownDzSpreadCountLayer() => TileManager.TownDzSpreadCountGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownStoneValueLayer() => TileManager.TownStoneValueGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownStructureLayer() => TileManager.TownStructureGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownOasisLayer() => TileManager.TownOasisGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownFarmLayer() => TileManager.TownFarmGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetTownIronLayer() => TileManager.TownIronGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetProblemBuildLayer() => TileManager.ProblemBuildGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<CompactPlayerBitMask> GetAIVBlockLayer() => TileManager.AIVBlockGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetAIVBlockZone() => TileManager.AIVBlockZone;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetDelayLayer() => TileManager.DelayGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> GetGatePathLayer() => TileManager.GatePathGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetMoatWorkTaskIndexLayer() => TileManager.MoatWorkTaskIndexGrid;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<MoatWorkTask> GetMoatWorkTasks() => TileManager.MoatWorkTasks;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<GamePitchDescriptor> GetPitchSlots() => TileManager.PitchSlots;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<UInt16> GetPitchSlotLookup() => TileManager.PitchSlotLookup;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetLayerInvalidationPending() => TileManager.LayerInvalidationPending;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<Int32> GetRotatedDirectionMap() => TileManager.RotatedDirectionMap;
+
+    #endregion
+
+    #region Moat work tasks
+
+    [LuaApiExport("GetMoatWorkTaskIndexAtTile")]
+    public int GetMoatWorkTaskIndexAtTile(int tileX, int tileY)
+    {
+        return TryGetPackedTileId(tileX, tileY, out int tileId)
+            ? GetMoatWorkTaskIndexLayer()[tileId]
+            : 0;
+    }
+
+    [LuaApiExport("GetMoatWorkTaskSlotLimit")]
+    public int GetMoatWorkTaskSlotLimit()
+    {
+        Int32 slotLimit = TileManager.MoatWorkTaskSlotLimit;
+        return (UInt32)slotLimit <= GameTileManagerView.MoatWorkTaskSlotCapacity ? slotLimit : 0;
+    }
+
+    [LuaApiExport("GetMoatWorkTaskActiveCount")]
+    public int GetMoatWorkTaskActiveCount()
+    {
+        Int32 activeCount = TileManager.MoatWorkTaskActiveCount;
+        return (UInt32)activeCount <= GameTileManagerView.MoatWorkTaskSlotCapacity ? activeCount : 0;
+    }
+
+    public bool TryGetMoatWorkTaskByIndex(int taskIndex, out NativePointer<MoatWorkTask> moatWorkTask)
+    {
+        moatWorkTask = new NativePointer<MoatWorkTask>((MoatWorkTask*)null);
+        Int32 slotLimit = GetMoatWorkTaskSlotLimit();
+        if (taskIndex <= 0 || taskIndex >= slotLimit)
+            return false;
+
+        MoatWorkTask* task = TileManager.MoatWorkTaskSlotsPointer + taskIndex;
+        if (task->r_OwnerPlayerId == 0)
+            return false;
+
+        moatWorkTask = new NativePointer<MoatWorkTask>(task);
+        return true;
+    }
+
+    public bool TryGetMoatWorkTaskAtTile(int tileX, int tileY, out NativePointer<MoatWorkTask> moatWorkTask)
+    {
+        moatWorkTask = new NativePointer<MoatWorkTask>((MoatWorkTask*)null);
+        if (!TryGetPackedTileId(tileX, tileY, out int tileId))
+            return false;
+
+        Int32 taskIndex = GetMoatWorkTaskIndexLayer()[tileId];
+        if (!TryGetMoatWorkTaskByIndex(taskIndex, out moatWorkTask))
+            return false;
+
+        return moatWorkTask.Pointer->r_TileId == tileId;
+    }
+
+    #endregion
 
     /// <summary>
     /// There may be higher values idk
@@ -710,14 +938,18 @@ public unsafe sealed class GameTileManagerAPI
     [LuaApiExport("IsValid")]
     public bool IsValidTileId(int tileId)
     {
-        // If TileID is negative, it's definitely invalid.
-        // If TileID is larger than the total number of tiles for this map size, it's invalid.
-        // The game always allocates memory for the maximum map size (800x800),
-        // regardless of the current playable map size (e.g., 160x160).
-        // Therefore, any ID within the 640,000 range is a valid memory index,
-        // even if it falls outside the playable area.
-        int size = GetCurrentMapSize();
-        return tileId >= 0 && tileId < (MAX_WIDTH * MAX_HEIGHT);
+        return (UInt32)tileId < GameTileManagerView.NativePackedTileCapacity;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool TryGetPackedTileId(int tileX, int tileY, out int tileId)
+    {
+        tileId = 0;
+        if (!IsTileInsideMapBounds(tileX, tileY))
+            return false;
+
+        tileId = GetTileId(tileX, tileY);
+        return IsValidTileId(tileId);
     }
 
     /// <summary>
@@ -1348,17 +1580,18 @@ public unsafe sealed class GameTileManagerAPI
     private void ExportSemaBuildings(SEMAData data, int minX, int minY, int maxX, int maxY)
     {
         Span<GameBuilding> buildings = GameBuildingManagerAPI.Instance.GetBuildingsAsSpan();
+        GameBuildingManagerAPI buildingApi = GameBuildingManagerAPI.Instance;
         for (int index = 0; index < buildings.Length; index++)
         {
             ref GameBuilding building = ref buildings[index];
             if (!IsAliveForSemaExport(building.r_AliveState))
                 continue;
+            int oldId = index + 1;
             UnmanagedVector2<UInt16> position = *building.CurrentTilePosition();
-            UnmanagedVector2<UInt16> endPosition = new(building.r_TilePositionXEnd, building.r_TilePositionYEnd);
+            UnmanagedVector2<UInt16> endPosition = buildingApi.GetEndPosition(oldId);
             if (!IsInsideArea(position, minX, minY, maxX, maxY) || !IsInsideArea(endPosition, minX, minY, maxX, maxY))
                 continue;
 
-            int oldId = index + 1;
             data.Buildings[oldId] = new SEMABuilding
             {
                 Id = oldId,
@@ -1405,7 +1638,7 @@ public unsafe sealed class GameTileManagerAPI
 
     private static void ExportSemaPitch(SEMAData data, int minX, int minY, int maxX, int maxY)
     {
-        Span<GamePitchDescriptor> pitches = GamePitchManagerAPI.Instance.GetPitchArrayAsSpan();
+        Span<GamePitchDescriptor> pitches = GamePitchManagerAPI.Instance.GetPitchArrayAsSpan()[1..];
         for (int index = 0; index < pitches.Length; index++)
         {
             ref GamePitchDescriptor pitch = ref pitches[index];
@@ -1488,7 +1721,7 @@ public unsafe sealed class GameTileManagerAPI
 
         int maxX = targetX + width - 1;
         int maxY = targetY + height - 1;
-        Span<GamePitchDescriptor> pitches = GamePitchManagerAPI.Instance.GetPitchArrayAsSpan();
+        Span<GamePitchDescriptor> pitches = GamePitchManagerAPI.Instance.GetPitchArrayAsSpan()[1..];
         for (int i = 0; i < pitches.Length; i++)
         {
             ref GamePitchDescriptor pitch = ref pitches[i];

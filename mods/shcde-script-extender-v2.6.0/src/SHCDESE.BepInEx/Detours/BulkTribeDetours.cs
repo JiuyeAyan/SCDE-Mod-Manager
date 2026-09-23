@@ -3,6 +3,7 @@ using RedBird.Abstractions.Hooks.Transaction;
 using RedBird.Core.Memory;
 using RedBird.X64.Hooks;
 using RedBird.X64.Hooks.Transaction;
+using RedBird.X64.Memory.Scanners;
 using Serilog;
 using SHCDESE.API;
 using SHCDESE.API.LowLevel;
@@ -18,13 +19,10 @@ namespace SHCDESE.Detours;
 
 public unsafe class BulkTribeDetours
 {
-    private HookTransaction? tx;
-    public BulkTribeDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkTribeDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
-
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
 
         tx.AddDetour(c_game_unit_assign_tribe_hook,
             "48 89 5C 24 ?? 57 48 63 DA",
@@ -60,7 +58,7 @@ public unsafe class BulkTribeDetours
              {
                  UInt64 tribeAddr = ctx.Pointer->RBX;
                  UInt64 nextWaypointIndex = ctx.Pointer->R8;
-                 int tribeId = (int)((tribeAddr - (UInt64)GameTribeManagerAPI.Instance._tribesArray._array) / (UInt64)sizeof(GameTribe)) + 1;
+                 int tribeId = (int)((tribeAddr - (UInt64)GameTribeManagerAPI.Instance._tribesArray._array) / (UInt64)sizeof(GameTribe));
 
                  Log.Debug($"c_game_tribe_get_next_waypoint: tribeId={tribeId}, nextWaypointIndex={nextWaypointIndex}");
                  TribeGetNextPatrolWaypointEventArgs eventArgs = new(EventHookPhase.Pre, tribeId, (int)nextWaypointIndex);
@@ -70,7 +68,6 @@ public unsafe class BulkTribeDetours
 
              }, new RedBird.X64.Hooks.Context.ContextHookOptions() { Registers = RedBird.X64.Assembly.X64SmartCPUContextRegs.Volatile | RedBird.X64.Assembly.X64SmartCPUContextRegs.RBX });
 
-        tx.Commit();
     }
 
     internal static HookHandle<X64InlineHook> c_game_tribe_get_next_waypoint = new();

@@ -329,7 +329,7 @@ public unsafe struct GameUnit : IPositionable, IEquatable<GameUnit>
     public UInt32 N000001FA; //0x041C
     public UInt32 N000000D7; //0x0420
     public UInt16 r_AITribeRoleRelatedUnknown; //0x0424
-    [LuaExposed] public AITribeRole16 r_AITribeRole; //0x0426
+    [LuaExposed] public UInt16 r_AITribeRole; //0x0426
     public UInt32 N000000D8; //0x0428
     public UInt32 N000001FE; //0x042C
     public UInt16 N000000D9; //0x0430

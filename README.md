@@ -21,20 +21,24 @@ The adjacent `Stronghold Crusader Definitive Edition - SCDE Modded` folder is th
 - Batch import of `.scdemod` packages and supported SE Workshop Mods.
 - Enable/disable Mods, reorder file deployment, and inspect file conflicts. BepInEx/SE still control plugin initialization; row order is not a universal plugin execution order.
 - Manual confirmation for imported Mod updates; automatic preparation of SE core updates while keeping the shared BepInEx runtime.
-- Multiplayer profile checks, including loaded plugins and SE networked Mods. These checks are not anti-cheat or a guarantee against all gameplay desynchronization.
+- Protocol v4 multiplayer checks compare actual loaded runtime/plugin identities and networked SE Mods, not Manager package wrappers. SE-only peers can join with an explicit unverified warning; extra plugins cannot be verified without MMC. These checks are not anti-cheat or a guarantee against all gameplay desynchronization.
+- The game copy is created/prepared when **Launch with Mods** is clicked, not when the Manager opens. Current copies are reused; older copies may need a one-time isolation migration at launch.
+- Declared persistent Mod data is preserved during deployment, and ordinary packages cannot replace built-in runtime files.
 - Launch progress, Steam checks, and controls locked while the managed game is running.
 - Editable English/Chinese JSON language packs; community translations are supported.
 - An SE toggle; disabling SE also disables declared dependent Mods with a notice.
 
-## Included by default in 0.2.8
+## Included by default in 0.2.10
 
 | Component | Bundled version | Author |
 |---|---|---|
 | BepInEx Runtime | 5.4.23.5 | BepInEx contributors |
-| Script Extender | 2.6.0+scdemm.1 | Rawra; Manager integration by JiuyeAyan |
-| Multiplayer Mod Compatibility | 0.3.1 | JiuyeAyan |
+| Script Extender | 2.8.0+scdemm.1 | Rawra; Manager integration by JiuyeAyan |
+| Multiplayer Mod Compatibility | 0.4.0 | JiuyeAyan |
 
 SE is initially enabled but can be disabled. The installed SE version can be newer than the bundled baseline after an update. No Fog, Advanced Control, Serps, or other optional gameplay Mod is bundled here.
+
+New application builds obtain and validate the latest official SE release instead of silently reusing 2.6.0. This source update does not replace existing GitHub Release EXEs; check each Release's version separately.
 
 ## Notes
 
@@ -42,4 +46,4 @@ SE is initially enabled but can be disabled. The installed SE version can be new
 - Use only Mods you trust: plugins execute code. Import checks do not make untrusted Mods safe.
 - The Windows EXE is **not digitally signed**.
 - Manager self-update currently checks its own Steam Workshop subscription, not GitHub Releases. Uploading a GitHub release does not change that behavior.
-- See [release notes](docs/RELEASE_0.2.8.md), [build instructions](BUILDING.md), and [component notices](THIRD_PARTY_NOTICES.md). Third-party components keep their respective licenses; this repository's MIT license does not relicense SE or its bundled assets.
+- See [0.2.10 source update notes](docs/RELEASE_0.2.10.md), [package schema](docs/SCDEMOD_SCHEMA.md), [build instructions](BUILDING.md), and [component notices](THIRD_PARTY_NOTICES.md). Third-party components keep their respective licenses; this repository's MIT license does not relicense SE or its bundled assets.

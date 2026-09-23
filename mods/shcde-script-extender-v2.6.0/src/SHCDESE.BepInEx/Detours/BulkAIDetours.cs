@@ -4,6 +4,7 @@ using RedBird.Abstractions.Hooks.Transaction;
 using RedBird.Core.Memory;
 using RedBird.X64.Hooks;
 using RedBird.X64.Hooks.Transaction;
+using RedBird.X64.Memory.Scanners;
 using SHCDESE.API;
 using SHCDESE.API.LowLevel;
 using SHCDESE.BepInEx.Bootstrap;
@@ -21,14 +22,11 @@ namespace SHCDESE.Detours;
 
 public unsafe class BulkAIDetours
 {
-    private HookTransaction? tx;
 
-    public BulkAIDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkAIDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
 
         tx.AddDetour(c_game_ai_enqueue_message_hook,
             "83 39 ? 0F 84 ? ? ? ? 48 63 81 ? ? ? ? 83 F8 ? 0F 84 ? ? ? ? C7 84 81",
@@ -72,8 +70,6 @@ public unsafe class BulkAIDetours
 
         tx.AddDetour<c_game_ai_should_not_build_hovel_hook_delegate>("41 83 F8 ? 75 ? 48 63 C2 48 8D 15 ? ? ? ? 48 69 C8",
             c_game_ai_should_not_build_hovel_hook_impl);
-
-        tx.Commit();
     }
 
     public static HookHandle<X64InlineHook> c_game_ai_setup_siege_pathing_stuff_hook = new();
@@ -138,26 +134,34 @@ public unsafe class BulkAIDetours
                 eventArgs?.TileX ?? tileX,
                 eventArgs?.TileY ?? tileY,
                 eventArgs?.Mappers ?? eMappers);
+
+            eventArgs = new AIBuildWallEventArgs(EventHookPhase.Post, playerId, tileX, tileY, eMappers);
+            AIR3EventHooks.OnAIBuildWall.Raise(eventArgs);
         }
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void c_game_dll_importaiv_delegate(int playerId, int aiLord, UInt64 aivData, int length);
+    public delegate void c_game_dll_importaiv_delegate(int bankIndex, int variantIndex, UInt64 aivData, int length, int custom);
     internal static DetourHandle<c_game_dll_importaiv_delegate> c_game_dll_importaiv_hook = new();
-    public static void c_game_dll_importaiv_hook_impl(int playerId, int aiLord, UInt64 aivData, int length)
+    public static void c_game_dll_importaiv_hook_impl(int bankIndex, int variantIndex, UInt64 aivData, int elementCount, int isCustom)
     {
-        LogHelper.Information($"Loaded Internal AIV for lord {(Enums.AILords)aiLord}, playerId={playerId} with length={length}");
-        //System.IO.File.WriteAllBytes("aiv.bin", new Span<byte>((void*)aivData, length * 2).ToArray());
-        c_game_dll_importaiv_hook.Original(playerId, aiLord, aivData, length);
+        LogHelper.Information($"Loaded AIV bank={bankIndex}, variant={variantIndex}, elementCount={elementCount}, isCustom={isCustom}");
+        //System.IO.File.WriteAllBytes("aiv.bin", new Span<byte>((void*)aivData, elementCount * 2).ToArray());
+        c_game_dll_importaiv_hook.Original(bankIndex, variantIndex, aivData, elementCount, isCustom);
+
+        if ((UInt32)bankIndex >= GameAIVManagerAPI.MAX_AIV_BANKS)
+            return;
+
         try
         {
-            playerId += 1;
+            int playerId = bankIndex + 1;
             string lordName = GameAIManagerAPI.Instance.GetCustomAILordNameByPlayerId(playerId);
             if (GameAIManagerAPI.Instance.IsSupportedCustomLord(lordName) && GameAIManagerAPI.Instance.TryGetLuaInitPath(lordName, out string? luaInitPath))
             {
                 LuaManager.Instance.RegisterLordAI(lordName, luaInitPath, playerId);
             }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             LogHelper.Error(ex, "Error during importaiv callback");
         }

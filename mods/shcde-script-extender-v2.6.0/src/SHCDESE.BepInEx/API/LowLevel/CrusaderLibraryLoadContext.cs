@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using RedBird.Core.Memory;
+using RedBird.Core.Memory.Scanners;
 using RedBird.X64.Memory.Scanners;
 using System;
 
@@ -34,4 +35,10 @@ public sealed class CrusaderLibraryLoadContext
     /// <param name="logger">An optional logger for scanner diagnostics.</param>
     /// <returns>An independent scanner owned by the subscriber.</returns>
     public DataScanner CreateScanner(ILogger? logger = null) => DataScanner.Create(Region, logger);
+
+    /// <summary>Creates an independent scanner over the shared library region with aob cache option.</summary>
+    /// <param name="cacheOptions">An optional AOB-cache option class.</param>
+    /// <param name="logger">An optional logger for scanner diagnostics.</param>
+    /// <returns>An independent scanner owned by the subscriber.</returns>
+    public DataScanner CreateScanner(AobCacheOptions cacheOptions, ILogger? logger = null) => DataScanner.Create(Region, logger, cacheOptions);
 }

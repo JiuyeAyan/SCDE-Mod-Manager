@@ -32,6 +32,8 @@ public unsafe sealed class GameTribeManagerAPI
 
     /// <summary>The maximum number of tribes the game pre-allocates memory for.</summary>
     internal const int NUM_PREALLOC_TRIBES = 4500;
+    public const int TRIBE_SLOT_COUNT = NUM_PREALLOC_TRIBES + 1;
+    public const int AI_TRIBE_STORAGE_ROLE_COUNT = 300;
 
     internal GameTribeManager* _tribeManager;
     internal SimpleNativeArray<GameTribe> _tribesArray;
@@ -72,7 +74,7 @@ public unsafe sealed class GameTribeManagerAPI
     }
 
     /// <summary>
-    /// Returns a span representing the current collection of tribes managed by the instance.
+    /// Returns the complete native tribe-slot span, including reserved slot zero.
     /// </summary>
     /// <returns>A <see cref="Span{GameTribe}"/> containing the tribes.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -99,7 +101,7 @@ public unsafe sealed class GameTribeManagerAPI
         if (_tribesArray._array == null)
             return false;
 
-        tribe = &_tribesArray._array[tribeId - 1];
+        tribe = &_tribesArray._array[tribeId];
         return true;
     }
 
@@ -184,7 +186,7 @@ public unsafe sealed class GameTribeManagerAPI
             LogHelper.Warning($"Could not find tribe by id: {tribeId}");
             return false;
         }
-        return (int)tribe->r_AliveState != 0;
+        return tribe->r_AliveState == AliveState.IsAlive;
     }
 
     /// <summary>
@@ -196,7 +198,7 @@ public unsafe sealed class GameTribeManagerAPI
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsValidId(int tribeId)
     {
-        if (tribeId <= 0 || tribeId > _tribesArray.Length)
+        if (tribeId <= 0 || tribeId >= _tribesArray.Length)
             return false;
 
         return true;
@@ -337,43 +339,6 @@ public unsafe sealed class GameTribeManagerAPI
     }
 
     /// <summary>
-    /// Manually unassigns a unit from a tribe (custom implementation)
-    /// Use the normal variant where ever you can.
-    /// </summary>
-    /// <param name="tribeId">The ID of the tribe.</param>
-    /// <param name="unitId">The ID of the unit to unassign.</param>
-    /// <param name="reassignNewTribeLeader">If true and this unit was the former team-leader, this function will re-assign the tribe a new one.</param>
-    /// <returns><c>true</c> if both tribe and unit were found and the unit was unassigned; otherwise, <c>false</c>.</returns>
-    [LuaApiExport("RemoveUnitEx")]
-    public bool UnassignUnitEx(int tribeId, int unitId, bool reassignNewTribeLeader = false)
-    {
-        if (!TryGetTribeById(tribeId, out GameTribe* tribe) || tribe == null)
-        {
-            LogHelper.Error($"Could not find tribe with id: {tribeId}");
-            return false;
-        }
-        if (GameUnitManagerAPI.Instance.TryGetUnitById(unitId, out GameUnit* unit) == false || unit == null)
-        {
-            LogHelper.Error($"Could not find unit with id: {unitId}");
-            return false;
-        }
-        tribe->r_UnitsInGroup--;
-
-        if (tribe->r_LeaderUnitId == unitId)
-        {
-            tribe->r_LeaderUnitId = 0;
-
-            if (reassignNewTribeLeader)
-                ReassignTribeLeader((int)unit->r_GlobalId, tribeId, tribe);
-        }
-
-        unit->r_TribeId = 0;
-        unit->r_TribeLeaderUnitId = 0;
-
-        return true;
-    }
-
-    /// <summary>
     /// Tries to reassign a tribe a new leader automatically (first unit found from the former tribe)
     /// </summary>
     /// <param name="excludeUnitGlobalId">A unit global id to exclude</param>
@@ -415,8 +380,13 @@ public unsafe sealed class GameTribeManagerAPI
         }
 
         int index = tribe.Pointer->r_TrackedRangedAttackersCount;
-        tribe.SetTrackedRangedAttackerIndex(index, (UInt16)unit->r_GlobalId);
-        tribe.Pointer->r_TrackedRangedAttackersCount = (UInt16)Math.Min(index + 1, 10);
+        if (index >= 10)
+            return false;
+
+        if (!tribe.SetTrackedRangedAttackerIndex(index, (UInt16)unit->r_GlobalId))
+            return false;
+
+        tribe.Pointer->r_TrackedRangedAttackersCount = (UInt16)(index + 1);
         return true;
     }
 
@@ -437,10 +407,13 @@ public unsafe sealed class GameTribeManagerAPI
             LogHelper.Error($"Could not find tribe with id: {tribeId}");
             return false;
         }
+        if (path == null)
+            throw new ArgumentNullException(nameof(path));
+
         int len = path.Length;
-        if (len > 10)
+        if (len <= 0 || len > 10)
         {
-            LogHelper.Error($"Patrol path length {len} exceeds max length {10}");
+            LogHelper.Error($"Patrol path length {len} must be in the range 1..10");
             return false;
         }
 
@@ -450,17 +423,33 @@ public unsafe sealed class GameTribeManagerAPI
             return false;
         }
 
-        UnmanagedVector2<UInt16> startingPoint = path[startingPatrolPointIndex];
-        IssueMoveHereCommand(tribeId, startingPoint.X, startingPoint.Y, true, 1, moveType);
+        UnmanagedVector2<UInt16>[] previousPath = new UnmanagedVector2<UInt16>[10];
+        for (int i = 0; i < previousPath.Length; i++)
+            previousPath[i] = tribe.GetPatrolPoint(i);
 
-        for (int i = 0; i < len; i++)
-            tribe.SetPatrolPoint(i, path[i]);
+        TribePatrolMode previousMode = tribe.Pointer->r_PatrolMode;
+        UInt16 previousTargetIndex = tribe.Pointer->r_PatrolCurrentTargetIndex;
+        UInt32 previousPointCount = tribe.Pointer->r_CurrentPatrolPoints;
+
+        UnmanagedVector2<UInt16> zero = default;
+        for (int i = 0; i < 10; i++)
+            tribe.SetPatrolPoint(i, i < len ? path[i] : zero);
 
         tribe.Pointer->r_PatrolMode = patrolMode;
         tribe.Pointer->r_PatrolCurrentTargetIndex = (UInt16)startingPatrolPointIndex;
-        tribe.Pointer->r_CurrentPatrolPoints = (byte)len;
+        tribe.Pointer->r_CurrentPatrolPoints = (UInt32)len;
 
-        return true;
+        UnmanagedVector2<UInt16> startingPoint = path[startingPatrolPointIndex];
+        if (IssueMoveHereCommand(tribeId, startingPoint.X, startingPoint.Y, true, 1, moveType))
+            return true;
+
+        for (int i = 0; i < previousPath.Length; i++)
+            tribe.SetPatrolPoint(i, previousPath[i]);
+
+        tribe.Pointer->r_PatrolMode = previousMode;
+        tribe.Pointer->r_PatrolCurrentTargetIndex = previousTargetIndex;
+        tribe.Pointer->r_CurrentPatrolPoints = previousPointCount;
+        return false;
     }
 
     /// <summary>
@@ -477,11 +466,9 @@ public unsafe sealed class GameTribeManagerAPI
             return [];
         }
 
-        int len = (int)tribe.Pointer->r_CurrentPatrolPoints;
+        int len = Math.Min((int)tribe.Pointer->r_CurrentPatrolPoints, 10);
         if (len == 0)
-        {
             return [];
-        }
 
         List<UnmanagedVector2<UInt16>> points = new List<UnmanagedVector2<ushort>>();
         for (int i = 0; i < len; i++)
@@ -596,7 +583,7 @@ public unsafe sealed class GameTribeManagerAPI
         for (int wordIdx = 0; wordIdx < 625; wordIdx++)
         {
             UInt16 word = bitmapStart[wordIdx];
-            if (word == 0) 
+            if (word == 0)
                 continue;
 
             for (int bit = 0; bit < 16; bit++)
@@ -703,6 +690,85 @@ public unsafe sealed class GameTribeManagerAPI
         if (results.Count == 0)
             return -1;
         return results[0];
+    }
+
+    /// <summary>Reads the raw tribe ID/global-ID pair stored in one per-player AI role slot.</summary>
+    public bool TryGetAITribeStorageRole(int playerId, AITribeStorageRole16 role, out UInt16 tribeId, out UInt32 tribeGlobalId)
+    {
+        tribeId = 0;
+        tribeGlobalId = 0;
+        int roleIndex = (Int32)role;
+        if ((UInt32)roleIndex >= AI_TRIBE_STORAGE_ROLE_COUNT
+            || !GamePlayerManagerAPI.Instance.TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources))
+        {
+            return false;
+        }
+
+        tribeId = resources->r_AITribeIdsByStorageRole[roleIndex];
+        tribeGlobalId = resources->r_AITribeGlobalIdsByStorageRole[roleIndex];
+        return true;
+    }
+
+    /// <summary>
+    /// Resolves a per-player AI role slot and rejects empty or old ID/global-ID pairs.
+    /// </summary>
+    public bool TryResolveAITribeStorageRole(int playerId, AITribeStorageRole16 role, out GameTribe* tribe)
+    {
+        tribe = null;
+        if (!TryGetAITribeStorageRole(playerId, role, out UInt16 tribeId, out UInt32 tribeGlobalId)
+            || tribeId == 0
+            || !TryGetTribeById(tribeId, out GameTribe* candidate)
+            || candidate == null
+            || candidate->r_AliveState != AliveState.IsAlive
+            || candidate->r_GlobalId != tribeGlobalId
+            || candidate->r_PlayerIdOwner != playerId)
+        {
+            return false;
+        }
+
+        tribe = candidate;
+        return true;
+    }
+
+    public bool TryResolveAITribeStorageRoleEx(int playerId, AITribeStorageRole16 role, out NativePointer<GameTribe> tribe)
+    {
+        bool result = TryResolveAITribeStorageRole(playerId, role, out GameTribe* tribePointer);
+        tribe = new NativePointer<GameTribe>(tribePointer);
+        return result;
+    }
+
+    /// <summary>Stores an owned, live tribe in one per-player AI role slot.</summary>
+    public bool SetAITribeStorageRole(int playerId, AITribeStorageRole16 role, int tribeId)
+    {
+        int roleIndex = (Int32)role;
+        if ((UInt32)roleIndex >= AI_TRIBE_STORAGE_ROLE_COUNT
+            || !GamePlayerManagerAPI.Instance.TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources)
+            || !TryGetTribeById(tribeId, out GameTribe* tribe)
+            || tribe == null
+            || tribe->r_AliveState != AliveState.IsAlive
+            || tribe->r_PlayerIdOwner != playerId)
+        {
+            return false;
+        }
+
+        resources->r_AITribeIdsByStorageRole[roleIndex] = (UInt16)tribeId;
+        resources->r_AITribeGlobalIdsByStorageRole[roleIndex] = tribe->r_GlobalId;
+        return true;
+    }
+
+    /// <summary>Clears both halves of one per-player AI tribe role slot.</summary>
+    public bool ClearAITribeStorageRole(int playerId, AITribeStorageRole16 role)
+    {
+        int roleIndex = (Int32)role;
+        if ((UInt32)roleIndex >= AI_TRIBE_STORAGE_ROLE_COUNT
+            || !GamePlayerManagerAPI.Instance.TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources))
+        {
+            return false;
+        }
+
+        resources->r_AITribeIdsByStorageRole[roleIndex] = 0;
+        resources->r_AITribeGlobalIdsByStorageRole[roleIndex] = 0;
+        return true;
     }
 
     /// <summary>
@@ -1005,7 +1071,7 @@ public unsafe sealed class GameTribeManagerAPI
     /// </summary>
     public GameStructQuery<GameTribe> QueryTribes()
     {
-        return new GameStructQuery<GameTribe>(_tribesArray._array, _tribesArray.Length);
+        return new GameStructQuery<GameTribe>(_tribesArray._array + 1, _tribesArray.Length - 1);
     }
 
     /// <summary>

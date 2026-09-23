@@ -15,13 +15,21 @@ namespace SHCDESE.Interop;
 public unsafe class GameTileManagerView
 {
     private readonly void* _ptr;
-    private const int MapWidth = 800;
-    private const int MapHeight = 800;
-    private const int MapSize = MapWidth * MapHeight;
+    public const int PackedMapAxisCapacity = 800;
+    public const int PackedNeighborDirectionCount = 8;
     public const int NativePackedTileCapacity = 320_800;
+    public const int AivBlockZoneCapacity = 6_400;
     public const int MoatWorkTaskSlotCapacity = 64_000;
+    public const int PitchSlotCapacity = 4_000;
+    public const int PitchSlotLookupCapacity = 4_000;
+    public const int LayerInvalidationFlagCount = 3;
+    public const int RotatedDirectionCount = 5;
 
     // dynamic= is mostly ignored in flattened view, or can be otherwise recalculated by the game on-demand
+    internal const UInt64 PackedNeighborTileDeltasOffset = 0x0;
+    internal const UInt64 PackedRowTileCountsOffset = 0x6400;
+    internal const UInt64 PackedTileCoordinateLookup0Offset = 0x7480;
+    internal const UInt64 PackedTileCoordinateLookup1Offset = 0xA3EC0;
     internal const UInt64 GFXGridOffset = 0x140900; // OK  (int32)
     // ^ [ground seems be in 00730XXX range, cliffs: 00201XXX, walls: 000C0XXX, visible cliffside: 003XXXXX, stoneresource: 000C00XX,
     // ^ sea: 00A60XXX, beach-to-sea: 000200XX, sea-edge: 000001XX, river: 00050XXX, hole-building: 00060XXX, building: 00070XXX, chapel1:00310XXX,
@@ -31,11 +39,13 @@ public unsafe class GameTileManagerView
     internal const UInt64 ConstructionGridOffset = 0x3B3200; // OK  (int32)
     internal const UInt64 PillarGFXGridOffset = 0x4EC680; // OK (int32) (dynamic, note: atlas related? Mostly changing for water, uneven terrain and cliffs)
     internal const UInt64 WallGFXGridOffset = 0x625B00; // OK  (int32)
-    internal const UInt64 UnknownGrid_0x75EF80_Offset = 0x75EF80; // TODO  (int16)
-    internal const UInt64 TileRandomNoiseGridOffset = 0x7FB5C0; // OK  (uint16)
+    internal const UInt64 FloatingGridOffset = 0x75EF80; // OK (int16)
+    internal const UInt64 UnknownGrid_0x75EF80_Offset = FloatingGridOffset; // legacy alias
+    internal const UInt64 TileRandomNoiseGridOffset = 0x7FB9C0; // OK  (uint16)
     internal const UInt64 LogicGridOffset = 0x898400; // OK   (int32)
     internal const UInt64 Logic2GridOffset = 0x9D2500; // OK   (byte)
-    internal const UInt64 UnknownGridReal2Offset = 0xA20D40; // TODO (byte)
+    internal const UInt64 ChangedGridOffset = 0xA20D40; // OK (byte)
+    internal const UInt64 UnknownGridReal2Offset = ChangedGridOffset; // legacy alias
     internal const UInt64 OrganismGridOffset = 0xA6F260; // OK   (uint16)
     internal const UInt64 StructureGridOffset = 0xB0BCA0; // OK   (int16)
     internal const UInt64 StructureWasGridOffset = 0xBA86E0; // OK   (byte)
@@ -60,9 +70,12 @@ public unsafe class GameTileManagerView
     internal const UInt64 PathEdgeMaskGridOffset = 0x112A320;// OK (byte)
     // ^ not sure for what purpose tho) [UCP equivalent.: https://github.com/sourcehold/sourcehold-maps/wiki/Section-1021]
     internal const UInt64 OccupancyGridOffset = 0x1178840;// IOK (byte)  (note: describes tiles where a player unit stands, bitflag-based playerid description.)
+    internal const UInt64 CertainPathGridOffset = 0x11C6D60; // TODO (uint16)
+    internal const UInt64 WalkGridOffset = 0x12637A0; // TODO (uint16)
     // ^ Player1 = 1, Player2 = 2, Player3 = 4, Player4 = 8, Player5 = 16, Player6 = 32, Player7 = 64, Player8 = 128
     internal const UInt64 AIZoneGridOffset = 0x13001E0;// TODO (byte)  (note: nothing?)
-    internal const UInt64 UnknownGrid_0x134E700_Offset = 0x134E700;// TODO  (byte)
+    internal const UInt64 AIInfoGridOffset = 0x134E700; // TODO (byte)
+    internal const UInt64 UnknownGrid_0x134E700_Offset = AIInfoGridOffset; // legacy alias
     internal const UInt64 AIDangerGridOffset = 0x139CC20;// OK  (byte)
     // ^ seems to be like so: after each time a unit dies as far as the game is concerned, there seems to spawn a 3x3 grid around the death location (post corpse despawn)
     // that is additive to previous deaths in the same location:
@@ -74,17 +87,28 @@ public unsafe class GameTileManagerView
     // where 3 = unit exact death position.
     // So if 10 units die at some X Y coordinate, the center of that would be (3*10=30)
     // It is not known what purpose this serves.
-    internal const UInt64 UnknownGrid_0x13EB140_Offset = 0x13EB140;// TODO  (byte) (note: seems to be related to pathing of units.
+    internal const UInt64 AIProximityGridOffset = 0x13EB140; // TODO (byte)
+    internal const UInt64 UnknownGrid_0x13EB140_Offset = AIProximityGridOffset; // legacy alias
     // ^ perhaps some pathfinding optimization where subsequent units with same / close target with follow the unit? aka SupComRTS level pathfinding.
     // none seems to be 0, and 1 - 6 seem to be non-identifiers but just pathmarkers.
     // apparently not all units draw such a line. Units that do are:
     // Arab. Horsearcher, Arab Firethrower: 6
     // No other known unit draws these lines. These also decay after some time from 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
     // It is not known what purpose this serves.
+    internal const UInt64 TownDzSpreadIdGridOffset = 0x1439660;
+    internal const UInt64 TownNullConnectsGridOffset = 0x1487B80;
+    internal const UInt64 TownDzSpreadCountGridOffset = 0x14D60A0;
+    internal const UInt64 TownStoneValueGridOffset = 0x15245C0;
+    internal const UInt64 TownStructureGridOffset = 0x1572AE0;
+    internal const UInt64 TownOasisGridOffset = 0x15C1000;
+    internal const UInt64 TownFarmGridOffset = 0x160F520;
+    internal const UInt64 TownIronGridOffset = 0x165DA40;
+    internal const UInt64 ProblemBuildGridOffset = 0x16ABF60;
     internal const UInt64 UnknownStruct_0x16FA480_Offset = 0x16FA480;// TODO  (byte[18] or struct) Size is 5.774.400
     internal const UInt64 AIVBlockGridOffset = 0x1C7C0C0;// NEW  (byte) (note: AIV Related. Shows a per-ai number for the entire layout of a AIV)
     // ^ data format is same as TileUnitPresenceMaskGrid: CompactPlayerBitMask
     // ^ 0 = Player or none? 
+    internal const UInt64 AIVBlockZoneOffset = 0x1CCA5F0;
     internal const UInt64 DelayGridOffset = 0x1CCBEF0;// OK (byte)  aka delay_layer
     // ^ For every object (non entity) it goes upwards towards the top left growing from the left and top edge of the building.
     // ^ a 1x1 tree would produce this: (adjusted for isometric view)
@@ -103,12 +127,23 @@ public unsafe class GameTileManagerView
     internal const UInt64 MoatWorkTaskIndexGridOffset = 0x1EA23F0;// OK (uint16, packed 320800-tile grid)
     internal const UInt64 MoatWorkTaskSlotsOffset = 0x1F3EE30;// OK (MoatWorkTask[64000])
     internal const UInt64 MoatWorkTaskSlotLimitOffset = 0x2038E30;// OK (int32 exclusive high-water mark)
+    internal const UInt64 MoatWorkTaskActiveCountOffset = 0x2038E34;// OK (int32 active task count)
+    internal const UInt64 PitchSlotsOffset = 0x2038E48;
+    internal const UInt64 PitchSlotLookupOffset = 0x204C6CC;
+    internal const UInt64 LayerInvalidationPendingOffset = 0x204E62C;
+    internal const UInt64 RotatedDirectionMapOffset = 0x204E66C;
 
     internal const UInt64 BlockPlacementOffset = 0x204E6FC;
+    internal const UInt64 DetectedAdjacentGateRotationOffset = 0x204E70C;
+    internal const UInt64 DrawbridgePlacementVariantOffset = 0x204E710;
 
-    internal const UInt64 PlaceableWallsAmountOffset = 0x204E758;
+    internal const UInt64 BuildingFootprintCellCountOffset = 0x204E758;
+    internal const UInt64 BuildingFootprintCellOffsetXOffset = 0x204E760;
+    internal const UInt64 BuildingFootprintCellOffsetYOffset = 0x204E764;
 
     internal const UInt64 CurrentMapSizeOffset = 0x204E7E4;
+
+    internal const UInt64 PitchIdLimitOffset = 0x204C6C4;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameTileManagerView"/> class.
@@ -126,12 +161,12 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            UInt16 value = *(UInt16*)((UInt64)_ptr + BlockPlacementOffset);
+            Int32 value = *(Int32*)((UInt64)_ptr + BlockPlacementOffset);
             return value == 1;
         }
         set
         {
-            *(UInt16*)((UInt64)_ptr + BlockPlacementOffset) = value == true ? (ushort)1 : (ushort)0;
+            *(Int32*)((UInt64)_ptr + BlockPlacementOffset) = value ? 1 : 0;
         }
     }
 
@@ -139,19 +174,45 @@ public unsafe class GameTileManagerView
     public bool PlacementBlockedOverrideValue { get; set; } = false;
 
     /// <summary>
-    /// The current amount of walls that the player is able to place.
-    /// For use in short context windows.
+    /// Current number of cells in the configured native building footprint.
     /// </summary>
-    public int PlaceableWallsAmount
+    public int BuildingFootprintCellCount
     {
         get
         {
-            return *(int*)((UInt64)_ptr + PlaceableWallsAmountOffset);
+            return *(Int32*)((UInt64)_ptr + BuildingFootprintCellCountOffset);
         }
         set
         {
-            *(int*)((UInt64)_ptr + PlaceableWallsAmountOffset) = value;
+            *(Int32*)((UInt64)_ptr + BuildingFootprintCellCountOffset) = value;
         }
+    }
+
+    /// <summary>
+    /// Legacy context-specific alias for <see cref="BuildingFootprintCellCount"/>.
+    /// </summary>
+    public int PlaceableWallsAmount
+    {
+        get { return BuildingFootprintCellCount; }
+        set { BuildingFootprintCellCount = value; }
+    }
+
+    /// <summary>
+    /// Current X offset selected while iterating the configured building footprint.
+    /// </summary>
+    public int BuildingFootprintCellOffsetX
+    {
+        get { return *(Int32*)((UInt64)_ptr + BuildingFootprintCellOffsetXOffset); }
+        set { *(Int32*)((UInt64)_ptr + BuildingFootprintCellOffsetXOffset) = value; }
+    }
+
+    /// <summary>
+    /// Current Y offset selected while iterating the configured building footprint.
+    /// </summary>
+    public int BuildingFootprintCellOffsetY
+    {
+        get { return *(Int32*)((UInt64)_ptr + BuildingFootprintCellOffsetYOffset); }
+        set { *(Int32*)((UInt64)_ptr + BuildingFootprintCellOffsetYOffset) = value; }
     }
 
     /// <summary>
@@ -165,6 +226,42 @@ public unsafe class GameTileManagerView
         }
     }
 
+    public int PitchIdLimit
+    {
+        get
+        {
+            return *(int*)((UInt64)_ptr + PitchIdLimitOffset);
+        }
+    }
+
+    /// <summary>
+    /// Flattened 800 by 8 table of packed-tile deltas used to reach neighbouring tiles.
+    /// </summary>
+    public Span<Int32> PackedNeighborTileDeltas => new((void*)((UInt64)_ptr + PackedNeighborTileDeltasOffset), PackedMapAxisCapacity * PackedNeighborDirectionCount);
+    public Span<Int32> PackedRowTileCounts => new((void*)((UInt64)_ptr + PackedRowTileCountsOffset), PackedMapAxisCapacity);
+    public Span<Int16> PackedTileCoordinateLookup0 => new((void*)((UInt64)_ptr + PackedTileCoordinateLookup0Offset), NativePackedTileCapacity);
+    public Span<Int16> PackedTileCoordinateLookup1 => new((void*)((UInt64)_ptr + PackedTileCoordinateLookup1Offset), NativePackedTileCapacity);
+    public Span<Int16> FloatingGrid => new((void*)((UInt64)_ptr + FloatingGridOffset), NativePackedTileCapacity);
+    public Span<byte> ChangedGrid => new((void*)((UInt64)_ptr + ChangedGridOffset), NativePackedTileCapacity);
+    public Span<UInt16> CertainPathGrid => new((void*)((UInt64)_ptr + CertainPathGridOffset), NativePackedTileCapacity);
+    public Span<UInt16> WalkGrid => new((void*)((UInt64)_ptr + WalkGridOffset), NativePackedTileCapacity);
+    public Span<byte> AIInfoGrid => new((void*)((UInt64)_ptr + AIInfoGridOffset), NativePackedTileCapacity);
+    public Span<byte> AIProximityGrid => new((void*)((UInt64)_ptr + AIProximityGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownDzSpreadIdGrid => new((void*)((UInt64)_ptr + TownDzSpreadIdGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownNullConnectsGrid => new((void*)((UInt64)_ptr + TownNullConnectsGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownDzSpreadCountGrid => new((void*)((UInt64)_ptr + TownDzSpreadCountGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownStoneValueGrid => new((void*)((UInt64)_ptr + TownStoneValueGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownStructureGrid => new((void*)((UInt64)_ptr + TownStructureGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownOasisGrid => new((void*)((UInt64)_ptr + TownOasisGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownFarmGrid => new((void*)((UInt64)_ptr + TownFarmGridOffset), NativePackedTileCapacity);
+    public Span<byte> TownIronGrid => new((void*)((UInt64)_ptr + TownIronGridOffset), NativePackedTileCapacity);
+    public Span<byte> ProblemBuildGrid => new((void*)((UInt64)_ptr + ProblemBuildGridOffset), NativePackedTileCapacity);
+    public Span<byte> AIVBlockZone => new((void*)((UInt64)_ptr + AIVBlockZoneOffset), AivBlockZoneCapacity);
+    public Span<GamePitchDescriptor> PitchSlots => new((void*)((UInt64)_ptr + PitchSlotsOffset), PitchSlotCapacity);
+    public Span<UInt16> PitchSlotLookup => new((void*)((UInt64)_ptr + PitchSlotLookupOffset), PitchSlotLookupCapacity);
+    public Span<Int32> LayerInvalidationPending => new((void*)((UInt64)_ptr + LayerInvalidationPendingOffset), LayerInvalidationFlagCount);
+    public Span<Int32> RotatedDirectionMap => new((void*)((UInt64)_ptr + RotatedDirectionMapOffset), RotatedDirectionCount);
+
     /// <summary>
     /// aka pillar_gfx_layer
     /// </summary>
@@ -172,7 +269,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<int>((void*)((UInt64)_ptr + PillarGFXGridOffset), MapSize);
+            return new Span<int>((void*)((UInt64)_ptr + PillarGFXGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -183,7 +280,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + UnknownGridReal2Offset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + UnknownGridReal2Offset), NativePackedTileCapacity);
         }
     }
 
@@ -194,7 +291,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + ShowHiGridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + ShowHiGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -205,7 +302,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<UInt16>((void*)((UInt64)_ptr + MiscDisplayGridOffset), MapSize);
+            return new Span<UInt16>((void*)((UInt64)_ptr + MiscDisplayGridOffset), NativePackedTileCapacity);
         }
     }
     /// <summary>
@@ -245,7 +342,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + AIZoneGridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + AIZoneGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -258,7 +355,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<CompactPlayerBitMask>((void*)((UInt64)_ptr + OccupancyGridOffset), MapSize);
+            return new Span<CompactPlayerBitMask>((void*)((UInt64)_ptr + OccupancyGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -269,7 +366,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + DelayGridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + DelayGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -286,7 +383,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<Int32>((void*)((UInt64)_ptr + LogicGridOffset), MapSize);
+            return new Span<Int32>((void*)((UInt64)_ptr + LogicGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -303,7 +400,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<UInt16>((void*)((UInt64)_ptr + OrganismGridOffset), MapSize);
+            return new Span<UInt16>((void*)((UInt64)_ptr + OrganismGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -319,7 +416,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + Logic2GridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + Logic2GridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -334,7 +431,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + WallOwnerGridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + WallOwnerGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -349,7 +446,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<UInt16>((void*)((UInt64)_ptr + StructureGridOffset), MapSize);
+            return new Span<UInt16>((void*)((UInt64)_ptr + StructureGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -363,7 +460,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<UInt16>((void*)((UInt64)_ptr + TileUnitIdGridOffset), MapSize);
+            return new Span<UInt16>((void*)((UInt64)_ptr + TileUnitIdGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -379,7 +476,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + DamageGridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + DamageGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -394,7 +491,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + HeightGridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + HeightGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -406,7 +503,7 @@ public unsafe class GameTileManagerView
     {
         get
         {
-            return new Span<byte>((void*)((UInt64)_ptr + DefaultHeightGridOffset), MapSize);
+            return new Span<byte>((void*)((UInt64)_ptr + DefaultHeightGridOffset), NativePackedTileCapacity);
         }
     }
 
@@ -415,7 +512,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int32> GFXGrid
     {
-        get { return new Span<Int32>((void*)((UInt64)_ptr + GFXGridOffset), MapSize); }
+        get { return new Span<Int32>((void*)((UInt64)_ptr + GFXGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -426,7 +523,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int32> AlphaGFXGrid
     {
-        get { return new Span<Int32>((void*)((UInt64)_ptr + AlphaGFXGridOffset), MapSize); }
+        get { return new Span<Int32>((void*)((UInt64)_ptr + AlphaGFXGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -434,7 +531,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int32> ConstructionGrid
     {
-        get { return new Span<Int32>((void*)((UInt64)_ptr + ConstructionGridOffset), MapSize); }
+        get { return new Span<Int32>((void*)((UInt64)_ptr + ConstructionGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -442,7 +539,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int32> WallGFXGrid
     {
-        get { return new Span<Int32>((void*)((UInt64)_ptr + WallGFXGridOffset), MapSize); }
+        get { return new Span<Int32>((void*)((UInt64)_ptr + WallGFXGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -450,15 +547,15 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int16> UnknownGrid_0x75EF80
     {
-        get { return new Span<Int16>((void*)((UInt64)_ptr + UnknownGrid_0x75EF80_Offset), MapSize); }
+        get { return new Span<Int16>((void*)((UInt64)_ptr + UnknownGrid_0x75EF80_Offset), NativePackedTileCapacity); }
     }
 
     /// <summary>
-    /// Random Noise Variation Grid (Offset 0x7FB5C0).
+    /// Random Noise Variation Grid (Offset 0x7FB9C0).
     /// </summary>
     public Span<UInt16> TileRandomNoiseGrid
     {
-        get { return new Span<UInt16>((void*)((UInt64)_ptr + TileRandomNoiseGridOffset), MapSize); }
+        get { return new Span<UInt16>((void*)((UInt64)_ptr + TileRandomNoiseGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -467,7 +564,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<byte> StructureWasGrid
     {
-        get { return new Span<byte>((void*)((UInt64)_ptr + StructureWasGridOffset), MapSize); }
+        get { return new Span<byte>((void*)((UInt64)_ptr + StructureWasGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -477,7 +574,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int16> FlyGrid
     {
-        get { return new Span<Int16>((void*)((UInt64)_ptr + FlyGridOffset), MapSize); }
+        get { return new Span<Int16>((void*)((UInt64)_ptr + FlyGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -485,7 +582,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<byte> UnknownGrid_0xD30080
     {
-        get { return new Span<byte>((void*)((UInt64)_ptr + UnknownGrid_0xD30080_Offset), MapSize); }
+        get { return new Span<byte>((void*)((UInt64)_ptr + UnknownGrid_0xD30080_Offset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -494,7 +591,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<byte> LuminesenceGrid
     {
-        get { return new Span<byte>((void*)((UInt64)_ptr + LuminesenceGridOffset), MapSize); }
+        get { return new Span<byte>((void*)((UInt64)_ptr + LuminesenceGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -502,7 +599,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int16> MacroGrid
     {
-        get { return new Span<Int16>((void*)((UInt64)_ptr + MacroGridOffset), MapSize); }
+        get { return new Span<Int16>((void*)((UInt64)_ptr + MacroGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -510,7 +607,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<byte> UnknownGrid_0x134E700
     {
-        get { return new Span<byte>((void*)((UInt64)_ptr + UnknownGrid_0x134E700_Offset), MapSize); }
+        get { return new Span<byte>((void*)((UInt64)_ptr + UnknownGrid_0x134E700_Offset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -518,7 +615,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<byte> AIDangerGrid
     {
-        get { return new Span<byte>((void*)((UInt64)_ptr + AIDangerGridOffset), MapSize); }
+        get { return new Span<byte>((void*)((UInt64)_ptr + AIDangerGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -526,7 +623,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<byte> UnknownGrid_0x13EB140
     {
-        get { return new Span<byte>((void*)((UInt64)_ptr + UnknownGrid_0x13EB140_Offset), MapSize); }
+        get { return new Span<byte>((void*)((UInt64)_ptr + UnknownGrid_0x13EB140_Offset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -535,7 +632,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<CompactPlayerBitMask> AIVBlockGrid
     {
-        get { return new Span<CompactPlayerBitMask>((void*)((UInt64)_ptr + AIVBlockGridOffset), MapSize); }
+        get { return new Span<CompactPlayerBitMask>((void*)((UInt64)_ptr + AIVBlockGridOffset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -543,7 +640,7 @@ public unsafe class GameTileManagerView
     /// </summary>
     public Span<Int32> UnknownGrid_0x1D68F70
     {
-        get { return new Span<Int32>((void*)((UInt64)_ptr + UnknownGrid_0x1D68F70_Offset), MapSize); }
+        get { return new Span<Int32>((void*)((UInt64)_ptr + UnknownGrid_0x1D68F70_Offset), NativePackedTileCapacity); }
     }
 
     /// <summary>
@@ -575,5 +672,14 @@ public unsafe class GameTileManagerView
     public ref Int32 MoatWorkTaskSlotLimit
     {
         get { return ref *(Int32*)((UInt64)_ptr + MoatWorkTaskSlotLimitOffset); }
+    }
+
+    /// <summary>
+    /// Number of currently active moat-work task slots.
+    /// Native task creation increments this independently of the slot high-water mark.
+    /// </summary>
+    public ref Int32 MoatWorkTaskActiveCount
+    {
+        get { return ref *(Int32*)((UInt64)_ptr + MoatWorkTaskActiveCountOffset); }
     }
 }

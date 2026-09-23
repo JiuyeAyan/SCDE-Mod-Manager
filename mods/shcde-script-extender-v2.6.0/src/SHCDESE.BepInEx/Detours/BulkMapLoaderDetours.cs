@@ -24,7 +24,6 @@ namespace SHCDESE.Detours;
 internal unsafe class BulkMapLoaderDetours 
 {
     private static bool _isMapEditorSave = false;
-    private HookTransaction? tx;
 
     /// <summary>
     /// Scans the game memory for specific function patterns and applies hooks to them.
@@ -32,13 +31,13 @@ internal unsafe class BulkMapLoaderDetours
     /// </summary>
     /// <param name="memory">A ReadOnlySpan of the game executable memory to be scanned.</param>
     /// <param name="region">The memory region to scan.</param>
-    public BulkMapLoaderDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    /// <param name="tx">Shared transaction.</param>
+    /// <param name="scanner">Shared scanner.</param>
+    public BulkMapLoaderDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         tx.AddDetour(c_game_dll_loadmaptoplay_hook, 
             HookTarget.FromExport("DLL_LoadMapToPlay", (IntPtr)currentImageBase),
@@ -116,7 +115,6 @@ internal unsafe class BulkMapLoaderDetours
         } 
         else LogHelper.Error($"Could not retrieve function ptr to c_game_save_file_write");
 
-        tx.Commit();
     }
 
     internal static HookHandle<X64InlineHook> c_game_save_game_file = new();

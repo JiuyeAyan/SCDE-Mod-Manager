@@ -29,8 +29,6 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 internal unsafe class BulkMapEditorDetours
 {
-    private HookTransaction? tx;
-
     /// <summary>
     /// This is for an edge-case where the game uses the SetTileTypeToNone function to "clean" surface before redrawing it with another one.
     /// </summary>
@@ -41,18 +39,17 @@ internal unsafe class BulkMapEditorDetours
     /// </summary>
     /// <param name="memory">A <see cref="ReadOnlySpan{T}"/> of bytes representing the memory block of the loaded `CrusaderDE.dll`.</param>
     /// <param name="region">The memory region to scan for function signatures.</param>
+    /// <param name="tx">Shared transaction.</param>
+    /// <param name="scanner">Shared scanner.</param>
     /// <remarks>
     /// This method should only be called once during the script extender's initialization phase. It finds the
     /// target functions using AOB (Array of Bytes) scanning and redirects them to our custom hook implementations.
     /// </remarks>
-    public BulkMapEditorDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkMapEditorDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         tx.AddDetour(c_game_editor_brush_set_tiletype_hook,
             "48 89 5C 24 ? 44 89 4C 24 ? 44 89 44 24 ? 89 54 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC ? 4D 63 E1",
@@ -101,7 +98,6 @@ internal unsafe class BulkMapEditorDetours
         }
         else LogHelper.Error($"Could not retrieve function ptr to c_game_tile_refresh_visual");
 
-        tx.Commit();
     }
 
     // 44 89 4C 24 ? 44 89 44 24 ? 89 54 24 ? 53 55 56 57 41 54 41 55 41 57

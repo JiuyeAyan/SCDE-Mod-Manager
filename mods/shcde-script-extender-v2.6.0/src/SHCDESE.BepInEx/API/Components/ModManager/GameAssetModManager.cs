@@ -64,6 +64,12 @@ public sealed class GameAssetModManager
     /// </summary>
     private readonly Dictionary<string, string> _pendingLuaMods = [];
 
+    /// <summary>
+    /// Candidates discovered by the early mod compatibility check. 
+    /// Keeping thes winning candidates here lets normal registration reuse the same discovery result.
+    /// </summary>
+    private List<AssetModCandidate>? _preparedCandidates;
+
     // ---------------------------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------------------------
@@ -109,11 +115,71 @@ public sealed class GameAssetModManager
     }
 
     /// <summary>
+    /// Discovers the mods that would be registered and checks all declared mod dependencies.
+    /// The Script Extender participates as a normal installed dependency under <see cref="Plugin.PLUGIN_GUID"/>.
+    /// The discovered candidates are retained for <see cref="RegisterAll"/>.
+    /// </summary>
+    /// <param name="currentScriptExtenderVersion">The running Script Extender version.</param>
+    /// <returns>One issue for each missing, malformed, or version-incompatible dependency.</returns>
+    internal IReadOnlyList<ModCompatibilityIssue> PrepareAllAndCheckCompatibility(string currentScriptExtenderVersion)
+    {
+        if (!TryParseModVersion(currentScriptExtenderVersion, out _))
+            throw new InvalidOperationException($"The running Script Extender version [{currentScriptExtenderVersion}] is invalid.");
+
+        DiscardPreparedCandidates();
+        _preparedCandidates = DiscoverWinningCandidates();
+
+        Dictionary<string, InstalledModVersion> installedMods = new(StringComparer.OrdinalIgnoreCase)
+        {
+            [Plugin.PLUGIN_GUID] = new InstalledModVersion(Plugin.PLUGIN_NAME, currentScriptExtenderVersion),
+        };
+
+        foreach (AssetModCandidate candidate in _preparedCandidates)
+        {
+            // The running Script Extender version is authoritative when its own asset folder is also discovered.
+            if (!installedMods.ContainsKey(candidate.Info.GUID))
+                installedMods[candidate.Info.GUID] = new InstalledModVersion(candidate.DisplayName, candidate.Info.Version);
+        }
+
+        List<ModCompatibilityIssue> issues = [];
+        foreach (AssetModCandidate candidate in _preparedCandidates)
+        {
+            foreach (ModDependency dependency in EnumerateDependencies(candidate.Info))
+            {
+                if (!TryGetDependencyIssue(dependency, installedMods, out string reason))
+                    continue;
+
+                ModCompatibilityIssue issue = new(candidate.Info, dependency, reason);
+                issues.Add(issue);
+                LogHelper.Warning($"Mod [{issue.DisplayName}] has an unmet dependency: {issue.Reason}");
+            }
+        }
+
+        LogHelper.Information($"Mod compatibility check completed ({_preparedCandidates.Count} active mod(s), {issues.Count} issue(s)).");
+        return issues;
+    }
+
+    /// <summary>
+    /// Releases candidates retained by <see cref="PrepareAllAndCheckCompatibility"/> when startup is cancelled.
+    /// </summary>
+    internal void DiscardPreparedCandidates()
+    {
+        if (_preparedCandidates == null)
+            return;
+
+        foreach (AssetModCandidate candidate in _preparedCandidates)
+            candidate.Source.Dispose();
+
+        _preparedCandidates = null;
+    }
+
+    /// <summary>
     /// Finds and registers all directories and top-level .semod packages within BepInEx/plugins/.
     /// </summary>
     /// <remarks>
-    /// Discovery runs in three phases. Every immediate subdirectory is first read and parsed without registering anything, then candidates that declare the same <c>info.json</c> GUID
+    /// Discovery runs before registration. Every immediate subdirectory is first read and parsed without registering anything, then candidates that declare the same <c>info.json</c> GUID
     /// are collapsed down to the one with the highest <see cref="ModInfo.Version"/>, and only the surviving candidates are registered. 
+    /// When the startup compatibility check already ran, this method reuses its discovered winners.
     /// Losing copies are logged and otherwise ignored, so a mod that is installed twice no longer loads as well.
     ///
     /// Winners are registered by container name using ordinal comparison, matching BepInEx-style numeric/uppercase/lowercase folder ordering for both loose and packed mods.
@@ -121,65 +187,18 @@ public sealed class GameAssetModManager
     public void RegisterAll()
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
-        string pluginsDirectory = IO.DirectoryHelpers.BepInExPluginsDirectory;
+        List<AssetModCandidate> candidates = _preparedCandidates ?? DiscoverWinningCandidates();
+        _preparedCandidates = null;
 
-        if (!Directory.Exists(pluginsDirectory))
-        {
-            LogHelper.Warning($"BepInEx plugins directory does not exist at [{pluginsDirectory}] - no asset mods will be registered.");
-            return;
-        }
-
-        // Phase 1: read metadata for every candidate source, registering nothing yet.
-        List<AssetModCandidate> candidates = [];
-        IEnumerable<string> packagePaths = Directory.EnumerateFiles(pluginsDirectory, "*", SearchOption.TopDirectoryOnly)
-            .Where(path => string.Equals(Path.GetExtension(path), ".semod", StringComparison.OrdinalIgnoreCase));
-        IEnumerable<string> candidatePaths = Directory.EnumerateDirectories(pluginsDirectory)
-            .Concat(packagePaths)
-            .OrderBy(path => Path.GetFileName(path), StringComparer.Ordinal);
-
-        foreach (string candidatePath in candidatePaths)
-        {
-            AssetModCandidate? candidate = TryReadCandidate(candidatePath);
-            if (candidate != null)
-                candidates.Add(candidate);
-        }
-
-        // Phase 2: collapse duplicate GUIDs down to the highest declared version.
-        Dictionary<string, AssetModCandidate> winners = new(StringComparer.OrdinalIgnoreCase);
+        // Register the winners in discovery order.
         foreach (AssetModCandidate candidate in candidates)
         {
-            if (!winners.TryGetValue(candidate.Info.GUID, out AssetModCandidate? incumbent))
-            {
-                winners[candidate.Info.GUID] = candidate;
-                continue;
-            }
-
-            if (candidate.Version > incumbent.Version)
-            {
-                winners[candidate.Info.GUID] = candidate;
-                LogShadowedCandidate(incumbent, candidate);
-            }
-            else
-            {
-                LogShadowedCandidate(candidate, incumbent);
-            }
-        }
-
-        // Phase 3: register the winners in discovery order.
-        foreach (AssetModCandidate candidate in candidates)
-        {
-            if (!winners.TryGetValue(candidate.Info.GUID, out AssetModCandidate? winner) || !ReferenceEquals(winner, candidate))
-            {
-                candidate.Source.Dispose();
-                continue;
-            }
-
             LogHelper.Information($"Loading Asset Mod: [{candidate.Directory}]");
             RegisterAssetModCore(candidate);
         }
 
         stopwatch.Stop();
-        LogHelper.Information($"Asset mod discovery and indexing completed in {stopwatch.ElapsedMilliseconds} ms ({_registeredByGuid.Count} mod(s)).");
+        LogHelper.Information($"Asset mod registration and indexing completed in {stopwatch.ElapsedMilliseconds} ms ({_registeredByGuid.Count} mod(s)).");
     }
 
     /// <summary>
@@ -203,6 +222,7 @@ public sealed class GameAssetModManager
 
     internal void Unload()
     {
+        DiscardPreparedCandidates();
         _registeredAssetDirectories.Clear();
         _registeredByGuid.Clear();
         _pendingLuaMods.Clear();
@@ -211,6 +231,161 @@ public sealed class GameAssetModManager
     // ---------------------------------------------------------------------------------------
     // Internals
     // ---------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Reads every candidate and collapses duplicate GUIDs to the highest mod version.
+    /// </summary>
+    private static List<AssetModCandidate> DiscoverWinningCandidates()
+    {
+        string pluginsDirectory = IO.DirectoryHelpers.BepInExPluginsDirectory;
+
+        if (!Directory.Exists(pluginsDirectory))
+        {
+            LogHelper.Warning($"BepInEx plugins directory does not exist at [{pluginsDirectory}] - no asset mods will be registered.");
+            return [];
+        }
+
+        List<AssetModCandidate> candidates = [];
+        try
+        {
+            IEnumerable<string> packagePaths = Directory.EnumerateFiles(pluginsDirectory, "*", SearchOption.TopDirectoryOnly)
+                .Where(path => string.Equals(Path.GetExtension(path), ".semod", StringComparison.OrdinalIgnoreCase));
+            IEnumerable<string> candidatePaths = Directory.EnumerateDirectories(pluginsDirectory)
+                .Concat(packagePaths)
+                .OrderBy(path => Path.GetFileName(path), StringComparer.Ordinal);
+
+            foreach (string candidatePath in candidatePaths)
+            {
+                AssetModCandidate? candidate = TryReadCandidate(candidatePath);
+                if (candidate != null)
+                    candidates.Add(candidate);
+            }
+
+            Dictionary<string, AssetModCandidate> winnersByGuid = new(StringComparer.OrdinalIgnoreCase);
+            foreach (AssetModCandidate candidate in candidates)
+            {
+                if (!winnersByGuid.TryGetValue(candidate.Info.GUID, out AssetModCandidate? incumbent))
+                {
+                    winnersByGuid[candidate.Info.GUID] = candidate;
+                    continue;
+                }
+
+                if (candidate.Version > incumbent.Version)
+                {
+                    winnersByGuid[candidate.Info.GUID] = candidate;
+                    LogShadowedCandidate(incumbent, candidate);
+                }
+                else
+                {
+                    LogShadowedCandidate(candidate, incumbent);
+                }
+            }
+
+            List<AssetModCandidate> winners = [];
+            foreach (AssetModCandidate candidate in candidates)
+            {
+                if (winnersByGuid.TryGetValue(candidate.Info.GUID, out AssetModCandidate? winner) && ReferenceEquals(winner, candidate))
+                    winners.Add(candidate);
+                else
+                    candidate.Source.Dispose();
+            }
+
+            return winners;
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Error(ex, "Error during discovery");
+
+            foreach (AssetModCandidate candidate in candidates)
+                candidate.Source.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Returns dependencies declared through the generic collection, including malformed null
+    /// entries so they can be reported instead of silently ignored.
+    /// </summary>
+    private static IEnumerable<ModDependency> EnumerateDependencies(ModInfo info)
+    {
+        foreach (ModDependency? declaredDependency in info.Dependencies ?? [])
+            yield return declaredDependency ?? new ModDependency();
+    }
+
+    /// <summary>
+    /// Checks one dependency against the installed mod index. Invalid declarations are treated as
+    /// issues so malformed metadata cannot silently bypass the check.
+    /// </summary>
+    private static bool TryGetDependencyIssue(ModDependency dependency, IReadOnlyDictionary<string, InstalledModVersion> installedMods, out string reason)
+    {
+        reason = string.Empty;
+        if (string.IsNullOrWhiteSpace(dependency.GUID))
+        {
+            reason = "a dependency declares no GUID";
+            return true;
+        }
+
+        string dependencyGuid = dependency.GUID.Trim();
+        if (!installedMods.TryGetValue(dependencyGuid, out InstalledModVersion? installedMod))
+        {
+            reason = $"required mod [{dependencyGuid}] is not installed";
+            return true;
+        }
+
+        Version? minimum = null;
+        Version? maximum = null;
+        if (!string.IsNullOrWhiteSpace(dependency.MinimumVersion))
+        {
+            if (!TryParseModVersion(dependency.MinimumVersion, out Version parsedMinimum))
+            {
+                reason = $"dependency [{dependencyGuid}] has an invalid MinimumVersion [{dependency.MinimumVersion}]";
+                return true;
+            }
+
+            minimum = parsedMinimum;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dependency.MaximumVersion))
+        {
+            if (!TryParseModVersion(dependency.MaximumVersion, out Version parsedMaximum))
+            {
+                reason = $"dependency [{dependencyGuid}] has an invalid MaximumVersion [{dependency.MaximumVersion}]";
+                return true;
+            }
+
+            maximum = parsedMaximum;
+        }
+
+        if (minimum != null && maximum != null && minimum > maximum)
+        {
+            reason = $"dependency [{dependencyGuid}] declares minimum [{dependency.MinimumVersion}] greater than maximum [{dependency.MaximumVersion}]";
+            return true;
+        }
+
+        // A dependency without bounds only requires presence, so its installed Version does not need to be parseable.
+        if (minimum == null && maximum == null)
+            return false;
+
+        if (!TryParseModVersion(installedMod.RawVersion, out Version installedVersion))
+        {
+            reason = $"installed mod [{installedMod.DisplayName}] ({dependencyGuid}) has an invalid version [{installedMod.RawVersion ?? "<null>"}]";
+            return true;
+        }
+
+        if (minimum != null && installedVersion < minimum)
+        {
+            reason = $"installed mod [{installedMod.DisplayName}] ({dependencyGuid}) is version [{installedMod.RawVersion}], but [{dependency.MinimumVersion}] or newer is required";
+            return true;
+        }
+
+        if (maximum != null && installedVersion > maximum)
+        {
+            reason = $"installed mod [{installedMod.DisplayName}] ({dependencyGuid}) is version [{installedMod.RawVersion}], but [{dependency.MaximumVersion}] or older is required";
+            return true;
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Reads and validates a mod folder's <c>info.json</c> without touching any registry.
@@ -284,6 +459,13 @@ public sealed class GameAssetModManager
             return null;
         }
 
+        if (!Enum.IsDefined(typeof(ModAssetMode), modInfo.AssetMode))
+        {
+            LogHelper.Error($"Mod [{modInfo.GUID}] at [{source.DisplayName}] declares an unknown AssetMode [{modInfo.AssetMode}].");
+            source.Dispose();
+            return null;
+        }
+
         if (!TryParseModVersion(modInfo.Version, out Version version))
         {
             LogHelper.Warning($"Mod [{modInfo.GUID}] at [{source.DisplayName}] declares an unusable Version [{modInfo.Version ?? "<null>"}]. It will be treated as [{UNKNOWN_VERSION}] when resolving duplicates, so any copy with a valid version wins.");
@@ -316,7 +498,7 @@ public sealed class GameAssetModManager
         }
 
         // One pass indexes the entire mod and derives all specialized views.
-        if (!GameAssetManagerAPI.Instance.RegisterModProvider(modInfo.GUID, candidate.Source))
+        if (!GameAssetManagerAPI.Instance.RegisterModProvider(modInfo.GUID, candidate.Source, modInfo.AssetMode))
             return;
 
         _registeredByGuid[modInfo.GUID] = candidate;
@@ -326,7 +508,10 @@ public sealed class GameAssetModManager
         string logoSpritePath = $"Override/Assets/GUI/Sprites/{modInfo.GUID}.png";
         if (candidate.Source.Contains(logoSpritePath))
         {
-            Plugin.ViewModel.AddMod($"/Assets/GUI/Sprites/{modInfo.GUID}", modInfo);
+            string logoReference = modInfo.AssetMode == ModAssetMode.Local
+                ? "/" + GameAssetManagerAPI.CreateModAssetReference(modInfo.GUID, logoSpritePath)
+                : $"/Assets/GUI/Sprites/{modInfo.GUID}";
+            Plugin.ViewModel.AddMod(logoReference, modInfo);
         }
         else LogHelper.Warning($"Mod has no sprite logo at [{logoSpritePath}] in [{directory}] - This may be ignored.");
 
@@ -403,7 +588,9 @@ public sealed class GameAssetModManager
             return false;
         }
 
-        version = parsed;
+        // System.Version treats missing components as -1, which would make 1.0 sort below 1.0.0.
+        // Normalize omitted build/revision components so common SemVer spellings compare as expected.
+        version = new Version(parsed.Major, parsed.Minor, Math.Max(parsed.Build, 0), Math.Max(parsed.Revision, 0));
         return true;
     }
 
@@ -419,5 +606,23 @@ public sealed class GameAssetModManager
         public ModInfo Info { get; } = info;
         public Version Version { get; } = version;
         public string DisplayVersion => string.IsNullOrWhiteSpace(Info.Version) ? "<none>" : Info.Version;
+        public string DisplayName => string.IsNullOrWhiteSpace(Info.Name) ? Info.GUID : Info.Name;
     }
+
+    private sealed class InstalledModVersion(string displayName, string? rawVersion)
+    {
+        public string DisplayName { get; } = displayName;
+        public string? RawVersion { get; } = rawVersion;
+    }
+}
+
+/// <summary>
+/// Describes an active mod with a missing, malformed, or version-incompatible dependency.
+/// </summary>
+internal sealed class ModCompatibilityIssue(ModInfo info, ModDependency dependency, string reason)
+{
+    public ModInfo Info { get; } = info;
+    public ModDependency Dependency { get; } = dependency;
+    public string Reason { get; } = reason;
+    public string DisplayName => string.IsNullOrWhiteSpace(Info.Name) ? Info.GUID : Info.Name;
 }

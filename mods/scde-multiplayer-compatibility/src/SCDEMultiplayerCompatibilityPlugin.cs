@@ -18,12 +18,14 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
     {
         public const string PluginGuid = "com.jiuyeayan.scde.multiplayer-compatibility";
         public const string PluginName = "SCDE Multiplayer Mod Compatibility";
-        public const string PluginVersion = "0.3.1";
+        public const string PluginVersion = "0.4.0";
 
-        private const string MemberProfileKey = "scdemm_profile_v3";
-        private const string LobbyProfileKey = "scdemm_host_profile_v3";
-        private const string LobbyManifestCountKey = "scdemm_mod_count_v3";
-        private const string LobbyManifestChunkPrefix = "scdemm_mods_v3_";
+        private const string MemberProfileKey = "scdemm_profile_v4";
+        private const string LobbyProfileKey = "scdemm_host_profile_v4";
+        private const string LobbyManifestCountKey = "scdemm_mod_count_v4";
+        private const string LobbyManifestChunkPrefix = "scdemm_mods_v4_";
+        private const string LobbyOwnerKey = "scdemm_host_owner_v4";
+        private const string CapabilityKey = "scdemm_protocol";
         private const int LobbyManifestChunkSize = 3000;
         private const int MaxLobbyManifestChunks = 16;
         private const float PollIntervalSeconds = 0.75f;
@@ -42,6 +44,8 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             new Dictionary<ulong, float>();
         private readonly HashSet<ulong> handledMembers = new HashSet<ulong>();
         private readonly HashSet<ulong> activeMemberIds = new HashSet<ulong>();
+        private readonly HashSet<ulong> knownMmcMembers = new HashSet<ulong>();
+        private readonly HostCapabilityMemory hostCapabilities = new HostCapabilityMemory();
         private readonly List<ulong> staleMemberIds = new List<ulong>();
         private Harmony harmony;
         private CompatibilityRuntime runtime;
@@ -50,6 +54,8 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
         private readonly List<ProfileMod> localMods = new List<ProfileMod>();
         private readonly List<ProfileMod> managerMods = new List<ProfileMod>();
         private bool managerProfileLoaded;
+        private bool managerProfileInvalid;
+        private string initializationError = "";
         private string runtimeProfileError = "";
         private bool useChinese;
         private bool singlePlayerSkirmishSetup;
@@ -69,6 +75,9 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
         private ulong localProfileErrorLobbyId;
         private float nextPollAt;
         private bool lobbyCompatible;
+        private bool lobbyInteropAllowed;
+        private bool interopWarningShown;
+        private float invalidHostSince = -1f;
         private string overlayMessage = "";
         private float overlayUntil;
         private bool overlayIsVerification;
@@ -97,12 +106,37 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             );
             LoadLocalProfile();
             harmony = new Harmony(PluginGuid);
-            if (managerProfileLoaded) ScriptExtenderBridge.InstallManagedPolicy(harmony);
-            harmony.PatchAll(typeof(SCDEMultiplayerCompatibilityPlugin).Assembly);
+            try
+            {
+                PatchTargetGuard.ValidateGameTargets();
+                if (managerProfileLoaded) ScriptExtenderBridge.InstallManagedPolicy(harmony);
+                harmony.PatchAll(typeof(SCDEMultiplayerCompatibilityPlugin).Assembly);
+                if (managerProfileInvalid) RecordInitializationFailure("The Manager deployment receipt is missing or invalid.");
+            }
+            catch (Exception error)
+            {
+                harmony.UnpatchSelf();
+                RecordInitializationFailure(error.Message);
+            }
             CreateDetachedRuntime();
+            if (!String.IsNullOrEmpty(initializationError))
+            {
+                ShowOverlay(L("联机检测未能初始化，请退出游戏并更新组件。当前多人游戏不受保护。\n",
+                    "Compatibility checks could not initialize. Exit and update the components; multiplayer is not protected.\n") + initializationError);
+                return;
+            }
             Logger.LogInfo(
                 "Multiplayer compatibility checker initialized; SCDE settings load guard enabled."
             );
+        }
+
+        private void RecordInitializationFailure(string message)
+        {
+            initializationError = message;
+            localToken = "";
+            lobbyCompatible = false;
+            StartupReadyReporter.ReportFailure(message);
+            Logger.LogError("MMC initialization failed; no verified runtime profile will be published. " + message);
         }
 
         internal static void LogSettingsGuardInfo(string message)
@@ -137,6 +171,11 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
 
         internal void RuntimeUpdate()
         {
+            if (!String.IsNullOrEmpty(initializationError))
+            {
+                overlayUntil = Time.unscaledTime + OverlayDurationSeconds;
+                return;
+            }
             if (pluginHostDestroyed && !runtimeSurvivalLogged)
             {
                 runtimeSurvivalLogged = true;
@@ -175,38 +214,67 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                 "_scde_manager",
                 "active-mods.lobby"
             );
-            if (!File.Exists(profilePath))
+            try
             {
-                Logger.LogError("Manager compatibility profile is missing: " + profilePath);
-                localToken = "";
-                return;
+                string receipt = ReadManagerReceipt(profilePath);
+                bool requested = !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("SCDEModManagerLaunchId"));
+                ProfileDocument profile;
+                int mode = ClassifyManagerProfile(receipt, requested, out profile);
+                managerProfileInvalid = mode < 0;
+                managerProfileLoaded = mode > 0;
+                if (managerProfileInvalid) Logger.LogError("Manager compatibility profile is missing or invalid for this launch.");
+                if (profile != null) managerMods.AddRange(profile.Mods);
+                if (!managerProfileInvalid)
+                    Logger.LogInfo(managerProfileLoaded ? "Manager package receipt retained as local provenance." : "MMC standalone runtime profile mode.");
             }
-
-            localLobbyProfile = File.ReadAllText(profilePath).TrimEnd('\r', '\n');
-            ProfileDocument profile;
-            if (!TryParseProfile(localLobbyProfile, out profile))
+            catch (Exception error)
             {
-                Logger.LogError("Manager compatibility profile is invalid.");
-                localToken = "";
-                return;
+                managerProfileInvalid = true;
+                Logger.LogError("Manager compatibility profile could not be read: " + error.Message);
             }
-
-            managerMods.Clear();
-            managerMods.AddRange(profile.Mods);
-            managerProfileLoaded = true;
             localToken = ""; // BepInEx is still loading plugins; capture runtime state only at the lobby boundary.
-            Logger.LogInfo("Loaded manager Mod profile " + profile.Token.Substring(0, 14) + "...");
+        }
+
+        internal static string ReadManagerReceipt(string profilePath)
+        {
+            try
+            {
+                // Read at most one bounded profile; do not treat access/I/O errors as absence.
+                using (var reader = new StreamReader(profilePath, Encoding.UTF8, true))
+                {
+                    char[] buffer = new char[LobbyManifestChunkSize * MaxLobbyManifestChunks + 1];
+                    int count = 0, read;
+                    while (count < buffer.Length && (read = reader.Read(buffer, count, buffer.Length - count)) > 0) count += read;
+                    if (count == buffer.Length) throw new FormatException("Manager compatibility profile exceeds the size limit.");
+                    return new string(buffer, 0, count).TrimEnd('\r', '\n');
+                }
+            }
+            catch (FileNotFoundException) { return null; }
+            catch (DirectoryNotFoundException) { return null; }
+        }
+
+        // -1: broken receipt/request; 0: standalone; 1: valid managed launch.
+        internal static int ClassifyManagerProfile(string receipt, bool requested, out ProfileDocument profile)
+        {
+            profile = null;
+            if (receipt == null) return requested ? -1 : 0;
+            if (!TryParseProfile(receipt, out profile) || !profile.Token.StartsWith("2:"))
+            {
+                profile = null;
+                return -1;
+            }
+            return requested ? 1 : 0;
         }
 
         private bool RefreshRuntimeProfile()
         {
-            if (!managerProfileLoaded) return false;
+            if (managerProfileInvalid || !String.IsNullOrEmpty(initializationError)) return false;
             try
             {
-                bool requireExtender = managerMods.Exists(mod => mod.Id == ScriptExtenderBridge.PackageId);
-                List<ProfileMod> merged = RuntimeProfile.Merge(managerMods, ScriptExtenderBridge.Read(requireExtender));
+                bool requireExtender = managerProfileLoaded && managerMods.Exists(mod => mod.Id == ScriptExtenderBridge.PackageId);
+                List<ProfileMod> merged = RuntimeProfile.Merge(managerMods, ScriptExtenderBridge.Read(requireExtender, managerProfileLoaded));
                 string fingerprint = RuntimeProfile.Fingerprint(merged);
-                string token = "3:" + fingerprint;
+                string token = "4:" + fingerprint;
                 string document = RuntimeProfile.Serialize(merged, fingerprint);
                 if (document.Length > LobbyManifestChunkSize * MaxLobbyManifestChunks)
                     throw new InvalidOperationException("Combined Mod profile exceeds the lobby metadata limit.");
@@ -218,8 +286,9 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                     localMods.AddRange(merged);
                     publishedMemberLobbyId = publishedHostLobbyId = 0;
                     lobbyCompatible = false;
+                    lobbyInteropAllowed = false;
                     handledClientLobbyId = 0;
-                    Logger.LogInfo("SE_BRIDGE_PROFILE_READY: " + merged.Count + " required manager/runtime entries; " + token);
+                    Logger.LogInfo("SE_BRIDGE_PROFILE_READY: " + merged.Count + " required runtime entries; " + managerMods.Count + " local package receipts; " + token);
                 }
                 runtimeProfileError = "";
                 return true;
@@ -242,7 +311,7 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
 
             string[] lines = text.Replace("\r", "").Split('\n');
             string[] header = lines[0].Split('|');
-            if (header.Length != 2 || (header[0] != "SCDEMM2" && header[0] != "SCDEMM3") || header[1].Length != 64)
+            if (header.Length != 2 || (header[0] != "SCDEMM2" && header[0] != "SCDEMM4") || header[1].Length != 64)
                 return false;
 
             for (int index = 0; index < header[1].Length; index++)
@@ -316,13 +385,22 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                     localProfileErrorLobbyId = 0;
                     missingProfileSince.Clear();
                     handledMembers.Clear();
+                    knownMmcMembers.Clear();
                     lobbyCompatible = false;
+                    lobbyInteropAllowed = false;
+                    interopWarningShown = false;
+                    invalidHostSince = -1f;
+                    // Retain capability even when the profile later becomes unreadable.
+                    SteamMatchmaking.SetLobbyMemberData(lobby.id, CapabilityKey, "4");
+                    if (lobby.isHost || SteamMatchmaking.GetLobbyOwner(lobby.id) == SteamUser.GetSteamID())
+                        SteamMatchmaking.SetLobbyData(lobby.id, CapabilityKey, "4");
                     Logger.LogInfo("Checking multiplayer lobby " + lobbyId + ".");
                 }
 
                 if (!RefreshRuntimeProfile())
                 {
                     lobbyCompatible = false;
+                    lobbyInteropAllowed = false;
                     // Retract a previously valid claim if the live registry becomes unreadable.
                     if (publishedMemberLobbyId == lobbyId)
                     {
@@ -358,7 +436,7 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                     {
                         if (PublishHostProfile(lobby.id)) publishedHostLobbyId = lobbyId;
                     }
-                    if (publishedHostLobbyId != lobbyId) { lobbyCompatible = false; return; }
+                    if (publishedHostLobbyId != lobbyId) { lobbyCompatible = false; lobbyInteropAllowed = false; return; }
                     ValidateMembersAsHost(platform, lobby);
                 }
                 else
@@ -369,12 +447,15 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             catch (Exception error)
             {
                 lobbyCompatible = false;
+                lobbyInteropAllowed = false;
                 Logger.LogError("Lobby compatibility check failed: " + error);
             }
         }
 
         private bool PublishHostProfile(CSteamID lobbyId)
         {
+            CSteamID owner = SteamUser.GetSteamID();
+            if (SteamMatchmaking.GetLobbyOwner(lobbyId) != owner) return false;
             int chunkCount = (localLobbyProfile.Length + LobbyManifestChunkSize - 1) /
                              LobbyManifestChunkSize;
             if (chunkCount < 1 || chunkCount > MaxLobbyManifestChunks)
@@ -385,7 +466,9 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                 return false;
             }
 
-            bool published = true;
+            // Withdraw the old commit before changing chunks or owner identity.
+            bool published = SteamMatchmaking.SetLobbyData(lobbyId, LobbyProfileKey, "");
+            if (!published) return false;
             for (int index = 0; index < chunkCount; index++)
             {
                 int offset = index * LobbyManifestChunkSize;
@@ -401,6 +484,8 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                 LobbyManifestCountKey,
                 chunkCount.ToString(CultureInfo.InvariantCulture)
             );
+            published &= SteamMatchmaking.SetLobbyData(lobbyId, LobbyOwnerKey, owner.m_SteamID.ToString(CultureInfo.InvariantCulture));
+            if (SteamMatchmaking.GetLobbyOwner(lobbyId) != owner) return false;
             // Commit the token last; readers verify both the token and the document hash.
             if (published) published = SteamMatchmaking.SetLobbyData(lobbyId, LobbyProfileKey, localToken);
             if (!published)
@@ -410,8 +495,13 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             return published;
         }
 
-        private static ProfileDocument ReadHostProfile(CSteamID lobbyId)
+        private ProfileDocument ReadHostProfile(CSteamID lobbyId)
         {
+            // Remember even partial/old capability before parsing the current profile.
+            HostAdvertisesMMC(lobbyId);
+            ulong owner = SteamMatchmaking.GetLobbyOwner(lobbyId).m_SteamID;
+            string ownerText = SteamMatchmaking.GetLobbyData(lobbyId, LobbyOwnerKey);
+            if (!HostOwnerMatches(ownerText, owner)) return null;
             string countText = SteamMatchmaking.GetLobbyData(lobbyId, LobbyManifestCountKey);
             int chunkCount;
             if (!Int32.TryParse(countText, NumberStyles.None, CultureInfo.InvariantCulture,
@@ -431,8 +521,62 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             }
 
             ProfileDocument profile;
-            return TryParseProfile(text.ToString(), out profile) && profile.Token.StartsWith("3:") &&
-                profile.Token == SteamMatchmaking.GetLobbyData(lobbyId, LobbyProfileKey) ? profile : null;
+            return TryParseProfile(text.ToString(), out profile) && profile.Token.StartsWith("4:") &&
+                profile.Token == SteamMatchmaking.GetLobbyData(lobbyId, LobbyProfileKey) &&
+                ownerText == SteamMatchmaking.GetLobbyData(lobbyId, LobbyOwnerKey) &&
+                owner == SteamMatchmaking.GetLobbyOwner(lobbyId).m_SteamID ? profile : null;
+        }
+
+        internal static bool HostOwnerMatches(string publishedOwner, ulong currentOwner)
+        {
+            ulong parsed;
+            return currentOwner != 0 && UInt64.TryParse(publishedOwner, NumberStyles.None, CultureInfo.InvariantCulture, out parsed) &&
+                parsed == currentOwner;
+        }
+
+        private bool IsSeLobby(CSteamID lobbyId)
+        {
+            return localMods.Exists(mod => mod.Id == "runtime:" + ScriptExtenderBridge.PluginId) &&
+                String.Equals(SteamMatchmaking.GetLobbyData(lobbyId, "_SE_"), "true", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool HostAdvertisesMMC(CSteamID lobbyId)
+        {
+            bool advertised = false;
+            int count = SteamMatchmaking.GetLobbyDataCount(lobbyId);
+            for (int index = 0; index < count; index++)
+            {
+                string key, value;
+                if (!SteamMatchmaking.GetLobbyDataByIndex(lobbyId, index, out key, 256, out value, 8192) ||
+                    key.StartsWith("scdemm_", StringComparison.Ordinal))
+                {
+                    advertised = true;
+                    break;
+                }
+            }
+            return hostCapabilities.Observe(lobbyId.m_SteamID, SteamMatchmaking.GetLobbyOwner(lobbyId).m_SteamID,
+                advertised, currentLobbyId, pendingJoinLobby == null ? 0 : pendingJoinLobby.id.m_SteamID);
+        }
+
+        // 1 verified v4; 2 explicitly unverified SE-lobby interoperability; 0 reject/wait.
+        internal static int ClassifyPeer(string local, string remote, bool advertisedMMC, bool seLobby)
+        {
+            if (String.IsNullOrEmpty(local) || !local.StartsWith("4:") || local.Length != 66) return 0;
+            for (int index = 2; index < local.Length; index++) if (!Uri.IsHexDigit(local[index])) return 0;
+            if (!String.IsNullOrEmpty(remote)) return remote == local ? 1 : 0;
+            if (advertisedMMC) return 0;
+            return seLobby ? 2 : 0;
+        }
+
+        private void ShowInteropWarning(bool force = false)
+        {
+            if (interopWarningShown && !force) return;
+            interopWarningShown = true;
+            ShowOverlay(L(
+                "允许进入 SE 房间，但额外插件未核验。仅保留 SE 自身的检查；无法独立确认未运行 MMC 的成员是否加载 SE 或相同插件。",
+                "SE-lobby interoperability allowed, but extra plugins are NOT VERIFIED. SE's own checks remain; MMC cannot independently confirm SE or matching plugins on members without MMC."
+            ));
+            Logger.LogWarning("MMC_SE_LOBBY_UNVERIFIED: extra plugins and per-member SE presence are not independently verified.");
         }
 
         private string L(string chinese, string english)
@@ -549,6 +693,8 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             CSteamID localId = SteamUser.GetSteamID();
             int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby.id);
             bool allCompatible = true;
+            bool allAllowed = true;
+            bool anyUnverified = false;
             activeMemberIds.Clear();
 
             for (int index = 0; index < memberCount; index++)
@@ -562,7 +708,13 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                     memberId,
                     MemberProfileKey
                 );
-                if (String.Equals(remoteToken, localToken, StringComparison.Ordinal))
+                bool advertised = !String.IsNullOrEmpty(remoteToken) ||
+                    !String.IsNullOrEmpty(SteamMatchmaking.GetLobbyMemberData(lobby.id, memberId, CapabilityKey)) ||
+                    !String.IsNullOrEmpty(SteamMatchmaking.GetLobbyMemberData(lobby.id, memberId, "scdemm_profile_v3")) ||
+                    !String.IsNullOrEmpty(SteamMatchmaking.GetLobbyMemberData(lobby.id, memberId, "scdemm_profile_v2"));
+                if (advertised) knownMmcMembers.Add(memberId.m_SteamID);
+                int peer = ClassifyPeer(localToken, remoteToken, knownMmcMembers.Contains(memberId.m_SteamID), IsSeLobby(lobby.id));
+                if (peer == 1)
                 {
                     missingProfileSince.Remove(memberId.m_SteamID);
                     handledMembers.Remove(memberId.m_SteamID);
@@ -573,6 +725,7 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                 float firstSeen;
                 if (!missingProfileSince.TryGetValue(memberId.m_SteamID, out firstSeen))
                 {
+                    allAllowed = false;
                     missingProfileSince[memberId.m_SteamID] = Time.unscaledTime;
                     string playerName = SteamFriends.GetFriendPersonaName(memberId);
                     ShowOverlay(
@@ -584,7 +737,13 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                     );
                     continue;
                 }
-                if (Time.unscaledTime - firstSeen < MemberHandshakeGraceSeconds) continue;
+                if (Time.unscaledTime - firstSeen < MemberHandshakeGraceSeconds) { allAllowed = false; continue; }
+                if (peer == 2)
+                {
+                    anyUnverified = true;
+                    continue;
+                }
+                allAllowed = false;
                 RejectMember(platform, lobby, memberId, String.IsNullOrEmpty(remoteToken));
             }
 
@@ -598,9 +757,17 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                 if (!activeMemberIds.Contains(memberId)) staleMemberIds.Add(memberId);
             for (int index = 0; index < staleMemberIds.Count; index++)
                 missingProfileSince.Remove(staleMemberIds[index]);
+            staleMemberIds.Clear();
+            foreach (ulong memberId in knownMmcMembers)
+                if (!activeMemberIds.Contains(memberId)) staleMemberIds.Add(memberId);
+            for (int index = 0; index < staleMemberIds.Count; index++)
+                knownMmcMembers.Remove(staleMemberIds[index]);
 
             lobbyCompatible = allCompatible;
+            lobbyInteropAllowed = allAllowed && anyUnverified;
             if (allCompatible && overlayIsVerification) ClearOverlay();
+            if (lobbyInteropAllowed) ShowInteropWarning();
+            if (!anyUnverified) interopWarningShown = false;
         }
 
         private void ValidateHostAsClient(
@@ -609,8 +776,29 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
         )
         {
             lobbyCompatible = false;
+            lobbyInteropAllowed = false;
             ProfileDocument hostProfile = ReadHostProfile(lobby.id);
-            if (hostProfile == null) return;
+            if (hostProfile == null)
+            {
+                bool advertised = HostAdvertisesMMC(lobby.id);
+                if (ClassifyPeer(localToken, "", advertised, IsSeLobby(lobby.id)) == 2)
+                {
+                    invalidHostSince = -1f;
+                    lobbyInteropAllowed = true;
+                    ShowInteropWarning();
+                }
+                else
+                {
+                    if (invalidHostSince < 0f) invalidHostSince = Time.unscaledTime;
+                    if (Time.unscaledTime - invalidHostSince >= MemberHandshakeGraceSeconds)
+                    {
+                        ShowOverlay(L("房主核验信息无效或未就绪，已退出房间。", "The host's verification data is invalid or unavailable; left the lobby."));
+                        platform.LeaveLobby(false);
+                    }
+                }
+                return;
+            }
+            invalidHostSince = -1f;
 
             if (String.Equals(hostProfile.Token, localToken, StringComparison.Ordinal))
             {
@@ -682,8 +870,12 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             handledClientLobbyId = 0;
             localProfileErrorLobbyId = 0;
             lobbyCompatible = false;
+            lobbyInteropAllowed = false;
+            interopWarningShown = false;
+            invalidHostSince = -1f;
             missingProfileSince.Clear();
             handledMembers.Clear();
+            knownMmcMembers.Clear();
         }
 
         private void ClearOverlay()
@@ -709,6 +901,7 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             PollLobby();
             if (currentLobbyId == 0) return true;
             if (lobbyCompatible) return true;
+            if (lobbyInteropAllowed) { ShowInteropWarning(true); return true; }
 
             ShowOverlay(
                 L(
@@ -792,8 +985,10 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             }
 
             ProfileDocument hostProfile = ReadHostProfile(pendingJoinLobby.id);
-            if (hostProfile == null) return;
             if (!RefreshRuntimeProfile()) return;
+            bool unverified = hostProfile == null &&
+                ClassifyPeer(localToken, "", HostAdvertisesMMC(pendingJoinLobby.id), IsSeLobby(pendingJoinLobby.id)) == 2;
+            if (hostProfile == null && !unverified) return;
 
             Platform_Multiplayer platform = pendingJoinPlatform;
             Platform_Multiplayer.MPLobby lobby = pendingJoinLobby;
@@ -803,13 +998,14 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             int generation = joinGeneration;
             ClearPendingJoin();
 
-            if (!String.Equals(hostProfile.Token, localToken, StringComparison.Ordinal))
+            if (!unverified && !String.Equals(hostProfile.Token, localToken, StringComparison.Ordinal))
             {
                 ShowOverlay(BuildVisitorMismatchMessage(hostProfile, false));
                 return;
             }
 
             if (overlayIsVerification) ClearOverlay();
+            if (unverified) ShowInteropWarning(true);
             Action guardedLobbyJoined = delegate
             {
                 if (generation != joinGeneration || singlePlayerSkirmishSetup)
@@ -933,6 +1129,33 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             overlayBackground.hideFlags = HideFlags.HideAndDontSave;
             overlayBackground.SetPixel(0, 0, new Color(0.035f, 0.04f, 0.04f, 0.97f));
             overlayBackground.Apply();
+        }
+    }
+
+    internal sealed class HostCapabilityMemory
+    {
+        private readonly Dictionary<ulong, ulong> owners = new Dictionary<ulong, ulong>();
+
+        internal bool Observe(ulong lobby, ulong owner, bool advertised, ulong currentLobby, ulong pendingLobby)
+        {
+            // Keep only the current/pending query context, never every lobby ever visited.
+            var stale = new List<ulong>();
+            foreach (ulong previous in owners.Keys)
+                if (previous != lobby && previous != currentLobby && previous != pendingLobby) stale.Add(previous);
+            foreach (ulong previous in stale) owners.Remove(previous);
+            ulong knownOwner;
+            if (owners.TryGetValue(lobby, out knownOwner))
+            {
+                // Missing owner metadata is not evidence that the host changed.
+                if (owner == 0 || knownOwner == 0 || owner == knownOwner)
+                {
+                    if (owner != 0) owners[lobby] = owner;
+                    return true;
+                }
+                owners.Remove(lobby);
+            }
+            if (advertised) owners[lobby] = owner;
+            return advertised;
         }
     }
 
@@ -1152,7 +1375,9 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
         {
             MethodInfo lookup = AccessTools.PropertyGetter(typeof(Dictionary<int, bool>), "Item");
             MethodInfo contains = AccessTools.Method(typeof(Dictionary<int, bool>), "ContainsKey");
-            foreach (CodeInstruction instruction in instructions)
+            var checkedInstructions = new List<CodeInstruction>(instructions);
+            PatchTargetGuard.ValidateSparseKeyMap(checkedInstructions);
+            foreach (CodeInstruction instruction in checkedInstructions)
             {
                 if (instruction.Calls(lookup)) instruction.operand = contains;
                 yield return instruction;

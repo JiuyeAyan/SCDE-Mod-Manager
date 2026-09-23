@@ -48,6 +48,8 @@ class LaunchProgress {
         this.phase = "menu";
       } else if (this.launchId && line.endsWith("SCDEMM_STARTUP_READY " + this.launchId)) {
         this.finish("ready");
+      } else if (this.launchId && line.includes("SCDEMM_STARTUP_FAILED " + this.launchId + " ")) {
+        this.finish("failed", line.split("SCDEMM_STARTUP_FAILED " + this.launchId + " ")[1].slice(0, 2000));
       }
     }
   }
@@ -56,6 +58,7 @@ class LaunchProgress {
     this.launchId = launchId;
     this.logPath = path.join(stageDir, "BepInEx", "LogOutput.log");
     this.readyPath = path.join(stageDir, "_scde_manager", "startup-ready.txt");
+    this.failedPath = path.join(stageDir, "_scde_manager", "startup-failed.txt");
     this.initialStat = await fs.stat(this.logPath).catch(() => null);
     this.phase = "runtime";
     this.emit();
@@ -89,6 +92,13 @@ class LaunchProgress {
         }
       }
     } catch { /* Missing/locked logs must never delay or stop the game. */ }
+    try {
+      const stat = await fs.stat(this.failedPath);
+      if (stat.size < 8192) {
+        const message = await fs.readFile(this.failedPath, "utf8");
+        if (message.startsWith(this.launchId + "\n")) this.finish("failed", message.slice(this.launchId.length + 1, this.launchId.length + 2001));
+      }
+    } catch { /* No failure reported for this launch. */ }
     try {
       const stat = await fs.stat(this.readyPath);
       if (stat.size < 256 && (await fs.readFile(this.readyPath, "utf8")) === this.launchId) this.finish("ready");

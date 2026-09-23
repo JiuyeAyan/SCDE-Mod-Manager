@@ -22,14 +22,11 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 internal unsafe class BulkVegetationDetours
 {
-    private HookTransaction? tx;
-    public BulkVegetationDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkVegetationDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
-        DataScanner scanner = DataScanner.Create(region);
 
         tx.AddDetour(c_game_spawn_vegetation,
             "48 89 6C 24 ?? 56 57 41 56 48 83 EC ?? 83 3D",
@@ -56,7 +53,7 @@ internal unsafe class BulkVegetationDetours
              c_game_vegetation_growth_handler_hook_impl);
 
         tx.AddContextHook(c_game_vegetation_growth_hook,
-             "FF 05 ?? ?? ?? ?? 8B D6",
+             "FF 05 ? ? ? ? 8B D6 0F BF 83",
              static ctx =>
              {
                 UInt64 vegetationAddr = ctx.Pointer->RCX;

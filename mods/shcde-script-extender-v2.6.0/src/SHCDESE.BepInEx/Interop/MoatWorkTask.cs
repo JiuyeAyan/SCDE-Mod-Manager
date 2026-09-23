@@ -15,9 +15,9 @@ public struct MoatWorkTask
     [LuaExposed] public Int32 r_TileId;
     [LuaExposed] public Int16 r_TileX;
     [LuaExposed] public Int16 r_TileY;
-    public UInt16 N000_MoatWork_0008;
-    public UInt16 N000_MoatWork_000A;
+    [LuaExposed] public MoatTargetMode r_TargetMode;
     [LuaExposed] public byte r_OwnerPlayerId;
+    // Observed initial values are 0 for digging a planned moat and 4 for filling a dug moat.
     [LuaExposed] public byte r_Progress;
     [LuaExposed] public MoatWorkType r_WorkType;
     [LuaExposed] public byte r_ReservationPenalty;

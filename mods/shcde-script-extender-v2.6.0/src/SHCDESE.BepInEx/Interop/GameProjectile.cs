@@ -10,8 +10,8 @@ namespace SHCDESE.Interop;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public unsafe struct GameProjectile : IPositionable, IEquatable<GameProjectile>
 {
-	public UInt32 N000053F4; //0x0000
-    public UInt32 N00005425; //0x0004
+    public UInt32 UnknownOrActiveProjectiles; //0x0000
+    public UInt32 UnknownOrNextAvailableId; //0x0004
     public UInt32 N000053F5; //0x0008
     public UInt32 N00005427; //0x000C
     public UInt32 N000053F6; //0x0010
@@ -29,7 +29,7 @@ public unsafe struct GameProjectile : IPositionable, IEquatable<GameProjectile>
     public UInt32 N0000542F; //0x002C
     public UInt32 N000053FA; //0x0030
     public UInt32 N00005431; //0x0034
-    public UInt32 N000053FB; //0x0038
+    public UInt32 UnknownOrTotalAllocated; //0x0038
     [LuaExposed] public AliveState r_AliveState; //0x003C
     [LuaExposed] public ProjectileType r_ProjectileType; //0x003E
     [LuaExposed] public UInt32 r_PlayerSourceId; //0x0040

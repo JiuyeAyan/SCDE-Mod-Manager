@@ -967,6 +967,7 @@ public sealed class LuaManager
         LuaUtil.RegisterEnum(Lua, typeof(AILordMessageType), "eAILordMessageType");
         LuaUtil.RegisterEnum(Lua, typeof(LuaLoadMode), "eLuaLoadMode");
         LuaUtil.RegisterEnum(Lua, typeof(GatePathOverrideMode), "eGatePathOverrideMode");
+        LuaUtil.RegisterEnum(Lua, typeof(AISellCategory), "eAISellCategory");
     }
 
 

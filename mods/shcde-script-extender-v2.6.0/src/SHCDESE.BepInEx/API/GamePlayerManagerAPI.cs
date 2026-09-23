@@ -51,7 +51,7 @@ public unsafe sealed class GamePlayerManagerAPI
 
     private UInt32* _localPlayerId = null;
     private UInt32* _selectedBuildingId = null;
-    private Int32* _aiBoolPlayerList = null;
+    private Int32* _activePlayerList = null;
     private Int32* _aiLineUp = null;
     private Int32* _teamList = null;
     private Int32* _localPause = null;
@@ -124,7 +124,7 @@ public unsafe sealed class GamePlayerManagerAPI
         _localPlayerId = (UInt32*)(GameGlobalsManager.Instance.LocalPlayerIdVA);
         _defaultSkirmishGold = new SimpleNativeArray<UInt32>((byte*)(GameGlobalsManager.Instance.PlayerDefaultSkirmishSpawnGoldTable + (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle), 3);
         _defaultSkirmishResources = new SimpleNativeArray<UInt32>((byte*)(GameGlobalsManager.Instance.PlayerDefaultSkirmishResourcesVA), GoodsEnumCount);
-        _AIVCastleLayoutTable = (UInt32*)(GameGlobalsManager.Instance.AIVCastleLayoutTableRVA);
+        _AIVCastleLayoutTable = (UInt32*)(GameGlobalsManager.Instance.AIVSystemVA);
 
         _selectedBuildingId = (UInt32*)GameGlobalsManager.Instance.CurrentlySelectedBuildingIdVA;
 
@@ -132,7 +132,7 @@ public unsafe sealed class GamePlayerManagerAPI
         _peasantSpawnRateIncrementsLowPop = new SimpleNativeArray<UInt32>((byte*)GameGlobalsManager.Instance.PeasantSpawnRateIncrementsLowPopRVA + (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle, 24);
         _peasantSpawnRateIncrementsDefault = new SimpleNativeArray<UInt32>((byte*)GameGlobalsManager.Instance.PeasantSpawnRateIncrementsDefaultsRVA + (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle, 24);
 
-        _aiBoolPlayerList = (Int32*)(GameGlobalsManager.Instance.AIBoolPlayerListVA);
+        _activePlayerList = (Int32*)(GameGlobalsManager.Instance.ActivePlayerListVA);
         _aiLineUp = (Int32*)(GameGlobalsManager.Instance.AILineUpVA);
         _teamList = (Int32*)((UInt64)CrusaderLibrary.Instance.LibraryModuleHandle + (UInt64)GameGlobalsManager.Instance.TeamsListRVA);
         _localPause = (Int32*)(GameGlobalsManager.Instance.GamePausedVA);
@@ -171,7 +171,7 @@ public unsafe sealed class GamePlayerManagerAPI
         LogHelper.Information($"_peasantSpawnRateIncrementsLowPop: {new IntPtr(_peasantSpawnRateIncrementsLowPop._array).ToString("X16")}");
         LogHelper.Information($"_peasantSpawnRateIncrementsDefault: {new IntPtr(_peasantSpawnRateIncrementsDefault._array).ToString("X16")}");
         LogHelper.Information($"CursorManager: {new IntPtr(CursorManager).ToString("X16")}");
-        LogHelper.Information($"_aiBoolPlayerList: {new IntPtr(_aiBoolPlayerList).ToString("X16")}");
+        LogHelper.Information($"_activePlayerList: {new IntPtr(_activePlayerList).ToString("X16")}");
         LogHelper.Information($"_aiLineUp: {new IntPtr(_aiLineUp).ToString("X16")}");
         LogHelper.Information($"_teamList: {new IntPtr(_teamList).ToString("X16")}");
         LogHelper.Information($"_localPause: {new IntPtr(_localPause).ToString("X16")}");
@@ -270,6 +270,141 @@ public unsafe sealed class GamePlayerManagerAPI
         bool result = TryGetPlayerResourcesById(playerId, out GamePlayerResources* resourcesPtr);
         resources = new NativePointer<GamePlayerResources>(resourcesPtr);
         return result;
+    }
+
+
+    /// <summary>Returns the AI recruitment FSM mode stored for a player.</summary>
+    [LuaApiExport("GetAIRecruitmentMode")]
+    public AIRecruitmentMode GetAIRecruitmentMode(int playerId)
+    {
+        return TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources)
+            ? resources->r_AICombatRecruitmentMode
+            : default;
+    }
+
+    /// <summary>Writes the player's AI recruitment FSM mode.</summary>
+    [LuaApiExport("SetAIRecruitmentMode")]
+    public bool SetAIRecruitmentMode(int playerId, AIRecruitmentMode mode)
+    {
+        if ((UInt32)mode > (UInt32)AIRecruitmentMode.Siege
+            || !TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources))
+        {
+            return false;
+        }
+
+        resources->r_AICombatRecruitmentMode = mode;
+        return true;
+    }
+
+    /// <summary>Returns the live ten-slot defensive-position tile table for one native class.</summary>
+    public Span<UInt32> GetAIDefensivePositionTileIds(int playerId, AIDefensivePositionClass positionClass)
+    {
+        if (!IsValidAIDefensivePositionClass(positionClass)
+            || !TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources))
+        {
+            return Span<UInt32>.Empty;
+        }
+
+        UInt32* table = resources->r_AIDefensivePositionTileIdsByClass.r_TileIds;
+        return new Span<UInt32>(
+            table + (Int32)positionClass * GameAIDefensivePositionTileIdTable.SlotsPerClass,
+            GameAIDefensivePositionTileIdTable.SlotsPerClass);
+    }
+
+    /// <summary>Returns the live 30-entry defensive-position count table for a player.</summary>
+    public Span<Int32> GetAIDefensivePositionCounts(int playerId)
+    {
+        if (!TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources))
+            return Span<Int32>.Empty;
+
+        return new Span<Int32>(
+            resources->r_AIDefensivePositionCountsByClass.r_Counts,
+            GameAIDefensivePositionCountTable.Capacity);
+    }
+
+    [LuaApiExport("GetAIDefensivePositionCount")]
+    public int GetAIDefensivePositionCount(int playerId, AIDefensivePositionClass positionClass)
+    {
+        if (!IsValidAIDefensivePositionClass(positionClass))
+            return 0;
+
+        Span<Int32> counts = GetAIDefensivePositionCounts(playerId);
+        if (counts.IsEmpty)
+            return 0;
+
+        return Math.Min(Math.Max(counts[(Int32)positionClass], 0), GameAIDefensivePositionTileIdTable.SlotsPerClass);
+    }
+
+    public bool TryGetAIDefensivePositionTileId(int playerId, AIDefensivePositionClass positionClass, int positionIndex, out UInt32 tileId)
+    {
+        tileId = 0;
+        int count = GetAIDefensivePositionCount(playerId, positionClass);
+        if ((UInt32)positionIndex >= (UInt32)count)
+            return false;
+
+        Span<UInt32> tileIds = GetAIDefensivePositionTileIds(playerId, positionClass);
+        if (tileIds.IsEmpty)
+            return false;
+
+        tileId = tileIds[positionIndex];
+        return true;
+    }
+
+    /// <summary>
+    /// Writes one raw defensive-position slot. The caller is responsible for keeping the class count coherent.
+    /// </summary>
+    public bool SetAIDefensivePositionTileIdUnsafe(int playerId, AIDefensivePositionClass positionClass, int positionIndex, UInt32 tileId)
+    {
+        if ((UInt32)positionIndex >= GameAIDefensivePositionTileIdTable.SlotsPerClass)
+            return false;
+
+        Span<UInt32> tileIds = GetAIDefensivePositionTileIds(playerId, positionClass);
+        if (tileIds.IsEmpty)
+            return false;
+
+        tileIds[positionIndex] = tileId;
+        return true;
+    }
+
+    /// <summary>Writes the active position count for one defensive class.</summary>
+    public bool SetAIDefensivePositionCount(int playerId, AIDefensivePositionClass positionClass, int count)
+    {
+        if (!IsValidAIDefensivePositionClass(positionClass)
+            || (UInt32)count > GameAIDefensivePositionTileIdTable.SlotsPerClass)
+        {
+            return false;
+        }
+
+        Span<Int32> counts = GetAIDefensivePositionCounts(playerId);
+        if (counts.IsEmpty)
+            return false;
+
+        counts[(Int32)positionClass] = count;
+        return true;
+    }
+
+    /// <summary>Returns the live 300-entry AI tribe-ID storage-role table.</summary>
+    public Span<UInt16> GetAITribeIdsByStorageRole(int playerId)
+    {
+        if (!TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources))
+            return Span<UInt16>.Empty;
+
+        return new Span<UInt16>(resources->r_AITribeIdsByStorageRole, GameTribeManagerAPI.AI_TRIBE_STORAGE_ROLE_COUNT);
+    }
+
+    /// <summary>Returns the live 300-entry AI tribe global-ID storage-role table.</summary>
+    public Span<UInt32> GetAITribeGlobalIdsByStorageRole(int playerId)
+    {
+        if (!TryGetPlayerResourcesById(playerId, out GamePlayerResources* resources))
+            return Span<UInt32>.Empty;
+
+        return new Span<UInt32>(resources->r_AITribeGlobalIdsByStorageRole, GameTribeManagerAPI.AI_TRIBE_STORAGE_ROLE_COUNT);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsValidAIDefensivePositionClass(AIDefensivePositionClass positionClass)
+    {
+        return (UInt32)positionClass < GameAIDefensivePositionTileIdTable.ClassCount;
     }
 
     /// <summary>
@@ -1013,36 +1148,6 @@ public unsafe sealed class GamePlayerManagerAPI
             return false;
 
         return GetAILord(playerId) != Enums.AILords.SK_NULL;
-    }
-
-    /// <summary>
-    /// Checks if a specific player slot is controlled by an AI.
-    /// Warning: Unreliable
-    /// </summary>
-    /// <param name="playerId">The ID of the player to check (1-8).</param>
-    /// <returns><c>true</c> if the player is an AI; otherwise, <c>false</c>.</returns>
-    [LuaApiExport("IsAIInternal")]
-    public bool IsAIPlayerInternal(int playerId)
-    {
-        if (!IsPlayerIdValid(playerId))
-            return false;
-
-        return _aiBoolPlayerList[playerId - 1] == 1;
-    }
-
-    /// <summary>
-    /// Sets a specific player slot to be controlled by an AI.
-    /// Warning: Unreliable
-    /// </summary>
-    /// <param name="playerId">The ID of the player (1-8).</param>
-    /// <param name="isAI">AI control state.</param>
-    [LuaApiExport("SetIsAIInternal")]
-    public void SetIsAIPlayerInternal(int playerId, bool isAI)
-    {
-        if (!IsPlayerIdValid(playerId))
-            return;
-
-        _aiBoolPlayerList[playerId - 1] = isAI ? 1 : 0;
     }
 
     /// <summary>

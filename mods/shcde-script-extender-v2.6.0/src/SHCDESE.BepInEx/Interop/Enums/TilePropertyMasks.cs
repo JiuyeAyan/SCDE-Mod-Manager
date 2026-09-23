@@ -9,10 +9,10 @@ public static class TilePropertyMasks
     /// Common obstruction mask (Used by c_game_editor_place_vegetation to check for valid placement)
     /// </summary>
     public const TilePropertyFlag ObstructionMask = TilePropertyFlag.Sea | TilePropertyFlag.IsFarm | TilePropertyFlag.ImpassableEdge |
-                                 TilePropertyFlag.IsWall | TilePropertyFlag.CrenelationComponent | TilePropertyFlag.IsStairs |
+                                 TilePropertyFlag.IsWall | TilePropertyFlag.CrenelatedLow | TilePropertyFlag.IsStairs |
                                  TilePropertyFlag.IsTree | TilePropertyFlag.TreeProximity | TilePropertyFlag.PlannedMoat |
                                  TilePropertyFlag.IsLowWall | TilePropertyFlag.HasStone | TilePropertyFlag.HasIron |
-                                 TilePropertyFlag.River | TilePropertyFlag.CrenelationModifier | TilePropertyFlag.IsElevated |
+                                 TilePropertyFlag.River | TilePropertyFlag.CrenelatedHigh | TilePropertyFlag.IsElevated |
                                  TilePropertyFlag.IsSwamp | TilePropertyFlag.IsMoat;
 
     /// <summary>

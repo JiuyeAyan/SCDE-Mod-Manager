@@ -1,10 +1,15 @@
 ﻿using Noesis;
+using R3;
 using SHCDESE.API;
 using SHCDESE.API.Components.ModManager;
+using SHCDESE.EventAPI;
+using SHCDESE.EventAPI.Input;
+using SHCDESE.Logging;
 using SHCDESE.NoesisUtil;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using UnityEngine;
 
 namespace SHCDESE.ViewModels;
 
@@ -71,17 +76,40 @@ public class LobbyModSettingsHubViewModel : LobbyModSettingsBaseViewModel
 
         // Mods normally register after the hub is constructed.
         RegisteredModTabs.CollectionChanged += (s, e) => RefreshFilteredTabs();
+        InputR3EventHooks.OnKeyDown.Observable.Subscribe(HandleKeyDown);
 
-        ToggleWindowCommand = new RelayCommand(() => {
-            WindowVisibility = WindowVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        ToggleWindowCommand = new RelayCommand(() =>
+        {
+            if (WindowVisibility == Visibility.Visible)
+            {
+                CloseWindow();
+                return;
+            }
+
+            WindowVisibility = Visibility.Visible;
 
             // Refresh selection when opening if nothing is selected
-            if (WindowVisibility == Visibility.Visible && SelectedTab == null && ModTabs.Count > 0)
+            if (SelectedTab == null && ModTabs.Count > 0)
                 SelectedTab = ModTabs[0];
 
-            if (WindowVisibility == Visibility.Visible)
-                RefreshHostStateOnAllTabs();
+            RefreshHostStateOnAllTabs();
         });
+    }
+
+    private void CloseWindow() => WindowVisibility = Visibility.Collapsed;
+
+    private void HandleKeyDown(UnityInputEventArgs args)
+    {
+        if (args.Phase != EventHookPhase.Pre ||
+            args.Key != KeyCode.Escape ||
+            WindowVisibility != Visibility.Visible)
+        {
+            return;
+        }
+
+        // Consume Escape so the lobby screen underneath the modal cannot react to it.
+        args.Result = false;
+        CloseWindow();
     }
 
     private void RefreshFilteredTabs()

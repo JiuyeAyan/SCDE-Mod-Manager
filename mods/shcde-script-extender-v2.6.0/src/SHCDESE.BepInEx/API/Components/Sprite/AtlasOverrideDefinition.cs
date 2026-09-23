@@ -22,12 +22,12 @@ public class AtlasOverrideDefinition
     public Enums.GM GmFileID { get; init; }
 
     /// <summary>
-    /// Absolute path to the atlas texture (.png).
+    /// Absolute path to the atlas texture (.png or .dds).
     /// </summary>
     public string AtlasTexturePath { get; init; }
 
     /// <summary>
-    /// Absolute path to the team-colour/foliage mask texture (.png).
+    /// Absolute path to the team-colour/foliage mask texture (.png or .dds).
     /// Optional for Auto/Plain; required when TeamColour or Foliage is selected explicitly.
     /// </summary>
     public string MaskTexturePath { get; init; }

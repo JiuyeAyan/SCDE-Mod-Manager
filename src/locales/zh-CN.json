@@ -114,21 +114,22 @@
       "workshop": "Steam 创意工坊",
       "manualSource": "手动选择",
       "installed": "已安装 v{version}",
+      "contentChanged": "内容已变更（版本号不变）",
       "failure": "操作失败：{error}",
       "duplicate": "同一个 Mod 只能选择一个包，请取消勾选重复的版本。",
-      "changed": "所选包在下载过程中发生了变化，请重新扫描后再导入。",
+      "changed": "所选包在列表显示后发生了变化，请重新扫描后再导入。",
       "previous": "上一页",
       "next": "下一页",
       "trust": "只导入信任的作者提供的 Mod；Mod 可以执行代码。"
     },
     "updates": {
-      "title": "发现 Mod 新版本",
+      "title": "发现 Mod 更新",
       "hint": "仅列出已导入的 Mod。不会自动更新，请勾选并确认要更新的项目。",
       "confirm": "更新所选",
       "cancel": "暂不更新",
-      "version": "新版本",
+      "version": "可用版本",
       "source": "已安装版本",
-      "empty": "没有发现更新的版本。"
+      "empty": "没有发现 Mod 更新。"
     },
     "launch": {
       "title": "正在启动游戏",
@@ -139,6 +140,8 @@
       "menu": "Mod 初始化结束，正在准备主菜单",
       "exited": "游戏在启动完成前已退出",
       "unconfirmed": "暂时无法确认启动状态",
+      "failed": "联机核验组件初始化失败",
+      "failedHint": "请退出游戏并更新兼容组件后再进行联机。详细信息：",
       "ready": "游戏已就绪",
       "pending": "等待游戏报告加载进度…",
       "menuHint": "正在等待游戏界面和资源就绪…",

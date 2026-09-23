@@ -3,6 +3,7 @@ using RedBird.Core.Memory;
 using RedBird.Core.Memory.Managed;
 using RedBird.X64.Assembly.InstructionWalker;
 using RedBird.X64.Assembly.Stateful;
+using RedBird.X64.Hooks.Transaction;
 using RedBird.X64.Memory.Scanners;
 using Serilog;
 using SHCDESE.API;
@@ -118,7 +119,7 @@ public sealed class GameGlobalsManager
     public UInt64 PlayerDefaultSkirmishResourcesVA = 0;
 
     public UInt64 AILordManagerRVA = 0;
-    public UInt64 AIBoolPlayerListVA = 0;
+    public UInt64 ActivePlayerListVA = 0;
     public UInt64 AILineUpVA = 0;
     public UInt64 TeamsListRVA = 0;
     public UInt64 LocalPlayerArmyCountsVA = 0;
@@ -133,7 +134,7 @@ public sealed class GameGlobalsManager
     public UInt64 MonkAvailableVA = 0;
     public UInt64 EngineerAvailableVA = 0;
     public UInt64 LaddermanAvailableVA = 0;
-    public UInt64 AIVDataTableVA = 0;
+    public UInt64 AIVImportedVariantsVA = 0;
 
     public UInt64 TreeGrowthProgressionTableRVA = 0;
 
@@ -197,7 +198,7 @@ public sealed class GameGlobalsManager
     //public ManagedAssemblyImmediate<UInt16>? MinimumKeepPCLTilesToBeEnclosed = null;
 
     public UInt64 LocalPlayerIdVA = 0;
-    public UInt64 ElapsedMapTicksVA = 0;
+    public UInt64 CurrentGameTickVA = 0;
     public UInt64 CurrentlySelectedBuildingIdVA = 0;
 
     public UInt64 MapRowLookupTableRVA = 0;
@@ -218,7 +219,7 @@ public sealed class GameGlobalsManager
     public NativePointer<UnitFunctionsVTable> GameUnitFunctionsVTable = null;
     public UInt64 GameBuildingFunctionsRVA = 0;
     public NativePointer<BuildingFunctionsVTable> GameBuildingFunctionsVTable = null;
-    public UInt64 AIVCastleLayoutTableRVA = 0;
+    public UInt64 AIVSystemVA = 0;
 
     public UInt64 GameStateChoreHandlersVA = 0;
 
@@ -312,6 +313,13 @@ public sealed class GameGlobalsManager
 
     public ManagedAssemblyImmediate<UInt16>? CampPeasantsCap = null;
 
+    public ManagedAssemblyImmediate<Int32>? AIVBuildDelayGoldCeiling = null;
+    public ManagedAssemblyImmediate<Int32>? AIVAcceleratedBuildGoldThreshold = null;
+
+    public ManagedAssemblyImmediate<Int32>? AIMinimumAttackerGoldForPositiveAttackVariance = null;
+    public ManagedAssemblyImmediate<Int32>? AIAttackerGoldThresholdForDoubledAttackVariance = null;
+    public ManagedAssemblyImmediate<Int32>? AITargetGoldThresholdForNegativeAttackModifier = null;
+
     public UInt64 DefaultTradeBuyPriceTableRVA = 0;
 
     public UInt64 GameCursorManagerVA = 0;
@@ -329,6 +337,12 @@ public sealed class GameGlobalsManager
     public UInt64 PathfindingProfilesUnitTableRVA = 0;
     public UInt64 PathfindingConnectionClassesUnitTableVA = 0;
 
+    public UInt64 LocalPlayerUnitLimitVA = 0;
+
+    public UInt64 BuildingTypeAccessTileConnectivityBypassVA = 0;
+
+    public UInt64 AxisDistanceMetricsVA = 0;
+
     /// <summary>
     /// This variable contains the playerid that sent the last in-game "message"
     /// Mostly used for ai-related lookups.
@@ -340,12 +354,11 @@ public sealed class GameGlobalsManager
     /// Try to retrieve all relevant game globals we need
     /// to properly interop with the game.
     /// </summary>
-    internal unsafe void FindGameGlobals(ReadOnlySpan<byte> memory, ScanRegion region)
+    internal unsafe void FindGameGlobals(ReadOnlySpan<byte> memory, ScanRegion region, DataScanner scanner)
     {
         LogHelper.Information($"Finding Game Globals...");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        DataScanner scanner = DataScanner.Create(region, Plugin.Instance.LoggerFactory.CreateLogger("Scanner"));
 
         //
         // GameUnitManager: Is specified for the damage handler found when walking up the callstack of the c_game_unit_melee event
@@ -907,15 +920,15 @@ public sealed class GameGlobalsManager
         LogHelper.Information($"gLocalPlayerId found at VA: {LocalPlayerIdVA.ToString("X16")}");
 
         //
-        // gElapsedMapTicksVA: Can be found in 48 89 5C 24 ? 57 48 83 EC ? 33 FF 48 8B D9 89 B9 ? ? ? ? B9
+        // gCurrentGameTick: Can be found in 48 89 5C 24 ? 57 48 83 EC ? 33 FF 48 8B D9 89 B9 ? ? ? ? B9
         //
         if (!scanner
             .Scan("8B 0D ? ? ? ? 89 8B")
-            .TryReadDisplacement(out ElapsedMapTicksVA))
+            .TryReadDisplacement(out CurrentGameTickVA))
         {
-            LogHelper.Error($"Could not find gElapsedMapTicksVA");
+            LogHelper.Error($"Could not find gCurrentGameTick");
         }
-        LogHelper.Information($"gElapsedMapTicksVA found at VA: {ElapsedMapTicksVA.ToString("X16")}");
+        LogHelper.Information($"gCurrentGameTick found at VA: {CurrentGameTickVA.ToString("X16")}");
 
         //
         // gCurrentlySelectedBuildingId: Can be found in DLL_SetAppMode
@@ -940,15 +953,15 @@ public sealed class GameGlobalsManager
         LogHelper.Information($"gp_PathfindingContextVA found at VA: {PathfindingContextVA.ToString("X16")}");
 
         //
-        // gAIVDataTableVA: Can be found in DLL_ImportAIV
+        // gImportedAivVariants: Can be found in DLL_ImportAIV
         //
         if (!scanner
             .Scan("48 8D 3D ? ? ? ? 49 03 D6")
-            .TryReadDisplacement(out AIVDataTableVA))
+            .TryReadDisplacement(out AIVImportedVariantsVA))
         {
             LogHelper.Error($"Could not find gAIVDataTableVA");
         }
-        LogHelper.Information($"gAIVDataTableVA found at VA: {AIVDataTableVA.ToString("X16")}");
+        LogHelper.Information($"gAIVDataTableVA found at VA: {AIVImportedVariantsVA.ToString("X16")}");
 
         //
         // gSkirmishSpawnGoldTable
@@ -1011,11 +1024,11 @@ public sealed class GameGlobalsManager
         //
         if (!scanner
             .Scan("48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B 85")
-            .TryReadDisplacement(out AIVCastleLayoutTableRVA))
+            .TryReadDisplacement(out AIVSystemVA))
         {
-            LogHelper.Error($"Could not find gAIVCastleLayoutTableRVA");
+            LogHelper.Error($"Could not find gAIVSystem");
         }
-        LogHelper.Information($"gAIVCastleLayoutTableRVA found at VA: {AIVCastleLayoutTableRVA.ToString("X16")}");
+        LogHelper.Information($"gAIVSystem found at VA: {AIVSystemVA.ToString("X16")}");
 
         //
         // gGameVegetationManager: Can be found referenced within c_game_create_tree_proximity_area
@@ -1040,15 +1053,16 @@ public sealed class GameGlobalsManager
         LogHelper.Information($"gAILordManager found at RVA: {AILordManagerRVA.ToString("X16")} / VA: {((UInt64)CrusaderLibrary.Instance.LibraryModuleHandle + AILordManagerRVA).ToString("X16")}");
 
         //
-        // gAIBoolPlayerListVA: Can be found referenced within DLL_GetMultiplayerChatInfo
+        // gActivePlayerListVA: Can be found referenced within DLL_GetMultiplayerChatInfo
+        // Player1 has -1, all other players have 1 when in-game.
         //
         if (!scanner
             .Scan("8B 05 ? ? ? ? 89 01 8B 05")
-            .TryReadDisplacement(out AIBoolPlayerListVA))
+            .TryReadDisplacement(out ActivePlayerListVA))
         {
-            LogHelper.Error($"Could not find gAIBoolPlayerListVA");
+            LogHelper.Error($"Could not find gActivePlayerListVA");
         }
-        LogHelper.Information($"gAIBoolPlayerListVA found at VA: {AIBoolPlayerListVA.ToString("X16")}");
+        LogHelper.Information($"gActivePlayerListVA found at VA: {ActivePlayerListVA.ToString("X16")}");
 
         //
         // AILineUpVA: Can be found referenced within c_game_init_trail
@@ -1240,6 +1254,38 @@ public sealed class GameGlobalsManager
         }
         LogHelper.Information($"GameBuildingFunctionsVTable found at VA: {(GameBuildingFunctionsRVA + currentImageBase).ToString("X16")}");
 
+        //
+        // gLocalPlayerUnitLimitVA: Can be found referenced within DLL_ApplyMultiplayerSetupData
+        //
+        if (!scanner
+          .Scan("C7 05 ? ? ? ? ? ? ? ? C7 05 ? ? ? ? ? ? ? ? EB ? C7 05")
+          .TryReadDisplacement(out LocalPlayerUnitLimitVA, operandIndex: 0))
+        {
+            LogHelper.Error($"Could not find gLocalPlayerUnitLimitVA");
+        }
+        LogHelper.Information($"gLocalPlayerUnitLimitVA found at VA: {LocalPlayerUnitLimitVA.ToString("X16")}");
+
+        //
+        // gBuildingTypeAccessTileConnectivityBypassVA: Can be found referenced within c_game_ai_ensure_buildings_accessible_maybe
+        //
+        if (!scanner
+          .Scan("4C 8D 25 ? ? ? ? 4C 89 7C 24 ? 44 8D 7E")
+          .TryReadDisplacement(out BuildingTypeAccessTileConnectivityBypassVA, operandIndex: 1))
+        {
+            LogHelper.Error($"Could not find gBuildingTypeAccessTileConnectivityBypassVA");
+        }
+        LogHelper.Information($"gBuildingTypeAccessTileConnectivityBypassVA found at VA: {BuildingTypeAccessTileConnectivityBypassVA.ToString("X16")}");
+
+        //
+        // gAxisDistanceMetricsVA: Can be found referenced within c_game_ai_select_siege_rally_point
+        //
+        if (!scanner
+          .Scan("48 8D 0D ? ? ? ? E8 ? ? ? ? 42 0F B6 84 2B")
+          .TryReadDisplacement(out AxisDistanceMetricsVA, operandIndex: 1))
+        {
+            LogHelper.Error($"Could not find gAxisDistanceMetricsVA");
+        }
+        LogHelper.Information($"gAxisDistanceMetricsVA found at VA: {AxisDistanceMetricsVA.ToString("X16")}");
 
         //
         // gLocalPlayerArmyCounts: Can be found referenced within c_game_count_player_army_units
@@ -2289,6 +2335,76 @@ public sealed class GameGlobalsManager
         }
         _managedAssemblyStateManager.Register("gCampPeasantsCap", CampPeasantsCap);
         LogHelper.Information($"gCampPeasantsCap: {CampPeasantsCap.GetValue()}");
+
+        //
+        // AIVBuildDelayGoldCeiling: can be found referenced within c_game_ai_update_construction
+        // at this or below, the AI builds slower.
+        // default: 5000
+        //
+        if (!scanner
+         .Scan("3D ? ? ? ? 7F ? 49 69 CC")
+         .TryGetManagedImmediate(out AIVBuildDelayGoldCeiling, operand: 1))
+        {
+            LogHelper.Error($"Could not find gAIVBuildDelayGoldCeiling");
+        }
+        _managedAssemblyStateManager.Register("gAIVBuildDelayGoldCeiling", AIVBuildDelayGoldCeiling);
+        LogHelper.Information($"gAIVBuildDelayGoldCeiling: {AIVBuildDelayGoldCeiling.GetValue()}");
+
+        //
+        // AIVAcceleratedBuildGoldThreshold: can be found referenced within c_game_ai_update_construction
+        // at this or higher, the AI builds faster
+        // default: 16000
+        //
+        if (!scanner
+         .Scan("3D ? ? ? ? 7E ? 41 BD")
+         .TryGetManagedImmediate(out AIVAcceleratedBuildGoldThreshold, operand: 1))
+        {
+            LogHelper.Error($"Could not find gAIVAcceleratedBuildGoldThreshold");
+        }
+        _managedAssemblyStateManager.Register("gAIVAcceleratedBuildGoldThreshold", AIVAcceleratedBuildGoldThreshold);
+        LogHelper.Information($"gAIVAcceleratedBuildGoldThreshold: {AIVAcceleratedBuildGoldThreshold.GetValue()}");
+
+        //
+        // MinimumAttackerGoldForPositiveAttackVariance : can be found referenced within c_game_ai_roll_target_economy_siege_modifier
+        // Minimum attacker gold required before positive attack variance is applied.
+        // default: 1000
+        //
+        if (!scanner
+         .Scan("3D ? ? ? ? 7D ? 33 D2")
+         .TryGetManagedImmediate(out AIMinimumAttackerGoldForPositiveAttackVariance, operand: 1))
+        {
+            LogHelper.Error($"Could not find gAIMinimumAttackerGoldForPositiveAttackVariance ");
+        }
+        _managedAssemblyStateManager.Register("gAIMinimumAttackerGoldForPositiveAttackVariance ", AIMinimumAttackerGoldForPositiveAttackVariance);
+        LogHelper.Information($"gAIMinimumAttackerGoldForPositiveAttackVariance : {AIMinimumAttackerGoldForPositiveAttackVariance.GetValue()}");
+
+        //
+        // AttackerGoldThresholdForDoubledAttackVariance  : can be found referenced within c_game_ai_roll_target_economy_siege_modifier
+        // Attacker gold at which the positive attack variance is doubled.
+        // default: 5000
+        //
+        if (!scanner
+         .Scan("3D ? ? ? ? 7C ? 03 D2")
+         .TryGetManagedImmediate(out AIAttackerGoldThresholdForDoubledAttackVariance, operand: 1))
+        {
+            LogHelper.Error($"Could not find gAIAttackerGoldThresholdForDoubledAttackVariance ");
+        }
+        _managedAssemblyStateManager.Register("gAIAttackerGoldThresholdForDoubledAttackVariance ", AIAttackerGoldThresholdForDoubledAttackVariance);
+        LogHelper.Information($"gAIAttackerGoldThresholdForDoubledAttackVariance : {AIAttackerGoldThresholdForDoubledAttackVariance.GetValue()}");
+
+        //
+        // TargetGoldThresholdForNegativeAttackModifier   : can be found referenced within c_game_ai_roll_target_economy_siege_modifier
+        // Target gold below which the modifier becomes a negative economy-based adjustment.
+        // default: 500
+        //
+        if (!scanner
+         .Scan("42 81 BC 31 ? ? ? ? ? ? ? ? 7D ? 41 8B 84 28")
+         .TryGetManagedImmediate(out AITargetGoldThresholdForNegativeAttackModifier, operand: 1))
+        {
+            LogHelper.Error($"Could not find gAITargetGoldThresholdForNegativeAttackModifier  ");
+        }
+        _managedAssemblyStateManager.Register("gAITargetGoldThresholdForNegativeAttackModifier ", AITargetGoldThresholdForNegativeAttackModifier);
+        LogHelper.Information($"gAITargetGoldThresholdForNegativeAttackModifier : {AITargetGoldThresholdForNegativeAttackModifier.GetValue()}");
 
         //
         // PathfindingMaxTilesConstraint: can be found referenced within c_game_unit_get_path_plan_internal

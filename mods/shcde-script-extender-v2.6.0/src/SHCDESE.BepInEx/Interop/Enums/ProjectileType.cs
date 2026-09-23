@@ -32,7 +32,7 @@ public enum ProjectileType : UInt16
     Disease = 0x16,
     Cow = 0x17,
     UnkMissile24 = 0x18,
-    UnkMissile25 = 0x19,
+    Brazier2 = 0x19,
     UnkBlast = 0x1A,
     CatapultOrTrebutchetRocksImpactDebris1 = 0x1B,
     Crow = 0x1C,

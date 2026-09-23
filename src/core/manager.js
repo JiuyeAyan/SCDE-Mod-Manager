@@ -5,6 +5,9 @@ const { promisify } = require("node:util");
 const { ConfigStore } = require("./config-store");
 const { Localizations, canonicalLanguage, createModLocalizations } = require("./localization");
 const { compareVersions } = require("./workshop-updates");
+const { dependencyVersionMatches } = require("./manifest-contract");
+const { systemPathPolicy } = require("./system-path-policy");
+const { persistenceRules, assertUnlinked } = require("./persistent-data");
 const {
   createCompatibilityProfile,
   createLobbyProfileText,
@@ -12,6 +15,7 @@ const {
 const { detectSteamGame } = require("./detect-game");
 const {
   applyMods,
+  inventoryMods,
   pathExists,
   prepareStage,
   resolveStageDirectory,
@@ -30,6 +34,7 @@ const execFileAsync = promisify(execFile);
 const DEPLOYMENT_RECEIPT = "_scde_manager/active-mods.json";
 const PREFERRED_DEPLOYMENT_PROBE = "winhttp.dll";
 const SE_ID = "shcde-script-extender";
+const STAGE_ISOLATION_VERSION = 1;
 
 function dependsOnSE(mod, mods, seen = new Set()) {
   if (!mod || seen.has(mod.id)) return false;
@@ -57,7 +62,7 @@ async function deploymentReceiptIsCurrent(stageDir, mods, enabledMods, activeFil
       await fs.readFile(safeJoin(stageDir, DEPLOYMENT_RECEIPT), "utf8")
     );
     const expected = createCompatibilityProfile(mods, enabledMods);
-    return deployed.schema === expected.schema && deployed.fingerprint === expected.fingerprint;
+    return deployed.schema === expected.schema && deployed.deploymentFingerprint === expected.deploymentFingerprint;
   } catch {
     return false;
   }
@@ -98,9 +103,9 @@ function resolveEnabledMods(mods, requestedIds, config = {}) {
       if (!installed) {
         throw new Error(`${mod.name} 缺少依赖：${dependency.id}`);
       }
-      if (dependency.version && installed.version !== dependency.version) {
+      if (!dependencyVersionMatches(installed.version, dependency)) {
         throw new Error(
-          `${mod.name} 需要 ${dependency.id} v${dependency.version}，当前安装的是 v${installed.version}`
+          `${mod.name} 需要 ${dependency.id} ${dependency.version ? `v${dependency.version}` : `v${dependency.minimumVersion || "*"} – v${dependency.maximumVersion || "*"}`}，当前安装的是 v${installed.version}`
         );
       }
       visit(dependency.id);
@@ -305,6 +310,7 @@ class ModManager {
     const modOrder = normalizeModOrder(mods, config.modOrder, this.systemModOrder);
     const deploymentComplete =
       stageValid &&
+      config.stageIsolationVersion === STAGE_ISOLATION_VERSION &&
       (await deploymentReceiptIsCurrent(
         this.stageDir,
         mods,
@@ -375,11 +381,11 @@ class ModManager {
     return result.state;
   }
 
-  async installPackages(packagePaths) {
-    return this.withModMutation(() => this.#installPackages(packagePaths));
+  async installPackages(packagePaths, options = {}) {
+    return this.withModMutation(() => this.#installPackages(packagePaths, true, false, options));
   }
 
-  async #installPackages(packagePaths, deployStage = true) {
+  async #installPackages(packagePaths, deployStage = true, trustedSystem = false, options = {}) {
     const previousIds = new Set((await readInstalledMods(this.modsRoot)).map((mod) => mod.id));
     const imported = [];
     const failures = [];
@@ -387,7 +393,24 @@ class ModManager {
 
     for (const packagePath of packagePaths) {
       try {
-        imported.push(await installModPackage(packagePath, this.modsRoot));
+        imported.push(await installModPackage(packagePath, this.modsRoot, {
+          validatePrepared: async (manifest, folder) => {
+            if (!trustedSystem && this.requiredSystemModIds.has(manifest.id)) {
+              throw new Error(`Reserved system package ID: ${manifest.id}. Use the built-in component updater.`);
+            }
+            const expectedDigest = options.expectedDigests?.[path.resolve(packagePath)];
+            if (expectedDigest && expectedDigest !== manifest.packageSha256) {
+              throw Object.assign(new Error("MOD_CHANGED_RESCAN"), { code: "MOD_CHANGED_RESCAN" });
+            }
+            const installed = await readInstalledMods(this.modsRoot);
+            const candidate = { ...manifest, folder };
+            const inventories = await inventoryMods([...installed.filter(mod => mod.id !== candidate.id), candidate]);
+            const policy = systemPathPolicy(inventories, this.requiredSystemModIds);
+            const prepared = inventories.find(item => item.mod.id === candidate.id);
+            policy.validate(candidate, prepared.files);
+            await persistenceRules(inventories);
+          },
+        }));
       } catch (error) {
         failures.push({
           file: path.basename(packagePath),
@@ -558,11 +581,13 @@ class ModManager {
       stageDir: this.stageDir,
       mods,
       enabledIds: enabledMods,
+      systemIds: this.requiredSystemModIds,
     });
     await this.configStore.save({
       ...config,
       enabledMods,
       stageSource: config.gameDir,
+      stageIsolationVersion: STAGE_ISOLATION_VERSION,
       activeFiles: result.activeFiles,
       lastConflicts: result.conflicts,
     });
@@ -576,6 +601,11 @@ class ModManager {
     if (config.stageSource !== config.gameDir) {
       throw new Error("游戏目录已改变，请重新准备游戏副本。");
     }
+    if (config.stageIsolationVersion !== STAGE_ISOLATION_VERSION) {
+      const state = await this.prepareStage();
+      const refreshed = await this.configStore.load();
+      return { activeFiles: refreshed.activeFiles, conflicts: state.lastConflicts };
+    }
     const mods = await readInstalledMods(this.modsRoot);
     const enabledMods = resolveEnabledMods(mods, config.enabledMods, config);
     const result = await applyMods({
@@ -583,6 +613,7 @@ class ModManager {
       stageDir: this.stageDir,
       mods,
       enabledIds: enabledMods,
+      systemIds: this.requiredSystemModIds,
       previousActiveFiles: config.activeFiles,
     });
     await this.configStore.save({
@@ -596,6 +627,7 @@ class ModManager {
   }
 
   async writeCompatibilityProfile(mods, enabledMods) {
+    await assertUnlinked(this.stageDir, "_scde_manager");
     const directory = path.join(this.stageDir, "_scde_manager");
     const target = path.join(directory, "active-mods.json");
     const lobbyTarget = path.join(directory, "active-mods.lobby");
@@ -605,8 +637,8 @@ class ModManager {
     await fs.mkdir(directory, { recursive: true });
     await fs.writeFile(temporary, `${JSON.stringify(profile, null, 2)}\n`, "utf8");
     await fs.writeFile(lobbyTemporary, `${createLobbyProfileText(profile)}\n`, "utf8");
-    await fs.copyFile(temporary, target);
     await fs.copyFile(lobbyTemporary, lobbyTarget);
+    await fs.copyFile(temporary, target);
     await fs.rm(temporary, { force: true });
     await fs.rm(lobbyTemporary, { force: true });
     return profile;
@@ -626,7 +658,7 @@ class ModManager {
       .map((item) => item.packagePath);
 
     if (packagesToInstall.length > 0) {
-      const result = await this.#installPackages(packagesToInstall, false);
+      const result = await this.#installPackages(packagesToInstall, false, true);
       if (result.failures.length > 0) {
         const error = new Error(
           `联机兼容性系统组件安装失败：${result.failures.map((item) => item.error).join("；")}`

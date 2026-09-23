@@ -7,6 +7,23 @@ namespace SHCDESE.Interop;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public unsafe struct GameUnitManager
 {
+    /// <summary>Native unit IDs are stored in the range 0..9999; zero is reserved.</summary>
+    public const int NativeUnitSlotCount = 10_000;
+    public const int FirstLiveUnitId = 1;
+    public const int LastLiveUnitId = NativeUnitSlotCount - 1;
+
+    /// <summary>Size of one native <see cref="GameUnit"/> record.</summary>
+    public const int UnitRecordByteSize = 0x490;
+
+    /// <summary>
+    /// Offset of the separate packed path-plan block from the start of GameUnitManager.
+    /// This block is intentionally accessed through offsets instead of being embedded in this struct.
+    /// </summary>
+    public const int PackedPathPlanBlockOffset = 0xB4FE78;
+    public const int PackedPathPlanBytesPerUnit = 1_000;
+    public const int PackedPathPlanTransitionsPerUnit = PackedPathPlanBytesPerUnit * 2;
+    public const int PackedPathPlanBlockByteSize = NativeUnitSlotCount * PackedPathPlanBytesPerUnit;
+
     public UInt32 r_NextUnitId; //0x0000
     public UInt32 r_TotalUnits; //0x0004
     public UInt32 N000003DC; //0x0008
@@ -111,7 +128,7 @@ public unsafe struct GameUnitManager
     public Int32 r_RecruitmentResultMissingGoodId; //0x0654
     public UInt32 EmptyUnitFillValue; //0x0658
 
-    public GameUnit LastOrderedUnit; // offset 0x65C
-
-    public GameUnit GameUnitArray;
+    public GameUnit GameUnitArray; // [0] = LastOrderedUnit, Capacity: 10000
+    // UNKNOWN SECTION: 44999 * 4
+    // PackedPathPlans: 10000 * 1000
 }

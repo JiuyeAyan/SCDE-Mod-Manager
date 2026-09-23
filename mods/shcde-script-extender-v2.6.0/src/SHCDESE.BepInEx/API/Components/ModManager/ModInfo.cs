@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SHCDESE.API.Components.ModManager;
 
@@ -33,6 +34,12 @@ public sealed class ModInfo
     public string Version { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the other mods required by this mod, identified by their <see cref="GUID"/>.
+    /// Missing dependencies and installed versions outside an optional inclusive range are reported during startup.
+    /// </summary>
+    public List<ModDependency> Dependencies { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets a URL for the mod's website or repository.
     /// </summary>
     public string Website { get; set; } = null!;
@@ -54,6 +61,12 @@ public sealed class ModInfo
     /// Asset by default.
     /// </summary>
     public ModManifest Manifest { get; set; } = ModManifest.Asset;
+
+    /// <summary>
+    /// Determines whether files supplied through this mod's <c>Override/</c> folder are global overrides or private resources belonging only to this mod. 
+    /// Global by default.
+    /// </summary>
+    public ModAssetMode AssetMode { get; set; } = ModAssetMode.Global;
 
     /// <summary>
     /// Determines the network mode of the mod.

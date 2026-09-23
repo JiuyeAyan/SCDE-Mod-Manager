@@ -1,4 +1,5 @@
 ﻿using NLua;
+using RedBird.Core.Memory;
 using SHCDESE.API;
 using SHCDESE.Extensions;
 using SHCDESE.Interop;

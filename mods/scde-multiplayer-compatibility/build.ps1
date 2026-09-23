@@ -1,5 +1,6 @@
 param(
-  [string]$GameDir = 'D:\0_zhuangji\Softwares\Steam\steamapps\common\Stronghold Crusader Definitive Edition'
+  [Parameter(Mandatory = $true)][string]$GameDir,
+  [switch]$SkipPackage
 )
 
 $ErrorActionPreference = 'Stop'
@@ -11,7 +12,7 @@ $buildRoot = Join-Path $PSScriptRoot 'build'
 $payloadRoot = Join-Path $buildRoot 'payload'
 $pluginRoot = Join-Path $payloadRoot 'BepInEx\plugins\SCDEMultiplayerCompatibility'
 $releaseRoot = Join-Path $projectRoot 'release'
-$packagePath = Join-Path $releaseRoot 'scde-multiplayer-compatibility-0.3.1.scdemod'
+$packagePath = Join-Path $releaseRoot 'scde-multiplayer-compatibility-0.4.0.scdemod'
 
 foreach ($required in @(
   $compiler,
@@ -64,6 +65,7 @@ $compilerArgs += (Join-Path $PSScriptRoot 'src\SCDEMultiplayerCompatibilityPlugi
 $compilerArgs += (Join-Path $PSScriptRoot 'src\ScriptExtenderBridge.cs')
 $compilerArgs += (Join-Path $PSScriptRoot 'src\SeWorkshopMetadata.cs')
 $compilerArgs += (Join-Path $PSScriptRoot 'src\StartupReadyReporter.cs')
+$compilerArgs += (Join-Path $PSScriptRoot 'src\PatchTargetGuard.cs')
 
 & $compiler $compilerArgs
 if ($LASTEXITCODE -ne 0) { throw "Plugin compilation failed with exit code $LASTEXITCODE" }
@@ -85,6 +87,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Runtime profile test compilation failed' }
 & (Join-Path $testRoot 'RuntimeProfileTests.exe') $managedRoot (Split-Path $harmonyPath) (Join-Path $pluginRoot 'SCDEMultiplayerCompatibility.dll')
 if ($LASTEXITCODE -ne 0) { throw 'Runtime profile tests failed' }
 
+if ($SkipPackage) { return }
 & node (Join-Path $PSScriptRoot 'package.js') $buildRoot $packagePath
 if ($LASTEXITCODE -ne 0) { throw "Mod packaging failed with exit code $LASTEXITCODE" }
 

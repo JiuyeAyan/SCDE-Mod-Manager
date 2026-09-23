@@ -85,7 +85,7 @@ public unsafe sealed class GameTimeManagerAPI
         CurrentMonthReactive = new ReactiveProperty<UInt32>(0);
         CurrentYearReactive = new ReactiveProperty<UInt32>(0);
 
-        _elapsedMapTicks = (UInt64*)(GameGlobalsManager.Instance.ElapsedMapTicksVA);
+        _elapsedMapTicks = (UInt64*)(GameGlobalsManager.Instance.CurrentGameTickVA);
     }
 
     internal static void InitializeSubscribers()

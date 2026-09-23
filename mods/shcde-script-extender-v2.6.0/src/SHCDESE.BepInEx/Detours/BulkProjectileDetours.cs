@@ -1,6 +1,7 @@
 ﻿using RedBird.Abstractions.Hooks.Transaction;
 using RedBird.Core.Memory;
 using RedBird.X64.Hooks.Transaction;
+using RedBird.X64.Memory.Scanners;
 using SHCDESE.API.LowLevel;
 using SHCDESE.BepInEx.Bootstrap;
 using SHCDESE.EventAPI;
@@ -17,13 +18,11 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 internal class BulkProjectileDetours
 {
-    private HookTransaction? tx;
-    public BulkProjectileDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkProjectileDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
 
         tx.AddDetour(c_game_projectile_spawn_hook,
              "48 89 5C 24 ? 44 89 4C 24 ? 44 89 44 24 ? 89 54 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC ? 8B BC 24",
@@ -36,8 +35,6 @@ internal class BulkProjectileDetours
         tx.AddDetour(c_game_spawn_fire_internal_hook,
              "44 89 4C 24 ? 53 56 57",
              c_game_spawn_fire_internal_hook_impl);
-
-        tx.Commit();
 
     }
 
@@ -78,9 +75,9 @@ internal class BulkProjectileDetours
     //__int64 __fastcall c_game_projectile_delete(__int64 pProjectileManager, unsigned int projectileId)
     // 48 89 5C 24 ?? 57 48 83 EC ?? 48 63 DA 48 8B F9 8B D3 E8
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void c_game_projectile_delete_delegate(NativePointer<GameProjectileManager> pProjectileManager, int projectileId);
+    public delegate void c_game_projectile_delete_delegate(NativePointer<GameProjectile> pProjectileManager, int projectileId);
     internal static DetourHandle<c_game_projectile_delete_delegate> c_game_projectile_delete_hook = new();
-    public static void c_game_projectile_delete_hook_impl(NativePointer<GameProjectileManager> pProjectileManager, int projectileId)
+    public static void c_game_projectile_delete_hook_impl(NativePointer<GameProjectile> pProjectileManager, int projectileId)
     {
         //LogHelper.Debug($"pProjectileManager={new IntPtr(pProjectileManager).ToString("X16")}, sourceUnitId={sourceUnitId}, playerSourceId={playerSourceId}, unitPlayerSourceId={unitPlayerSourceId}, sourceWorldTileX={sourceWorldTileX}, sourceWorldTileY={sourceWorldTileY}, sourceUnknown={sourceUnknown}, targetWorldTileX={targetWorldTileX}, targetWorldTileY={targetWorldTileY}, targetUnknown={targetUnknown}, projectileType_arg={projectileType_arg}, attackedUnitId={attackedUnitId}");
         ProjectileDeleteEventArgs eventArgs = new(EventHookPhase.Pre, projectileId);
@@ -100,9 +97,9 @@ internal class BulkProjectileDetours
     // __int64 __fastcall c_game_projectile_spawn(__int64 pProjectileManager, int sourceUnitId, __int16 playerSourceId, int unitPlayerSourceId, int sourceWorldTileX, int sourceWorldTileY, int sourceUnknown, int targetWorldTileX, int targetWorldTileY, int targetUnknown, ProjectileType projectileType_arg, int attackedUnitId)
     // 48 89 5C 24 ? 44 89 4C 24 ? 44 89 44 24 ? 89 54 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 83 EC ? 8B BC 24
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate Int64 c_game_projectile_spawn_delegate(NativePointer<GameProjectileManager> pProjectileManager, int sourceUnitId, Int16 playerSourceId, int unitPlayerSourceId, int sourceWorldTileX, int sourceWorldTileY, int sourceUnknown, int targetWorldTileX, int targetWorldTileY, int targetUnknown, ProjectileType projectileType_arg, int attackedUnitId);
+    public delegate Int64 c_game_projectile_spawn_delegate(NativePointer<GameProjectile> pProjectileManager, int sourceUnitId, Int16 playerSourceId, int unitPlayerSourceId, int sourceWorldTileX, int sourceWorldTileY, int sourceUnknown, int targetWorldTileX, int targetWorldTileY, int targetUnknown, ProjectileType projectileType_arg, int attackedUnitId);
     internal static DetourHandle<c_game_projectile_spawn_delegate> c_game_projectile_spawn_hook = new();
-    public static Int64 c_game_projectile_spawn_hook_impl(NativePointer<GameProjectileManager> pProjectileManager, int sourceUnitId, Int16 playerSourceId, int unitPlayerSourceId, int sourceWorldTileX, int sourceWorldTileY, int sourceElevation, int targetWorldTileX, int targetWorldTileY, int targetElevation, ProjectileType projectileType_arg, int attackedUnitId)
+    public static Int64 c_game_projectile_spawn_hook_impl(NativePointer<GameProjectile> pProjectileManager, int sourceUnitId, Int16 playerSourceId, int unitPlayerSourceId, int sourceWorldTileX, int sourceWorldTileY, int sourceElevation, int targetWorldTileX, int targetWorldTileY, int targetElevation, ProjectileType projectileType_arg, int attackedUnitId)
     {
         //LogHelper.Debug($"pProjectileManager={pProjectileManager}, sourceUnitId={sourceUnitId}, playerSourceId={playerSourceId}, unitPlayerSourceId={unitPlayerSourceId}, sourceWorldTileX={sourceWorldTileX}, sourceWorldTileY={sourceWorldTileY}, sourceElevation={sourceElevation}, targetWorldTileX={targetWorldTileX}, targetWorldTileY={targetWorldTileY}, targetElevation={targetElevation}, projectileType_arg={projectileType_arg}, attackedUnitId={attackedUnitId}");
         ProjectileSpawnEventArgs eventArgs = new(EventHookPhase.Pre, sourceUnitId, playerSourceId, unitPlayerSourceId,sourceWorldTileX, sourceWorldTileY, sourceElevation, targetWorldTileX, targetWorldTileY, targetElevation, projectileType_arg, attackedUnitId);

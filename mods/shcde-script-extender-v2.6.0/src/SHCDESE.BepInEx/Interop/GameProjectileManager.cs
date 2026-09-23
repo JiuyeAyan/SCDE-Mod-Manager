@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace SHCDESE.Interop;
-
+/*
 public unsafe struct GameProjectileManager
 {
 	public UInt32 ActiveProjectiles; //0x0000
@@ -64,3 +64,4 @@ public unsafe struct GameProjectileManager
     public UInt32 N00005DCB; //0x00E4
     public GameProjectile ProjectilesArray; //0x00E8
 }; //Size: 0xCDA0
+*/

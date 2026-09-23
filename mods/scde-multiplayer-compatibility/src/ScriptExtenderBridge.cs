@@ -25,8 +25,8 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             PluginInfo extender;
             if (!Chainloader.PluginInfos.TryGetValue(PluginId, out extender) || ReferenceEquals(extender.Instance, null)) return;
             Type updater = extender.Instance.GetType().Assembly.GetType("SHCDESE.API.Components.Archive.MapModManager", true);
-            MethodInfo automaticUpdate = updater.GetMethod("TryUpdateModsFromRemote", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (automaticUpdate == null) throw new MissingMethodException("Unsupported Script Extender updater API.");
+            MethodInfo automaticUpdate = PatchTargetGuard.Require(updater, "TryUpdateModsFromRemote", false, typeof(void), Type.EmptyTypes);
+            PatchTargetGuard.RequireCall(automaticUpdate, "Platform_Workshop", "GetListOfSubscribedItemsPaths", 1);
             harmony.Patch(automaticUpdate, prefix: new HarmonyMethod(typeof(ScriptExtenderBridge), "BlockAutomaticDeployment"));
             managedUpdaterBlocked = true;
             SCDEMultiplayerCompatibilityPlugin.LogSettingsGuardInfo("SE_MANAGED_POLICY: automatic Workshop install/update/unsubscribe/restart disabled; existing SE Mods still load.");
@@ -41,8 +41,9 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             try
             {
                 Type hooks = extender.GetType("SHCDESE.ManagedHooks.ManagedHookManager", true);
-                MethodInfo update = hooks.GetMethod("MapFileManager_UpdateWorkshopMap_Hook", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (update == null) throw new MissingMethodException("SE Workshop hook not found.");
+                MethodInfo update = PatchTargetGuard.Require(hooks, "MapFileManager_UpdateWorkshopMap_Hook", false,
+                    typeof(void), new[] { typeof(MapFileManager), typeof(string), typeof(string) });
+                PatchTargetGuard.RequireCall(update, "SHCDESE.API.Components.Archive.MapArchive", "TryLoad", 1);
                 SeWorkshopMetadata.Initialize(Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(extender.Location), "ICSharpCode.SharpZipLib.dll")));
                 harmony.Patch(update, prefix: new HarmonyMethod(typeof(ScriptExtenderBridge), "SkipPluginMapRecompression"));
                 SCDEMultiplayerCompatibilityPlugin.LogSettingsGuardInfo("SE_WORKSHOP_METADATA_FAST_PATH_READY: plugin maps require only info.json, ordinary maps retain SE handling.");
@@ -60,14 +61,25 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
             return false;
         }
 
-        internal static List<RuntimeMod> Read(bool required)
+        internal static List<RuntimeMod> Read(bool required, bool managedMode)
         {
             var mods = new Dictionary<string, RuntimeMod>(StringComparer.OrdinalIgnoreCase);
+            // Loader identity is independent of any manager package name/version.
+            Assembly loader = typeof(BaseUnityPlugin).Assembly;
+            mods.Add("loader:bepinex", new RuntimeMod("loader:bepinex", loader.GetName().Version.ToString(), "BepInEx Runtime", false));
+            foreach (PluginInfo plugin in Chainloader.PluginInfos.Values)
+            {
+                if (ReferenceEquals(plugin.Instance, null)) continue;
+                BepInPlugin meta = plugin.Metadata;
+                var mod = new RuntimeMod(meta.GUID, meta.Version.ToString(), meta.Name, false);
+                if (mods.ContainsKey(mod.Id)) throw new InvalidOperationException("Duplicate loaded plugin GUID: " + mod.Id);
+                mods.Add(mod.Id, mod);
+            }
             PluginInfo extender;
             bool loaded = Chainloader.PluginInfos.TryGetValue(PluginId, out extender) &&
                           !ReferenceEquals(extender.Instance, null);
             if (required && !loaded) throw new InvalidOperationException("Script Extender did not load.");
-            if (required && !managedUpdaterBlocked) throw new InvalidOperationException("Script Extender managed deployment policy is not active.");
+            if (loaded && managedMode && !managedUpdaterBlocked) throw new InvalidOperationException("Script Extender managed deployment policy is not active.");
             if (loaded)
             {
                 if (registryInstance == null)
@@ -81,6 +93,7 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                 }
                 object registryObject = registryInstance.GetValue(null, null);
                 var entries = (IEnumerable)registeredDirectories.Invoke(registryObject, null);
+                var assetIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (object entry in entries)
                 {
                     object info = entry.GetType().GetProperty("Key").GetValue(entry, null);
@@ -90,20 +103,24 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                     string name = (string)type.GetProperty("Name").GetValue(info, null);
                     bool clientside = Convert.ToInt32(type.GetProperty("NetworkMode").GetValue(info, null)) == 0;
                     var mod = new RuntimeMod(id, version, name, clientside);
-                    if (mods.ContainsKey(mod.Id)) throw new InvalidOperationException("Duplicate SE Mod GUID: " + mod.Id);
-                    mods.Add(mod.Id, mod);
+                    AddAsset(mods, assetIds, mod);
                 }
-                if (!mods.ContainsKey(PluginId))
+                if (!assetIds.Contains(PluginId))
                     throw new InvalidOperationException("Script Extender asset registration is not ready.");
             }
-            foreach (PluginInfo plugin in Chainloader.PluginInfos.Values)
-            {
-                if (ReferenceEquals(plugin.Instance, null)) continue;
-                BepInPlugin meta = plugin.Metadata;
-                if (!mods.ContainsKey(meta.GUID))
-                    mods.Add(meta.GUID, new RuntimeMod(meta.GUID, meta.Version.ToString(), meta.Name, false));
-            }
             return new List<RuntimeMod>(mods.Values);
+        }
+
+        internal static void AddAsset(Dictionary<string, RuntimeMod> mods, HashSet<string> assetIds, RuntimeMod mod)
+        {
+            if (!assetIds.Add(mod.Id)) throw new InvalidOperationException("Duplicate SE Mod GUID: " + mod.Id);
+            RuntimeMod plugin;
+            if (mods.TryGetValue(mod.Id, out plugin))
+            {
+                if (plugin.Version != mod.Version)
+                    throw new InvalidOperationException("Loaded plugin and SE metadata versions disagree: " + mod.Id);
+            }
+            else mods.Add(mod.Id, mod);
         }
     }
 
@@ -122,7 +139,10 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
                 version.IndexOfAny(new[] { '\0', '\r', '\n' }) >= 0)
                 throw new InvalidOperationException("Invalid runtime Mod identity or version.");
             Id = id.Trim().ToLowerInvariant();
-            Version = version.Trim();
+            System.Version numeric;
+            Version = System.Version.TryParse(version.Trim(), out numeric)
+                ? numeric.Major + "." + numeric.Minor + "." + Math.Max(0, numeric.Build) + "." + Math.Max(0, numeric.Revision)
+                : version.Trim();
             Name = String.IsNullOrWhiteSpace(name) ? Id : name.Replace('\r', ' ').Replace('\n', ' ');
             // Infrastructure cannot be made optional by an asset manifest using its GUID.
             Clientside = clientside && Id != ScriptExtenderBridge.PluginId && Id != "uuimgui" &&
@@ -134,12 +154,13 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
     {
         internal static List<ProfileMod> Merge(List<ProfileMod> manager, List<RuntimeMod> runtime)
         {
-            var result = new List<ProfileMod>(manager);
+            // Package wrappers are deployment provenance, not a second network identity.
+            var result = new List<ProfileMod>();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (RuntimeMod mod in runtime)
             {
                 if (!seen.Add(mod.Id)) throw new InvalidOperationException("Duplicate runtime Mod GUID.");
-                if (!mod.Clientside) result.Add(new ProfileMod("se:" + mod.Id, mod.Version, mod.Name));
+                if (!mod.Clientside) result.Add(new ProfileMod("runtime:" + mod.Id, mod.Version, mod.Name));
             }
             result.Sort((left, right) => StringComparer.Ordinal.Compare(left.Id, right.Id));
             return result;
@@ -167,7 +188,7 @@ namespace JiuyeAyan.SCDEMultiplayerCompatibility
 
         internal static string Serialize(List<ProfileMod> mods, string fingerprint)
         {
-            var text = new StringBuilder("SCDEMM3|" + fingerprint);
+            var text = new StringBuilder("SCDEMM4|" + fingerprint);
             foreach (ProfileMod mod in mods)
                 text.Append('\n').Append(Encode(mod.Id)).Append('|').Append(Encode(mod.Version))
                     .Append('|').Append(Encode(mod.Name));

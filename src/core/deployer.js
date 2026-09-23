@@ -2,6 +2,8 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 const { GAME_APP_ID, GAME_EXECUTABLE } = require("./constants");
 const { safeJoin } = require("./paths");
+const { systemPathPolicy } = require("./system-path-policy");
+const { assertUnlinked, persistenceRules, collectPersistentFiles, assertNoPersistentCollisions } = require("./persistent-data");
 
 const STAGE_DIRECTORY_SUFFIX = " - SCDE Modded";
 const BEPINEX_PLUGIN_CACHE = "BepInEx/cache/chainloader_typeloader.dat";
@@ -66,6 +68,7 @@ async function filesHaveSameContents(first, second) {
 }
 
 async function listFiles(root, current = root) {
+  if (current === root) await assertUnlinked(root);
   if (!(await pathExists(root))) return [];
   const entries = await fs.readdir(current, { withFileTypes: true });
   const files = [];
@@ -95,24 +98,38 @@ async function validateGameDirectory(gameDir) {
   return { valid: true, executable };
 }
 
-async function prepareStage({ gameDir, stageDir, mods, enabledIds }) {
+async function inventoryMods(mods) {
+  return Promise.all(mods.map(async mod => ({ mod, files: await listFiles(path.join(mod.folder, "payload")) })));
+}
+
+async function deploymentPlan(stageDir, mods, enabledIds, systemIds) {
+  await assertUnlinked(stageDir);
+  const inventories = await inventoryMods(mods);
+  const policy = systemPathPolicy(inventories, systemIds);
+  for (const { mod, files } of inventories) if (enabledIds.includes(mod.id)) policy.validate(mod, files);
+  const rules = [{ root: "BepInEx/config" }, ...await persistenceRules(inventories)];
+  const persistentFiles = await collectPersistentFiles(stageDir, rules);
+  assertNoPersistentCollisions(inventories, enabledIds, persistentFiles);
+  return { inventories, policy, persistentFiles };
+}
+
+async function prepareStage({ gameDir, stageDir, mods, enabledIds, systemIds }) {
   const validation = await validateGameDirectory(gameDir);
   if (!validation.valid) throw new Error(validation.reason);
   assertExpectedStageDirectory(gameDir, stageDir);
 
-  // Configs belong to players, including editable translations created before first launch.
-  // Keep recovery copies outside the directory being rebuilt and retain them on failure.
-  const configPath = path.join(stageDir, "BepInEx/config");
-  let configBackup;
-  if (await pathExists(configPath)) {
-    for (const folder of [stageDir, path.join(stageDir, "BepInEx"), configPath]) {
-      if ((await fs.lstat(folder)).isSymbolicLink()) throw new Error("Linked game config directory is not supported.");
-    }
-    await listFiles(configPath); // Reject links instead of copying data outside the game copy.
-    configBackup = await fs.mkdtemp(path.join(path.dirname(stageDir), "scdemm-config-backup-"));
-    await fs.cp(configPath, path.join(configBackup, "config"), { recursive: true });
-  }
+  // Preflight before destroying a previous copy. Recovery data lives beside, not inside, it.
+  const plan = await deploymentPlan(stageDir, mods, enabledIds, systemIds);
+  let dataBackup;
   try {
+    if (plan.persistentFiles.length) {
+      dataBackup = await fs.mkdtemp(path.join(path.dirname(stageDir), "scdemm-data-backup-"));
+      for (const relative of plan.persistentFiles) {
+        const target = safeJoin(dataBackup, relative);
+        await fs.mkdir(path.dirname(target), { recursive: true });
+        await fs.copyFile(safeJoin(stageDir, relative), target);
+      }
+    }
     await fs.rm(stageDir, { recursive: true, force: true });
     await fs.mkdir(path.dirname(stageDir), { recursive: true });
     await fs.cp(path.resolve(gameDir), stageDir, {
@@ -121,6 +138,7 @@ async function prepareStage({ gameDir, stageDir, mods, enabledIds }) {
       force: true,
       errorOnExist: false,
       preserveTimestamps: true,
+      filter: source => !plan.policy.excludesSource(path.relative(gameDir, source).split(path.sep).join("/")),
     });
 
     const appIdPath = path.join(stageDir, "steam_appid.txt");
@@ -128,27 +146,46 @@ async function prepareStage({ gameDir, stageDir, mods, enabledIds }) {
       await fs.writeFile(appIdPath, `${GAME_APP_ID}\n`, "utf8");
     }
 
-    if (configBackup) await fs.cp(path.join(configBackup, "config"), configPath, { recursive: true, force: true });
-    const result = await applyMods({ gameDir, stageDir, mods, enabledIds, previousActiveFiles: [] });
-    if (configBackup) await fs.rm(configBackup, { recursive: true, force: true });
+    const result = await applyMods({ gameDir, stageDir, mods, enabledIds, systemIds, previousActiveFiles: [], plan });
+    if (dataBackup) {
+      for (const relative of plan.persistentFiles) {
+        await assertUnlinked(stageDir, relative);
+        const target = safeJoin(stageDir, relative);
+        await fs.mkdir(path.dirname(target), { recursive: true });
+        await fs.copyFile(safeJoin(dataBackup, relative), target);
+      }
+      await fs.rm(dataBackup, { recursive: true, force: true });
+    }
     return result;
   } catch (error) {
-    if (configBackup) error.message += ` (Configs retained at ${configBackup})`;
+    if (dataBackup) error.message += ` (User-data recovery backup retained at ${dataBackup})`;
     throw error;
   }
 }
 
-async function applyMods({ gameDir, stageDir, mods, enabledIds, previousActiveFiles }) {
+async function applyMods({ gameDir, stageDir, mods, enabledIds, previousActiveFiles, systemIds, plan }) {
+  assertExpectedStageDirectory(gameDir, stageDir);
   const stageValidation = await validateGameDirectory(stageDir);
   if (!stageValidation.valid) {
     throw new Error("游戏副本尚未准备，请先点击“准备游戏副本”。");
   }
 
+  plan ||= await deploymentPlan(stageDir, mods, enabledIds, systemIds);
+  // Validate every destination before restoring/removing the first file.
+  for (const relative of [...previousActiveFiles || [], ...plan.inventories.filter(item => enabledIds.includes(item.mod.id)).flatMap(item => item.files), BEPINEX_PLUGIN_CACHE]) {
+    safeJoin(stageDir, relative);
+    await assertUnlinked(stageDir, relative);
+  }
+  const receipts = ["_scde_manager/active-mods.json", "_scde_manager/active-mods.lobby"];
+  for (const relative of receipts) await assertUnlinked(stageDir, relative);
+  // A failed partial redeploy must never reuse a receipt from the previous successful deployment.
+  for (const relative of receipts) await fs.rm(safeJoin(stageDir, relative), { force: true });
+  const persistent = new Set(plan.persistentFiles.map(file => file.toLowerCase()));
   for (const relative of previousActiveFiles || []) {
-    if (/^BepInEx[\\/]config[\\/][^\\/]+[\\/]lang[\\/]/i.test(relative)) continue;
+    if (/^BepInEx[\\/]config[\\/]/i.test(relative) || persistent.has(relative.replaceAll("\\", "/").toLowerCase())) continue;
     const original = safeJoin(gameDir, relative);
     const staged = safeJoin(stageDir, relative);
-    if (await pathExists(original)) {
+    if (!plan.policy.excludesSource(relative) && await pathExists(original)) {
       await fs.mkdir(path.dirname(staged), { recursive: true });
       await fs.copyFile(original, staged);
     } else {
@@ -156,17 +193,17 @@ async function applyMods({ gameDir, stageDir, mods, enabledIds, previousActiveFi
     }
   }
 
-  const modById = new Map(mods.map((mod) => [mod.id, mod]));
+  const modById = new Map(plan.inventories.map(item => [item.mod.id, item]));
   const owners = new Map();
   const activeFiles = [];
   const activeFileKeys = new Set();
   const conflicts = [];
 
   for (const id of enabledIds) {
-    const mod = modById.get(id);
-    if (!mod) continue;
+    const inventory = modById.get(id);
+    if (!inventory) continue;
+    const { mod, files } = inventory;
     const payloadRoot = path.join(mod.folder, "payload");
-    const files = await listFiles(payloadRoot);
 
     for (const relative of files) {
       const source = safeJoin(payloadRoot, relative);
@@ -207,6 +244,7 @@ async function applyMods({ gameDir, stageDir, mods, enabledIds, previousActiveFi
 module.exports = {
   applyMods,
   filesHaveSameContents,
+  inventoryMods,
   listFiles,
   pathExists,
   prepareStage,

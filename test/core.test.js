@@ -393,7 +393,7 @@ test("required multiplayer components are enabled and write the staged profile",
 
 test("multiplayer checker publishes Steam profiles, rejects mismatches, and blocks start", async () => {
   const source = await fs.readFile(multiplayerCompatibilitySource, "utf8");
-  assert.match(source, /PluginVersion = "0\.3\.1"/);
+  assert.match(source, /PluginVersion = "0\.4\.0"/);
   const formatMod = source.match(/private static string FormatMod\(ProfileMod mod\)\s*\{([^}]+)\}/)[1];
   assert.match(formatMod, /return mod.Name \+ "  v" \+ mod.Version;/);
   assert.doesNotMatch(formatMod, /mod.Id/);
@@ -415,7 +415,8 @@ test("multiplayer checker publishes Steam profiles, rejects mismatches, and bloc
   assert.match(source, /ProcessPendingJoin/);
   assert.match(source, /pendingJoinExpiresAt/);
   assert.match(source, /allowNextJoinLobbyId/);
-  assert.match(source, /if \(hostProfile == null\) return;/);
+  assert.match(source, /if \(hostProfile == null && !unverified\) return;/);
+  assert.match(source, /if \(advertisedMMC\) return 0;/);
   assert.match(source, /if \(currentLobbyId == 0\) return true;/);
   assert.match(source, /MULTIPLAYER_COMPATIBILITY_RUNTIME_ACTIVE/);
   assert.match(source, /SetLobbyMemberData\(lobby\.id, MemberProfileKey, localToken\)/);
@@ -439,7 +440,7 @@ test("multiplayer checker publishes Steam profiles, rejects mismatches, and bloc
   assert.match(source, /if \(singlePlayerSkirmishSetup\) return true;/);
   assert.match(source, /MemberHandshakeGraceSeconds = 3f/);
   assert.match(source, /PendingJoinWaitSeconds = 12f/);
-  assert.match(source, /MemberHandshakeGraceSeconds\) continue;[\s\S]*RejectMember\(platform, lobby, memberId, String.IsNullOrEmpty\(remoteToken\)\)/);
+  assert.match(source, /MemberHandshakeGraceSeconds\) \{ allAllowed = false; continue; \}[\s\S]*RejectMember\(platform, lobby, memberId, String.IsNullOrEmpty\(remoteToken\)\)/);
   assert.match(source, /OverlayDurationSeconds = 5f/);
   assert.match(source, /overlayUntil = Time\.unscaledTime \+ OverlayDurationSeconds/);
   assert.match(source, /"正在验证 Mod 列表…"/);
@@ -476,7 +477,7 @@ test("compact manager layout keeps the drag bar visible and merges Mod version w
   assert.match(css, /\.app-titlebar\s*\{[^}]*position: relative;[^}]*flex: 0 0 48px;/s);
   assert.match(css, /\.workspace\s*\{[^}]*flex: 1 1 auto;[^}]*overflow: auto;/s);
   assert.match(renderer, /workspace\.addEventListener\(\s*"wheel"[\s\S]*event\.preventDefault\(\)[\s\S]*workspace\.scrollBy/);
-  assert.match(main, /await manager\.ensureSystemMods\(true, true\);/);
+  assert.match(main, /await manager\.ensureSystemMods\(false, true\);/);
 });
 
 test("new imports enable automatically and updates preserve disabled state", async (t) => {
@@ -714,14 +715,14 @@ test("launch repairs the staged environment when its single deployment probe is 
   const packagePath = await makePackage(
     root,
     { id: "test.launch", name: "Launch Repair", version: "1.0.0" },
-    { "winhttp.dll": "required bootstrap bytes" }
+    { "BepInEx/plugins/LaunchRepair/bootstrap.bin": "required bootstrap bytes" }
   );
 
   await manager.setGameDirectory(gameDir);
   await manager.installPackage(packagePath);
   await manager.setEnabled("test.launch", true);
   await manager.prepareStage();
-  const stagedProbe = path.join(manager.stageDir, "winhttp.dll");
+  const stagedProbe = path.join(manager.stageDir, "BepInEx/plugins/LaunchRepair/bootstrap.bin");
   await fs.rm(stagedProbe);
 
   assert.equal((await manager.getState()).stageReady, false);
@@ -755,7 +756,7 @@ test("launch does not rewrite intact Mod payloads when the deployment receipt is
     root,
     { id: "test.fast-launch", name: "Fast Launch", version: "1.0.0" },
     {
-      "winhttp.dll": "bootstrap sentinel",
+      "BepInEx/plugins/FastLaunch/bootstrap.bin": "bootstrap sentinel",
       "BepInEx/plugins/FastLaunch/large-map-pack.bin": Buffer.alloc(1024 * 1024, 7),
     }
   );
@@ -944,7 +945,7 @@ test("identical files from multiple mods are shared without a conflict", async (
     root,
     { id: "first.mod", name: "First", version: "1.0.0" },
     {
-      "BepInEx/core/shared-loader.dll": "same runtime bytes",
+      "BepInEx/plugins/shared-assets/shared-loader.dll": "same runtime bytes",
       "BepInEx/plugins/first/plugin.dll": "first plugin",
     }
   );
@@ -952,7 +953,7 @@ test("identical files from multiple mods are shared without a conflict", async (
     root,
     { id: "second.mod", name: "Second", version: "1.0.0" },
     {
-      "BepInEx/core/shared-loader.dll": "same runtime bytes",
+      "BepInEx/plugins/shared-assets/shared-loader.dll": "same runtime bytes",
       "BepInEx/plugins/second/plugin.dll": "second plugin",
     }
   );
@@ -967,7 +968,7 @@ test("identical files from multiple mods are shared without a conflict", async (
   assert.deepEqual(state.lastConflicts, []);
   assert.equal(state.activeFileCount, 3);
   assert.equal(
-    await fs.readFile(path.join(manager.stageDir, "BepInEx", "core", "shared-loader.dll"), "utf8"),
+    await fs.readFile(path.join(manager.stageDir, "BepInEx", "plugins", "shared-assets", "shared-loader.dll"), "utf8"),
     "same runtime bytes"
   );
   assert.equal(

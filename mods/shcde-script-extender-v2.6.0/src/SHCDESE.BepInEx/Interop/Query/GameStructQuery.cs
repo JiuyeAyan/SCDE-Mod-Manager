@@ -26,21 +26,19 @@ public delegate void RefAction<T>(in T item, int idOrIndex) where T : unmanaged;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>ID convention.</b> The game stores entities in flat, zero-indexed native arrays, but every
-/// public accessor in the script extender (<c>TryGetBuildingById</c>, <c>TryGetUnitById</c>,
-/// <c>TryGetTribeById</c>, ...) takes a <b>one-based game ID</b> and internally resolves it as
-/// <c>_array[id - 1]</c>. The corresponding <c>IsValidId</c> checks reject <c>0</c>.
+/// <b>ID convention.</b> Query inputs are zero-based views of addressable records: element 0 is native game ID 1, element 1 is native game ID 2, and so on. M
+/// anagers whose native storage has a reserved slot 0 must omit that slot before constructing a query. 
+/// Public accessors (<c>TryGetBuildingById</c>, <c>TryGetUnitById</c>, <c>TryGetTribeById</c>, ...) take a
+/// <b>one-based game ID</b> and resolve it against the corresponding view as <c>_array[id - 1]</c>.
+/// The corresponding <c>IsValidId</c> checks reject <c>0</c>.
 /// </para>
 /// <para>
-/// To keep the whole surface consistent, everything this query type hands back to a caller is a
-/// <b>one-based game ID</b>. Members that deliberately expose the raw zero-based slot index are
-/// named explicitly (<see cref="ToIndexList"/>, <see cref="ForEachIndex(Action{int})"/>,
+/// To keep the whole surface consistent, everything this query type hands back to a caller is a <b>one-based game ID</b>. 
+/// Members that expose the raw zero-based slot index are named explicitly (<see cref="ToIndexList"/>, <see cref="ForEachIndex(Action{int})"/>,
 /// <see cref="Enumerator.CurrentIndex"/>).
 /// </para>
 /// <para>
-/// The rule of thumb: <c>id == index + 1</c>. Anything named <c>...Id...</c> is safe to pass
-/// straight into a <c>TryGet...ById</c> method; anything named <c>...Index...</c> is only valid
-/// for direct span/array indexing.
+/// The rule of thumb: <c>id == index + 1</c>. Anything named <c>...Id...</c> is safe to pass straight into a <c>TryGet...ById</c> method; anything named <c>...Index...</c> is only valid for direct span/array indexing.
 /// </para>
 /// </remarks>
 public unsafe readonly ref struct GameStructQuery<T> where T : unmanaged

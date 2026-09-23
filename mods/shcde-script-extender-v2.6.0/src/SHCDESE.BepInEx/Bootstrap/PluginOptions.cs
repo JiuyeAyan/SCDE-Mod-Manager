@@ -151,6 +151,11 @@ public partial class Plugin : BaseUnityPlugin
     /// </summary>
     public ConfigEntry<bool> EnableEarlySteamInitialization;
 
+    /// <summary>
+    /// Ignores any found dependency incompatibilities, mainly used for testing.
+    /// </summary>
+    public ConfigEntry<bool> IgnoreDependencyIncompatibilities;
+
 #pragma warning restore 8618
     /// <summary>
     /// Binds all the plugin's configuration entries to the BepInEx configuration system.
@@ -173,6 +178,7 @@ public partial class Plugin : BaseUnityPlugin
         EnableNativeCrashHandler = Config.Bind("Bootstrap", "EnableNativeCrashHandler", true, "Write native crash diagnostics and minidumps to BepInEx/crashdumps");
         MaxNativeCrashDumpFiles = Config.Bind("Bootstrap", "MaxNativeCrashDumpFiles", 5, "Maximum number of files retained in BepInEx/crashdumps. The oldest files are deleted during startup; set to 0 to clear all existing files.");
         AllowChatInNonMultiplayer = Config.Bind("General", "AllowChatInNonMultiplayer", false, "Should the script extender allow the chat in non-multiplayer matches");
+        IgnoreDependencyIncompatibilities = Config.Bind("General", "IgnoreDependencyIncompatibilities", false, "Should the script extender ignore any mod dependency incompatibilities");
 
         LogLevel = Config.Bind("Bootstrap", "LogLevel", LogEventLevel.Information, "Log level");
 

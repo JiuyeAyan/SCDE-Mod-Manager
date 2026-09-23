@@ -38,7 +38,10 @@ public static class MinWinAPI
 
     [DllImport("user32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
     public static extern int MessageBoxA(IntPtr hWnd, string lpText, string lpCaption, uint uType);
-
+    public const uint MB_YESNO = 0x00000004;
+    public const uint MB_ICONWARNING = 0x00000030;
+    public const uint MB_DEFBUTTON2 = 0x00000100;
+    public const int IDYES = 6;
 
     [StructLayout(LayoutKind.Sequential)]
     public struct MODULEINFO

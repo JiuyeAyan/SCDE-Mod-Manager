@@ -2,6 +2,7 @@
 using RedBird.Core.Memory;
 using RedBird.X64.Hooks;
 using RedBird.X64.Hooks.Transaction;
+using RedBird.X64.Memory.Scanners;
 using Serilog;
 using SHCDESE.API;
 using SHCDESE.API.Components.Timer;
@@ -20,18 +21,15 @@ namespace SHCDESE.Detours;
 [SuppressUnmanagedCodeSecurity]
 internal class BulkTimeDetours
 {
-    private HookTransaction? tx;
-
     /// <summary>
     /// Scans game memory for the target function signatures and applies the detours.
     /// </summary>
     /// <param name="memory">A span representing the game's process memory to be scanned.</param>
-    public BulkTimeDetours(ReadOnlySpan<byte> memory, ScanRegion region)
+    public BulkTimeDetours(ReadOnlySpan<byte> memory, ScanRegion region, HookTransaction tx, DataScanner scanner)
     {
         LogHelper.Information($"Applying");
 
         UInt64 currentImageBase = (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle;
-        tx ??= new HookTransaction(region, Plugin.Instance.LoggerFactory);
 
         tx.AddDetour(c_game_update_datetime_hook,
             "FF 81 ?? ?? ?? ?? 45 33 D2",
@@ -67,7 +65,6 @@ internal class BulkTimeDetours
                 }
             }, new RedBird.X64.Hooks.Context.ContextHookOptions() {  Registers = RedBird.X64.Assembly.X64SmartCPUContextRegs.Volatile });
 
-        tx.Commit();
     }
 
     internal static HookHandle<X64InlineHook> c_game_handle_time_stuff = new();

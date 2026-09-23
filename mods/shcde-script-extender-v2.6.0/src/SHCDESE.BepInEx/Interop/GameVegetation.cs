@@ -88,45 +88,7 @@ public struct GameVegetationManager
     public UInt32 TotalActive; //0x0008
     public UInt32 N00004812; //0x000C
     public UInt32 TotalAllocated; //0x0010
-    public UInt32 N00004814; //0x0014
-    public UInt32 N000047D2; //0x0018
-    public UInt32 N00004816; //0x001C
-    public UInt32 N000047D3; //0x0020
-    public UInt32 N00004818; //0x0024
-    public UInt32 N000047D4; //0x0028
-    public UInt32 N0000481A; //0x002C
-    public UInt32 N000047D5; //0x0030
-    public UInt32 N0000481C; //0x0034
-    public UInt32 N000047D6; //0x0038
-    public UInt32 N0000481E; //0x003C
-    public UInt32 N000047D7; //0x0040
-    public UInt32 N00004820; //0x0044
-    public UInt32 N000047D8; //0x0048
-    public UInt32 N00004822; //0x004C
-    public UInt32 N000047D9; //0x0050
-    public UInt32 N00004824; //0x0054
-    public UInt32 N000047DA; //0x0058
-    public UInt32 N00004826; //0x005C
-    public UInt32 N000047DB; //0x0060
-    public UInt32 N00004828; //0x0064
-    public UInt32 N000047DC; //0x0068
-    public UInt32 N0000482A; //0x006C
-    public UInt32 N000047DD; //0x0070
-    public UInt32 N0000482C; //0x0074
-    public UInt32 N000047DE; //0x0078
-    public UInt32 N0000482E; //0x007C
-    public UInt32 N000047DF; //0x0080
-    public UInt32 N00004830; //0x0084
-    public UInt32 N000047E0; //0x0088
-    public UInt32 N00004832; //0x008C
-    public UInt32 N000047E1; //0x0090
-    public UInt32 N00004834; //0x0094
-    public UInt32 N000047E2; //0x0098
-    public UInt32 N00004836; //0x009C
-    public UInt32 N000048E8; //0x00A0
-    public UInt32 N000048D0; //0x00A4
-    public UInt32 N000048EA; //0x00A8
-    public UInt32 N000048D1; //0x00AC
-    public UInt32 N000048EC; //0x00B0
-    public GameVegetation VegetationArray;
+    public UInt16 N00004814; //0x0014
+    public UInt16 N000047D2; //0x0018
+    public GameVegetation VegetationArray; // Capacity: 5000
 }; //Size: 0x5EB4

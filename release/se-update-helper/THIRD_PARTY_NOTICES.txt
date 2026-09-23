@@ -10,8 +10,15 @@ when SCDEModManagerLaunchId is non-empty, return before automatic deployment/res
 Otherwise the original method body runs unchanged. This preserves the user's chosen
 manager-mode deployment policy. Other plugin resources are copied unchanged.
 The equivalent source patch and the complete patcher source are included here.
-The update helper validates the method structure and assembly version. This is NOT
-runtime, multiplayer or third-party Mod compatibility verification.
+Before writing a candidate, the update helper validates the assembly identity/version,
+one private instance void updater with no arguments, and exactly one expected Workshop
+enumeration call. It also checks MMC's public asset registry contract: singleton and
+directory enumeration shape, GUID/Version/Name strings and Clientside enum value 0.
+References to shared runtime types/members must resolve against the manager's actual
+BepInEx runtime, not a candidate-provided replacement. Missing dependency identities,
+public-key-token mismatches and shadow copies of shared core assemblies are rejected.
+These are bounded structural checks, NOT a Unity startup, multiplayer test, general
+binary-equivalence proof, security audit or promise of future Mod compatibility.
 
 The downloaded BepInEx core, Doorstop loader, configs and installer scripts are not installed.
 The manager's shared BepInEx Runtime remains authoritative; player configs are retained.

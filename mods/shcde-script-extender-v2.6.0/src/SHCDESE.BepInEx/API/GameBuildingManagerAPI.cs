@@ -35,7 +35,7 @@ public unsafe sealed class GameBuildingManagerAPI
     private static readonly Lazy<GameBuildingManagerAPI> _lazy = new(() => new GameBuildingManagerAPI());
     public static GameBuildingManagerAPI Instance => _lazy.Value;
 
-    /// <summary>The maximum number of buildings the game pre-allocates memory for.</summary>
+    /// <summary>The number of building slots the game pre-allocates, including reserved slot 0.</summary>
     internal const int NUM_PREALLOC_BUILDINGS = 4000;
 
     private GameBuildingManager* _buildingManager;
@@ -60,6 +60,7 @@ public unsafe sealed class GameBuildingManagerAPI
     private SimpleNativeArray<Int32> _buildingGoldCostsArray;
     private SimpleNativeArray<Int32> _buildingWoodCostsArray;
     private SimpleNativeArray<Int32> _buildingIronIngotsCostsArray;
+    private SimpleNativeArray<Int32> _buildingTypeAccessTileConnectivityBypassArray;
 
     // --- Managed Dictionary ---
 
@@ -158,7 +159,7 @@ public unsafe sealed class GameBuildingManagerAPI
         int amountStructs = Enum.GetValues(typeof(eStructs)).Length;
 
         _buildingManager = (GameBuildingManager*)GameGlobalsManager.Instance.GameBuildingManagerVA;
-        _buildingArray = new SimpleNativeArray<GameBuilding>((byte*)&_buildingManager->BuildingsArray, NUM_PREALLOC_BUILDINGS);
+        _buildingArray = new SimpleNativeArray<GameBuilding>((byte*)&_buildingManager->BuildingsArray + sizeof(GameBuilding), NUM_PREALLOC_BUILDINGS - 1);
 
         // Health, Population
         _buildingHealthDefaultsArray = new ManagedNativeArray<uint>((byte*)(GameGlobalsManager.Instance.BuildingHealthTableRVA + (ulong)CrusaderLibrary.Instance.LibraryModuleHandle), amountStructs);
@@ -215,6 +216,8 @@ public unsafe sealed class GameBuildingManagerAPI
         // Initialize the override to -1 (disabled)
         KeepProximityOverride = new ManagedValue<int>(-1);
 
+        _buildingTypeAccessTileConnectivityBypassArray = new SimpleNativeArray<int>((byte*)GameGlobalsManager.Instance.BuildingTypeAccessTileConnectivityBypassVA, amountStructs);
+
         LogHelper.Information($"_buildingManager: {new IntPtr(_buildingManager).ToString("X16")}");
         LogHelper.Information($"_buildingArray: {new IntPtr(_buildingArray._array).ToString("X16")}");
         LogHelper.Information($"_buildingDefaultCostsArray: {_buildingDefaultCostsArray.ToString("X16")}");
@@ -224,7 +227,7 @@ public unsafe sealed class GameBuildingManagerAPI
         LogHelper.Information($"_buildingGoldCostsArray: {new IntPtr(_buildingGoldCostsArray._array).ToString("X16")}");
         LogHelper.Information($"_buildingWoodCostsArray: {new IntPtr(_buildingWoodCostsArray._array).ToString("X16")}");
         LogHelper.Information($"_buildingIronIngotsCostsArray: {new IntPtr(_buildingIronIngotsCostsArray._array).ToString("X16")}");
-
+        LogHelper.Information($"_buildingTypeAccessTileConnectivityBypassArray: {new IntPtr(_buildingTypeAccessTileConnectivityBypassArray._array).ToString("X16")}");
     }
     internal static void InitializeSubscribers()
     {
@@ -1090,12 +1093,41 @@ public unsafe sealed class GameBuildingManagerAPI
     [LuaApiExport("GetEndPosition")]
     public UnmanagedVector2<UInt16> GetEndPosition(int buildingId)
     {
+        return GameTileManagerAPI.Instance.GetTileVectorFromId(GetEndTileId(buildingId));
+    }
+
+    /// <summary>
+    /// Gets the tile end position of a building as TileId.
+    /// </summary>
+    /// <param name="buildingId">The ID of the building.</param>
+    /// <returns>An <see cref="int"/> representing the end tile id, or default if not found.</returns>
+    [LuaApiExport("GetEndTileId")]
+    public int GetEndTileId(int buildingId)
+    {
         if (!TryGetBuildingById(buildingId, out GameBuilding* building))
         {
             LogHelper.Error($"TryGetBuildingById failed for buildingId: {buildingId}");
             return default;
         }
-        return *(UnmanagedVector2<UInt16>*)(&building->r_TilePositionXEnd);
+        UInt32 otaSize = building->r_OccupyTileGridSize;
+        UInt32 index = otaSize * otaSize - 1;
+        return (int)((UInt32*)&building->r_OccupiedTileIdsArrayBegin)[index];
+    }
+
+    /// <summary>
+    /// Gets the tile access position of a building.
+    /// </summary>
+    /// <param name="buildingId">The ID of the building.</param>
+    /// <returns>An <see cref="UnmanagedVector2{UInt16}"/> representing the access tile coordinates, or a default vector if not found.</returns>
+    [LuaApiExport("GetAccessPosition")]
+    public UnmanagedVector2<UInt16> GetAccessPosition(int buildingId)
+    {
+        if (!TryGetBuildingById(buildingId, out GameBuilding* building))
+        {
+            LogHelper.Error($"TryGetBuildingById failed for buildingId: {buildingId}");
+            return default;
+        }
+        return *(UnmanagedVector2<UInt16>*)(&building->r_AccessTilePositionX);
     }
 
     /// <summary>
@@ -1670,6 +1702,29 @@ public unsafe sealed class GameBuildingManagerAPI
         }
 
         return (Int64)_keepProximityTable.GetValue(mapSize);
+    }
+
+    /// <summary>
+    /// Sets the building access tile connectivity bypass for a building. Connection rules become more lenient if true.
+    /// (Internal detail used by various native tile accessor functions, for pathing, AI, etc)
+    /// </summary>
+    /// <param name="building">The building struct.</param>
+    /// <param name="enabled">Whether the bypass is enabled.</param>
+    [LuaApiExport("SetBuildingAccessTileConnectivityBypass")]
+    public void SetBuildingAccessTileConnectivityBypass(eStructs building, bool enabled)
+    {
+        _buildingTypeAccessTileConnectivityBypassArray.SetValue((int)building, enabled ? 1 : 0);
+    }
+
+    /// <summary>
+    /// Gets the building access tile connectivity bypass for a building.
+    /// </summary>
+    /// <param name="building">The building struct.</param>
+    /// <returns>Whether the bypass is enabled.</returns>
+    [LuaApiExport("GetBuildingAccessTileConnectivityBypass")]
+    public bool GetBuildingAccessTileConnectivityBypass(eStructs building)
+    {
+        return _buildingTypeAccessTileConnectivityBypassArray.GetValue((int)building) == 1;
     }
 
     #region Query System

@@ -79,9 +79,9 @@ public unsafe struct GameBuilding : IPositionable, IEquatable<GameBuilding>
     public UInt16 N00002C21;
     [LuaExposed] public UInt32 r_TileIdBegin;
     [LuaExposed] public UInt32 r_OccupyTileGridSize;
-    public UInt16 N000017C5;
-    [LuaExposed] public UInt16 r_TilePositionXEnd;
-    [LuaExposed] public UInt16 r_TilePositionYEnd;
+    [LuaExposed] public UInt16 r_AccessCandidateCursor;
+    [LuaExposed] public UInt16 r_AccessTilePositionX;
+    [LuaExposed] public UInt16 r_AccessTilePositionY;
     [LuaExposed] public UInt16 r_SpriteVariationIndex;
     [LuaExposed] public byte r_RandomShort;
     public byte N000057A8;
@@ -295,7 +295,6 @@ public unsafe struct GameBuildingManager
     public UInt32 N000017F7; //0x004C
     public UInt32 BuildingsAllocated; //0x0050
     public UInt32 FreeBuildings; //0x0054
-    public fixed byte pad_0058[816]; //0x0058
-    
-    public GameBuilding BuildingsArray; //0x0388
+    public UInt32 pad;  // 0x58
+    public GameBuilding BuildingsArray; //0x05C Capacity: 4000
 };

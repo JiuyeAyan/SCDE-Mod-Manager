@@ -9,7 +9,12 @@ public class LobbyModSettingsEntry
 {
     public BaseUnityPlugin Plugin { get; }
     public string Name { get; }
+
+    /// <summary>The optional image displayed while this tab is selected.</summary>
     public string OptionBannerPath { get; }
+
+    /// <summary>The optional image displayed behind this tab at all times.</summary>
+    public string OptionBannerBackgroundPath { get; }
     public object ViewModel { get; }
     public FrameworkElement View { get; }
 
@@ -17,27 +22,28 @@ public class LobbyModSettingsEntry
     {
         Plugin = plugin;
         Name = name;
-        OptionBannerPath = FindOptionBanner(plugin);
+        OptionBannerPath = FindOptionBanner(plugin, "_option_banner.png");
+        OptionBannerBackgroundPath = FindOptionBanner(plugin, "_option_banner_bg.png");
         ViewModel = vm;
         View = view;
     }
 
     /// <summary>
-    /// Resolves the optional Override/Assets/GUI/Sprites/%MOD_GUID%_option_banner.png banner path.
+    /// Resolves an optional option-banner asset beneath Override/Assets/GUI/Sprites.
     /// </summary>
-    private static string FindOptionBanner(BaseUnityPlugin plugin)
+    private static string FindOptionBanner(BaseUnityPlugin plugin, string fileNameSuffix)
     {
         string guid = plugin.Info.Metadata.GUID;
         if (string.IsNullOrWhiteSpace(guid))
             return string.Empty;
 
-        string fileName = guid + "_option_banner.png";
+        string fileName = guid + fileNameSuffix;
         string relativePath = "Assets/GUI/Sprites/" + fileName;
 
         bool indexed = GameAssetManagerAPI.Instance.GetModifiedFilePath(relativePath, out _);
         if (!indexed)
         {
-            LogHelper.Verbose($"Option banner for plugin {plugin.Info.Metadata.Name} ({guid}) not found in indexed assets.");
+            LogHelper.Verbose($"Option banner asset {fileName} for plugin {plugin.Info.Metadata.Name} ({guid}) not found in indexed assets.");
         }
 
         string? pluginDirectory = System.IO.Path.GetDirectoryName(plugin.Info.Location);

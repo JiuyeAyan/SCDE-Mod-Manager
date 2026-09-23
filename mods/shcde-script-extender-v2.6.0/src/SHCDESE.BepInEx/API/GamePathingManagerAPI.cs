@@ -7,6 +7,7 @@ using SHCDESE.Interop.Enums;
 using SHCDESE.Lua.DocsGen;
 using SHCDESE.LUA.DocsGen;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace SHCDESE.API;
@@ -19,13 +20,12 @@ public unsafe sealed class GamePathingManagerAPI
 {
     public const int FIRST_PATH_CONNECTION_RECORD_ID = 1;
     public const int LAST_PATH_CONNECTION_RECORD_ID = 199;
-    public const int PACKED_PLAN_BYTES_PER_UNIT = 1_000;
-    public const int MAX_PATH_PLAN_TRANSITIONS = PACKED_PLAN_BYTES_PER_UNIT * 2;
+    public const int PACKED_PLAN_BYTES_PER_UNIT = GameUnitManager.PackedPathPlanBytesPerUnit;
+    public const int MAX_PATH_PLAN_TRANSITIONS = GameUnitManager.PackedPathPlanTransitionsPerUnit;
     public const int PATHFINDING_UNIT_TYPE_COUNT = (Int32)eChimps.CHIMP_NUM_TYPES;
     public const int FIRST_PATH_CONNECTION_CLASS = (Int32)PathConnectionClass.LadderClimb;
     public const int LAST_PATH_CONNECTION_CLASS = (Int32)PathConnectionClass.Connection6;
 
-    private const int PACKED_PLAN_BUFFER_OFFSET = 0xB4FE78;
     private const int PATH_CONNECTION_CLASS_COUNT = LAST_PATH_CONNECTION_CLASS - FIRST_PATH_CONNECTION_CLASS + 1;
     private const int SELECTED_UNIT_TYPE_COUNTER_COUNT = 35;
     private const int NATIVE_ASSASSIN_SELECTION_COUNTER_INDEX = 22;
@@ -295,10 +295,99 @@ public unsafe sealed class GamePathingManagerAPI
     /// </summary>
     public Span<byte> GetUnitPathPlanBuffer(int unitId)
     {
-        if (!GameUnitManagerAPI.Instance.TryGetUnitById(unitId, out GameUnit* unit) || unit == null)
-            return Span<byte>.Empty;
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan)
+            ? pathPlan.PackedBytes
+            : Span<byte>.Empty;
+    }
 
-        return new Span<byte>(_unitManager + PACKED_PLAN_BUFFER_OFFSET + PACKED_PLAN_BYTES_PER_UNIT * unitId, PACKED_PLAN_BYTES_PER_UNIT);
+    /// <summary>
+    /// Returns the live portion of the packed buffer occupied by the current plan.
+    /// Its byte length is (r_PathPlanLength + 1) / 2.
+    /// </summary>
+    public Span<byte> GetActiveUnitPathPlanBuffer(int unitId)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan)
+            ? pathPlan.ActivePackedBytes
+            : Span<byte>.Empty;
+    }
+
+    /// <summary>
+    /// Creates a small live-memory view over one unit record and its separate packed path-plan buffer.
+    /// Native plan storage is indexed by unit ID and only has slots 0..9999; slot zero is reserved.
+    /// </summary>
+    public bool TryGetUnitPathPlanView(int unitId, out GameUnitPathPlanView pathPlan)
+    {
+        pathPlan = null!;
+        if (unitId < GameUnitManager.FirstLiveUnitId
+            || unitId > GameUnitManager.LastLiveUnitId
+            || _unitManager == null
+            || !GameUnitManagerAPI.Instance.TryGetUnitById(unitId, out GameUnit* unit)
+            || unit == null)
+        {
+            return false;
+        }
+
+        Byte* packedPlan = _unitManager
+            + GameUnitManager.PackedPathPlanBlockOffset
+            + GameUnitManager.PackedPathPlanBytesPerUnit * unitId;
+
+        pathPlan = new GameUnitPathPlanView(unit, packedPlan);
+        return true;
+    }
+
+    [LuaApiExport("GetUnitPathPlanLength")]
+    public int GetUnitPathPlanLength(int unitId)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) ? pathPlan.Length : -1;
+    }
+
+    [LuaApiExport("SetUnitPathPlanLength")]
+    public bool SetUnitPathPlanLength(int unitId, int transitionCount, bool clampCurrentIndex = true)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan)
+            && pathPlan.TrySetLength(transitionCount, clampCurrentIndex);
+    }
+
+    [LuaApiExport("GetUnitPathPlanCurrentIndex")]
+    public int GetUnitPathPlanCurrentIndex(int unitId)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) ? pathPlan.CurrentIndex : -1;
+    }
+
+    [LuaApiExport("SetUnitPathPlanCurrentIndex")]
+    public bool SetUnitPathPlanCurrentIndex(int unitId, int transitionIndex)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan)
+            && pathPlan.TrySetCurrentIndex(transitionIndex);
+    }
+
+    [LuaApiExport("ClearUnitPathPlan")]
+    public bool ClearUnitPathPlan(int unitId)
+    {
+        if (!TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan))
+            return false;
+
+        pathPlan.Clear();
+        return true;
+    }
+
+    /// <summary>Replaces the unit's live packed plan and sets its current transition cursor.</summary>
+    public bool ReplaceUnitPathPlan(int unitId, ReadOnlySpan<PackedPathDirection> directions, int currentIndex = 0)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) && pathPlan.TryReplace(directions, currentIndex);
+    }
+
+    /// <summary>Reads a direction from physical plan capacity, even if it is beyond the active length.</summary>
+    public bool TryGetRawPackedPathDirection(int unitId, int transitionIndex, out PackedPathDirection direction)
+    {
+        direction = default;
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) && pathPlan.TryGetRawDirection(transitionIndex, out direction);
+    }
+
+    /// <summary>Writes a direction in physical plan capacity, even if it is beyond the active length.</summary>
+    public bool SetRawPackedPathDirection(int unitId, int transitionIndex, PackedPathDirection direction)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) && pathPlan.TrySetRawDirection(transitionIndex, direction);
     }
 
     [LuaApiExport("GetComponentId")]
@@ -310,6 +399,34 @@ public unsafe sealed class GamePathingManagerAPI
     public UInt16 GetPathComponentIdByTileId(int tileId)
     {
         return IsValidPackedTileId(tileId) ? GetPathComponentGrid()[tileId] : (UInt16)0;
+    }
+    public bool TryGetPathComponentId(int tileX, int tileY, out UInt16 componentId)
+    {
+        componentId = 0;
+        if (!TryGetPackedTileId(tileX, tileY, out int tileId))
+            return false;
+
+        componentId = GetPathComponentGrid()[tileId];
+        return true;
+    }
+
+    /// <summary>
+    /// Returns a live decoded direction view, or null for an invalid unit ID.
+    /// Indexer reads and writes operate on the game's packed native plan buffer.
+    /// </summary>
+    public GameUnitPathPlanView? GetUnitPathPlanDirections(int unitId)
+    {
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) ? pathPlan : null;
+    }
+
+    public bool TryGetPathComponentIdByTileId(int tileId, out UInt16 componentId)
+    {
+        componentId = 0;
+        if (!IsValidPackedTileId(tileId))
+            return false;
+
+        componentId = GetPathComponentGrid()[tileId];
+        return true;
     }
 
     /// <summary>
@@ -367,6 +484,13 @@ public unsafe sealed class GamePathingManagerAPI
     [LuaApiExport("GetNextComponentId")]
     public int GetNextComponentId() => _pathfindingContextView.NextComponentId;
 
+    /// <summary>
+    /// Returns the exclusive upper bound assigned by the last component rebuild.
+    /// Component zero is reserved, so labelled components normally occupy 1..value-1.
+    /// </summary>
+    [LuaApiExport("GetComponentExclusiveUpperBound")]
+    public int GetPathComponentExclusiveUpperBound() => _pathfindingContextView.NextComponentId;
+
     [LuaApiExport("GetTotalLabelledTiles")]
     public int GetTotalLabelledTiles() => _pathfindingContextView.TotalLabelledTiles;
 
@@ -406,12 +530,25 @@ public unsafe sealed class GamePathingManagerAPI
         if ((UInt32)currentComponentId > UInt16.MaxValue
             || (UInt32)destinationComponentId > UInt16.MaxValue
             || (UInt32)queryMode > (UInt32)PathConnectionQueryMode.LadderClimbOnly
-            || BulkPathingDetours.c_game_get_next_reachable_pcl_to_destination_for_player == null)
+            || BulkPathingDetours.c_game_pathfinding_find_next_component_toward_destinaton == null)
         {
             return 0;
         }
 
-        return (Int32)BulkPathingDetours.c_game_get_next_reachable_pcl_to_destination_for_player(_pathfindingContext, playerId, currentComponentId, destinationComponentId, queryMode);
+        return (Int32)BulkPathingDetours.c_game_pathfinding_find_next_component_toward_destinaton(_pathfindingContext, playerId, currentComponentId, destinationComponentId, queryMode);
+    }
+
+    /// <summary>
+    /// Tests macro-graph reachability using the same player and connection-class filtering as the native route query.
+    /// </summary>
+    [LuaApiExport("AreComponentsConnected")]
+    public bool ArePathComponentsConnected(int playerId, int currentComponentId, int destinationComponentId, PathConnectionQueryMode queryMode = PathConnectionQueryMode.ExcludeLadderClimb)
+    {
+        if (currentComponentId <= 0 || destinationComponentId <= 0)
+            return false;
+
+        return currentComponentId == destinationComponentId
+            || FindNextComponentTowardDestination(playerId, currentComponentId, destinationComponentId, queryMode) != 0;
     }
 
     public bool TryGetPathConnectionRecordById(int recordId, out PathConnectionRecord* pathConnectionRecord)
@@ -466,6 +603,73 @@ public unsafe sealed class GamePathingManagerAPI
         return result;
     }
 
+
+    public bool TryGetPathConnectionRecordByUnitId(int unitId, out PathConnectionRecord* pathConnectionRecord)
+    {
+        pathConnectionRecord = null;
+        if (unitId <= 0 || _pathConnectionRecordArray._array == null)
+            return false;
+
+        for (int recordId = FIRST_PATH_CONNECTION_RECORD_ID; recordId <= LAST_PATH_CONNECTION_RECORD_ID; recordId++)
+        {
+            PathConnectionRecord* current = &_pathConnectionRecordArray._array[recordId];
+            if (current->r_IsActive == 0 || current->r_UnitId != unitId)
+                continue;
+
+            pathConnectionRecord = current;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryGetPathConnectionRecordByUnitIdEx(int unitId, out NativePointer<PathConnectionRecord> pathConnectionRecord)
+    {
+        bool result = TryGetPathConnectionRecordByUnitId(unitId, out PathConnectionRecord* recordPointer);
+        pathConnectionRecord = new NativePointer<PathConnectionRecord>(recordPointer);
+        return result;
+    }
+
+    /// <summary>Appends the IDs of all active native macro-connection records.</summary>
+    public void GetActivePathConnectionRecordIds(List<int> results)
+    {
+        if (results == null)
+            throw new ArgumentNullException(nameof(results));
+
+        if (_pathConnectionRecordArray._array == null)
+            return;
+
+        for (int recordId = FIRST_PATH_CONNECTION_RECORD_ID; recordId <= LAST_PATH_CONNECTION_RECORD_ID; recordId++)
+        {
+            if (_pathConnectionRecordArray._array[recordId].r_IsActive != 0)
+                results.Add(recordId);
+        }
+    }
+
+    /// <summary>
+    /// Appends IDs of active records that reference a component in any currently mapped component field.
+    /// </summary>
+    public void GetPathConnectionRecordIdsForComponent(int componentId, List<int> results)
+    {
+        if (results == null)
+            throw new ArgumentNullException(nameof(results));
+
+        if ((UInt32)componentId > UInt16.MaxValue || _pathConnectionRecordArray._array == null)
+            return;
+
+        for (int recordId = FIRST_PATH_CONNECTION_RECORD_ID; recordId <= LAST_PATH_CONNECTION_RECORD_ID; recordId++)
+        {
+            PathConnectionRecord* current = &_pathConnectionRecordArray._array[recordId];
+            if (current->r_IsActive != 0
+                && (current->r_PathComponentA == componentId
+                    || current->r_PathComponentB == componentId
+                    || current->r_PathComponentC == componentId))
+            {
+                results.Add(recordId);
+            }
+        }
+    }
+
     /// <summary>
     /// Returns the live sparse 50-entry registered-unit ID list for a connection record.
     /// </summary>
@@ -500,6 +704,17 @@ public unsafe sealed class GamePathingManagerAPI
         return (UInt32)slotLimit <= GameTileManagerView.MoatWorkTaskSlotCapacity ? slotLimit : 0;
     }
 
+    /// <summary>
+    /// Returns the native active moat-work task count. 
+    /// This is distinct from the exclusive slot high-water mark because freed slots may be reused below that mark.
+    /// </summary>
+    [LuaApiExport("GetMoatWorkTaskActiveCount")]
+    public int GetMoatWorkTaskActiveCount()
+    {
+        Int32 activeCount = _tileManagerView.MoatWorkTaskActiveCount;
+        return (UInt32)activeCount <= GameTileManagerView.MoatWorkTaskSlotCapacity ? activeCount : 0;
+    }
+
     public bool TryGetMoatWorkTaskByIndex(int taskIndex, out NativePointer<MoatWorkTask> moatWorkTask)
     {
         moatWorkTask = new NativePointer<MoatWorkTask>((MoatWorkTask*)null);
@@ -508,6 +723,8 @@ public unsafe sealed class GamePathingManagerAPI
             return false;
 
         MoatWorkTask* task = _tileManagerView.MoatWorkTaskSlotsPointer + taskIndex;
+        if (task->r_OwnerPlayerId == 0)
+            return false;
         moatWorkTask = new NativePointer<MoatWorkTask>(task);
         return true;
     }
@@ -528,21 +745,7 @@ public unsafe sealed class GamePathingManagerAPI
     public bool TryGetPackedPathDirection(int unitId, int transitionIndex, out PackedPathDirection direction)
     {
         direction = default;
-        if (!GameUnitManagerAPI.Instance.TryGetUnitById(unitId, out GameUnit* unit)
-            || unit == null
-            || (UInt32)transitionIndex >= unit->r_PathPlanLength)
-        {
-            return false;
-        }
-
-        Span<Byte> plan = GetUnitPathPlanBuffer(unitId);
-        Byte packed = plan[transitionIndex >> 1];
-        Byte rawDirection = (Byte)((packed >> ((transitionIndex & 1) * 4)) & 0x0F);
-        if (rawDirection > (Byte)PackedPathDirection.NorthWest)
-            return false;
-
-        direction = (PackedPathDirection)rawDirection;
-        return true;
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) && pathPlan.TryGetDirection(transitionIndex, out direction);
     }
 
     /// <summary>
@@ -551,20 +754,7 @@ public unsafe sealed class GamePathingManagerAPI
     /// </summary>
     public bool SetPackedPathDirection(int unitId, int transitionIndex, PackedPathDirection direction)
     {
-        if ((UInt32)direction > (UInt32)PackedPathDirection.NorthWest
-            || !GameUnitManagerAPI.Instance.TryGetUnitById(unitId, out GameUnit* unit)
-            || unit == null
-            || (UInt32)transitionIndex >= unit->r_PathPlanLength)
-        {
-            return false;
-        }
-
-        Span<Byte> plan = GetUnitPathPlanBuffer(unitId);
-        Int32 byteIndex = transitionIndex >> 1;
-        Int32 shift = (transitionIndex & 1) * 4;
-        Byte nibbleMask = (Byte)(0x0F << shift);
-        plan[byteIndex] = (Byte)((plan[byteIndex] & ~nibbleMask) | ((Byte)direction << shift));
-        return true;
+        return TryGetUnitPathPlanView(unitId, out GameUnitPathPlanView pathPlan) && pathPlan.TrySetDirection(transitionIndex, direction);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

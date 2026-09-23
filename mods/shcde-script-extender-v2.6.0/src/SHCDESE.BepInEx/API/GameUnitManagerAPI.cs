@@ -36,7 +36,7 @@ public unsafe sealed class GameUnitManagerAPI
     private static readonly Lazy<GameUnitManagerAPI> _lazy = new(() => new GameUnitManagerAPI());
     public static GameUnitManagerAPI Instance => _lazy.Value;
 
-    /// <summary>The maximum number of units the game pre-allocates memory for.</summary>
+    /// <summary>The number of unit slots the game pre-allocates, including reserved slot 0.</summary>
     internal const int NUM_PREALLOC_UNITS = 10000;
 
     internal GameUnitManager* _unitManager;
@@ -147,7 +147,7 @@ public unsafe sealed class GameUnitManagerAPI
 
         // --- Core ---
         _unitManager = (GameUnitManager*)GameGlobalsManager.Instance.GameUnitManagerVA;
-        _unitArray = new SimpleNativeArray<GameUnit>((byte*)&_unitManager->GameUnitArray, NUM_PREALLOC_UNITS);
+        _unitArray = new SimpleNativeArray<GameUnit>((byte*)&_unitManager->GameUnitArray + sizeof(GameUnit), NUM_PREALLOC_UNITS - 1);
 
         // --- Stat Arrays ---
         _healthDefaultsArray = new ManagedNativeArray<UInt32>((byte*)(GameGlobalsManager.Instance.UnitHealthTableRVA + (UInt64)CrusaderLibrary.Instance.LibraryModuleHandle), ChimpEnumCount);

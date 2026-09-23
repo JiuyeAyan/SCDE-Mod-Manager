@@ -4,7 +4,6 @@ using SHCDESE.API.Components.ModManager;
 using SHCDESE.IO;
 using SHCDESE.Logging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
@@ -38,7 +37,6 @@ public sealed class MapArchive : IDisposable
 
     private long _archiveOffset;
 
-    private byte[]? archiveBytes;
     private string _filePath;
 
     /// <summary>
@@ -50,8 +48,6 @@ public sealed class MapArchive : IDisposable
     /// Initializes a new instance of the <see cref="MapArchive"/> class by reading zip data from a given file path.
     /// </summary>
     /// <param name="filePath">The path to the map file to scan for an appended zip archive.</param>
-    // FIXED MapArchive Constructor
-    // The key issue: MemoryStreams were being disposed before SharpZipLib could read them
 
     public MapArchive(string filePath)
     {
@@ -79,66 +75,18 @@ public sealed class MapArchive : IDisposable
         LogHelper.Information($"Reading ZIP data from offset: {_archiveOffset.ToString("X8")}");
         try
         {
-            byte[] archiveBytes;
             using (FileStream fs = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 fs.Seek(_archiveOffset, SeekOrigin.Begin);
-                archiveBytes = new byte[fs.Length - _archiveOffset];
-                fs.Read(archiveBytes, 0, archiveBytes.Length);
-            }
+                MemoryStream archiveStream = new MemoryStream(checked((int)(fs.Length - _archiveOffset)));
+                ArchiveStream = archiveStream;
+                fs.CopyTo(archiveStream);
+                archiveStream.Position = 0;
 
-            // Keep streams alive until after commit
-            List<MemoryStream> tempStreams = new List<MemoryStream>();
-
-            try
-            {
-                // Rebuild the archive in memory to make it modifiable
-                using (ZipFile tempZip = new ZipFile(new MemoryStream(archiveBytes)))
-                {
-                    // Create a fresh, modifiable archive
-                    ArchiveStream = new MemoryStream();
-                    Archive = new ZipFile(ArchiveStream);
-                    Archive.IsStreamOwner = false;
-
-                    Archive.BeginUpdate();
-
-                    // Copy all existing entries
-                    foreach (ZipEntry entry in tempZip)
-                    {
-                        if (entry.IsFile)
-                        {
-                            // Read entry data into a NEW stream that we keep alive
-                            MemoryStream memStream = new MemoryStream();
-                            using (Stream inputStream = tempZip.GetInputStream(entry))
-                            {
-                                inputStream.CopyTo(memStream);
-                            }
-                            memStream.Position = 0;
-
-                            // Keep this stream alive until after commit
-                            tempStreams.Add(memStream);
-
-                            // Add to archive
-                            StreamDataSource dataSource = new StreamDataSource(memStream);
-                            Archive.Add(dataSource, entry.Name, entry.CompressionMethod);
-                        }
-                        else if (entry.IsDirectory)
-                        {
-                            Archive.AddDirectory(entry.Name);
-                        }
-                    }
-
-                    // Commit the update - this is when SharpZipLib reads the streams
-                    Archive.CommitUpdate();
-                }
-            }
-            finally
-            {
-                // Now it's safe to dispose the temporary streams
-                foreach (var stream in tempStreams)
-                {
-                    stream?.Dispose();
-                }
+                // Keep the original compressed entries intact. SharpZipLib only
+                // decompresses an entry when it is actually read, and the expandable
+                // MemoryStream still supports later BeginUpdate/CommitUpdate calls.
+                Archive = new ZipFile(archiveStream, leaveOpen: true);
             }
 
             IsValid = true;
@@ -157,7 +105,7 @@ public sealed class MapArchive : IDisposable
 
     private MapArchive()
     {
-        
+
     }
 
     /// <summary>
@@ -208,7 +156,7 @@ public sealed class MapArchive : IDisposable
             return false;
         }
 
-        if (!mapArchive.TryReadInfo())
+        if (mapArchive.Info == null)
         {
             LogHelper.Warning($"No info.json found: {filePath}");
         }
@@ -216,6 +164,8 @@ public sealed class MapArchive : IDisposable
         if (!mapArchive.IsArchiveSafe())
         {
             LogHelper.Warning($"Archive has been deemed not safe: {filePath}");
+            mapArchive.Dispose();
+            mapArchive = null;
             return false;
         }
 
@@ -433,7 +383,7 @@ public sealed class MapArchive : IDisposable
 
             foreach (ZipEntry? entry in Archive)
             {
-                if (entry == null) 
+                if (entry == null)
                     continue;
 
                 // Normalize entry name
@@ -448,7 +398,7 @@ public sealed class MapArchive : IDisposable
                                entryName.Equals(rootPath, StringComparison.InvariantCultureIgnoreCase) ||
                                entryName.StartsWith(rootPath + "/", StringComparison.InvariantCultureIgnoreCase);
 
-                if (!isMatch) 
+                if (!isMatch)
                     continue;
 
                 // Calculate the relative path for the destination.
@@ -549,7 +499,7 @@ public sealed class MapArchive : IDisposable
     /// </summary>
     public void Dispose()
     {
-        ArchiveStream?.Dispose();
         Archive?.Close();
+        ArchiveStream?.Dispose();
     }
 }

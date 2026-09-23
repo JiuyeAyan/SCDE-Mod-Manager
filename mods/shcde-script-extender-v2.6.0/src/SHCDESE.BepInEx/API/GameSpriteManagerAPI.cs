@@ -3,6 +3,7 @@ using SHCDESE.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace SHCDESE.API;
@@ -201,8 +202,7 @@ internal class GameSpriteManagerAPI
         UpdateGMSpriteArrays(allSprites, loaderInstance);
         stopwatch.Stop();
         if (transparentMaskCount > 0)
-            LogHelper.Warning($"{transparentMaskCount} TeamColour/Foliage sprite override(s) had no _m.png mask; " +
-                              "transparent masks were used.");
+            LogHelper.Warning($"{transparentMaskCount} TeamColour/Foliage sprite override(s) had no _m.png mask; transparent masks were used.");
         if (ignoredMaskCount > 0)
             LogHelper.Warning($"{ignoredMaskCount} Plain sprite override(s) supplied _m.png masks; those masks were ignored.");
 
@@ -234,7 +234,7 @@ internal class GameSpriteManagerAPI
         }
     }
 
-    private bool TryGetOverrideTexture(string spriteName, out Texture2D texture)
+    private bool TryGetOverrideTexture(string spriteName, [NotNullWhen(true)] out Texture2D texture)
     {
         if (GameAssetManagerAPI.Instance.TryLoadTexture(DEFAULT_OVERRIDE_SPRITES_PATH + spriteName + ".png", out texture))
         {

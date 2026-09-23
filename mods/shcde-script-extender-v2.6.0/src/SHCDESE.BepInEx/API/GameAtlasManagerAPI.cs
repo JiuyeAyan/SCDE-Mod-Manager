@@ -59,12 +59,16 @@ public sealed class GameAtlasManagerAPI
         }
 
         string atlasPath = Path.Combine(folderPath, "atlas.png");
+        if (!File.Exists(atlasPath))
+            atlasPath = Path.Combine(folderPath, "atlas.dds");
         string maskPath = Path.Combine(folderPath, "atlas_m.png");
+        if (!File.Exists(maskPath))
+            maskPath = Path.Combine(folderPath, "atlas_m.dds");
         string jsonPath = Path.Combine(folderPath, "atlas.json");
 
         if (!File.Exists(atlasPath) || !File.Exists(jsonPath))
         {
-            LogHelper.Warning($"Missing atlas.png or atlas.json in [{folderPath}]. Skipping.");
+            LogHelper.Warning($"Missing atlas.png/atlas.dds or atlas.json in [{folderPath}]. Skipping.");
             return;
         }
 
@@ -113,7 +117,7 @@ public sealed class GameAtlasManagerAPI
 
         // 1. Load atlas texture
         Texture2D atlasTex = LoadAtlasTexture(atlasPath);
-        if (atlasTex == null) 
+        if (atlasTex == null)
             return;
 
         // 2. Load mask texture (optional)
@@ -386,11 +390,24 @@ public sealed class GameAtlasManagerAPI
         try
         {
             byte[] bytes = File.ReadAllBytes(absolutePath);
-            Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            if (!tex.LoadImage(bytes))
+            Texture2D tex;
+            if (SHCDESE.Extensions.TextureExtensions.IsDds(bytes))
             {
-                LogHelper.Warning($"LoadImage failed for [{absolutePath}]");
-                return null;
+                tex = SHCDESE.Extensions.TextureExtensions.LoadDds(bytes);
+                if (tex == null)
+                {
+                    LogHelper.Warning($"DDS load failed for [{absolutePath}]");
+                    return null;
+                }
+            }
+            else
+            {
+                tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                if (!tex.LoadImage(bytes))
+                {
+                    LogHelper.Warning($"LoadImage failed for [{absolutePath}]");
+                    return null;
+                }
             }
             tex.filterMode = FilterMode.Point;
             tex.wrapMode = TextureWrapMode.Clamp;

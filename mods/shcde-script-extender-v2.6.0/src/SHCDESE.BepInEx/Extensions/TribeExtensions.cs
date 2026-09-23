@@ -9,50 +9,52 @@ public unsafe static class TribeExtensions
 {
 
     /// <summary>
-    /// Sets a last ranged attacker globalId by index. If index is invalid it defaults to the first entry.
+    /// Sets a tracked ranged-attacker global ID by zero-based index.
     /// </summary>
     /// <param name="self">The tribe to access</param>
     /// <param name="index">The index of the last ranged attacker (to-be)</param>
     /// <param name="globalId">The globalId of the attacker</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void SetTrackedRangedAttackerIndex(this NativePointer<GameTribe> self, int index, UInt16 globalId)
+    public static bool SetTrackedRangedAttackerIndex(this NativePointer<GameTribe> self, int index, UInt16 globalId)
     {
         switch (index)
         {
-            case 0: 
-                self.Pointer->r_LastRangedAttackerGlobalId1 = globalId; 
+            case 0:
+                self.Pointer->r_LastRangedAttackerGlobalId1 = globalId;
                 break;
             case 1:
-                self.Pointer->r_LastRangedAttackerGlobalId2 = globalId; 
+                self.Pointer->r_LastRangedAttackerGlobalId2 = globalId;
                 break;
             case 2:
-                self.Pointer->r_LastRangedAttackerGlobalId3 = globalId; 
+                self.Pointer->r_LastRangedAttackerGlobalId3 = globalId;
                 break;
-            case 3: 
-                self.Pointer->r_LastRangedAttackerGlobalId4 = globalId; 
+            case 3:
+                self.Pointer->r_LastRangedAttackerGlobalId4 = globalId;
                 break;
-            case 4: 
-                self.Pointer->r_LastRangedAttackerGlobalId5 = globalId; 
+            case 4:
+                self.Pointer->r_LastRangedAttackerGlobalId5 = globalId;
                 break;
-            case 5: 
-                self.Pointer->r_LastRangedAttackerGlobalId6 = globalId; 
+            case 5:
+                self.Pointer->r_LastRangedAttackerGlobalId6 = globalId;
                 break;
-            case 6: 
-                self.Pointer->r_LastRangedAttackerGlobalId7 = globalId; 
+            case 6:
+                self.Pointer->r_LastRangedAttackerGlobalId7 = globalId;
                 break;
-            case 7: 
-                self.Pointer->r_LastRangedAttackerGlobalId8 = globalId; 
+            case 7:
+                self.Pointer->r_LastRangedAttackerGlobalId8 = globalId;
                 break;
-            case 8: 
-                self.Pointer->r_LastRangedAttackerGlobalId9 = globalId; 
+            case 8:
+                self.Pointer->r_LastRangedAttackerGlobalId9 = globalId;
                 break;
-            case 9: 
-                self.Pointer->r_LastRangedAttackerGlobalId10 = globalId; 
+            case 9:
+                self.Pointer->r_LastRangedAttackerGlobalId10 = globalId;
                 break;
-            default: 
-                self.Pointer->r_LastRangedAttackerGlobalId1 = globalId; 
-                break;
+            default:
+                LogHelper.Error($"Tracked ranged attacker index out of range: {index}");
+                return false;
         }
+
+        return true;
     }
 
     /// <summary>
@@ -63,7 +65,7 @@ public unsafe static class TribeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnmanagedVector2<UInt16> GetPatrolPoint(this NativePointer<GameTribe> self, int index)
     {
-        if (index > 9)
+        if ((UInt32)index >= 10)
         {
             LogHelper.Error($"Requested patrol point out of range: {index}");
             return default;
@@ -81,7 +83,7 @@ public unsafe static class TribeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetPatrolPoint(this NativePointer<GameTribe> self, int index, UnmanagedVector2<UInt16> point)
     {
-        if (index > 9)
+        if ((UInt32)index >= 10)
         {
             LogHelper.Error($"Requested patrol point out of range: {index}");
             return;
